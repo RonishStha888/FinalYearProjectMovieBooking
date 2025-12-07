@@ -1,0 +1,323 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Main container - split screen */
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* Left panel - Image side */
+.left-panel {
+  flex: 1;
+  background: linear-gradient(135deg, #1D1616 0%, #2a2020 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.cinema-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.7;
+}
+
+/* Right panel - Login form */
+.right-panel {
+  flex: 1;
+  background: #EEEEEE;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Welcome title */
+.welcome-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #1D1616;
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+/* Login form */
+.login-form {
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Form group */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 12px;
+  color: #8E1616;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  border-bottom: 2px solid #d0d0d0;
+  background: transparent;
+  font-size: 15px;
+  color: #1D1616;
+  transition: border-color 0.3s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-bottom-color: #D84040;
+}
+
+/* Password input wrapper */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 5px;
+  color: #8E1616;
+  transition: color 0.3s;
+}
+
+.password-toggle:hover {
+  color: #D84040;
+}
+
+/* Forgot password link */
+.forgot-password {
+  font-size: 13px;
+  color: #D84040;
+  background: none;
+  border: none;
+  text-decoration: none;
+  align-self: flex-start;
+  margin-top: -8px;
+  transition: color 0.3s;
+  cursor: pointer;
+  padding: 0;
+  font-weight: 500;
+}
+
+.forgot-password:hover {
+  color: #8E1616;
+  text-decoration: underline;
+}
+
+/* Login button */
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background: #D84040;
+  border: none;
+  border-radius: 4px;
+  color: #EEEEEE;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(216, 64, 64, 0.3);
+}
+
+.login-btn:hover {
+  background: #8E1616;
+  box-shadow: 0 4px 8px rgba(142, 22, 22, 0.4);
+  transform: translateY(-1px);
+}
+
+.login-btn:active {
+  background: #1D1616;
+  transform: translateY(0);
+}
+
+/* Signup text */
+.signup-text {
+  margin-top: 30px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #8E1616;
+  text-align: center;
+}
+
+/* Google sign-in wrapper */
+.google-signin-wrapper {
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.google-signin-wrapper > div {
+  width: 100% !important;
+}
+
+.google-signin-wrapper button {
+  width: 100% !important;
+}
+
+/* Back arrow - Clean minimal design */
+.back-arrow {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 300;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  padding: 8px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.back-arrow:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(-4px);
+}
+
+.back-arrow:active {
+  transform: translateX(-2px) scale(0.95);
+}
+
+/* Link button */
+.link-button {
+  background: none;
+  border: none;
+  color: #D84040;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  margin-left: 4px;
+  transition: color 0.3s;
+}
+
+.link-button:hover {
+  color: #8E1616;
+}
+
+/* Subtitle text */
+.subtitle-text {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.subtitle-text strong {
+  color: #1D1616;
+  font-weight: 600;
+}
+
+/* Success message */
+.success-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #D84040 0%, #8E1616 100%);
+  color: white;
+  font-size: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 24px rgba(216, 64, 64, 0.3);
+  animation: scaleIn 0.5s ease;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Footer */
+.footer-text {
+  position: absolute;
+  bottom: 30px;
+  font-size: 12px;
+  color: #8E1616;
+  text-align: center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .left-panel {
+    display: none;
+  }
+
+  .right-panel {
+    flex: 1;
+  }
+
+  .welcome-title {
+    font-size: 28px;
+    margin-bottom: 40px;
+  }
+}
