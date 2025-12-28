@@ -2,7 +2,8 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import User from '../models/User.js';
 import PasswordReset from '../models/PasswordReset.js';
-import { sendWelcomeEmail, sendPasswordResetEmail } from '../services/sendgridService.js';
+import EmailVerification from '../models/EmailVerification.js';
+import { sendWelcomeEmail, sendPasswordResetEmail, sendVerificationEmail } from '../services/sendgridService.js';
 
 const router = express.Router();
 
@@ -11,62 +12,160 @@ const generateResetCode = () => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-// Signup endpoint
-router.post('/signup', async (req, res) => {
-  try {
-    const { login, email, password } = req.body;
+// Email validation function
+const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
 
-    // Validate input
-    if (!login || !password) {
+// Send verification code for signup
+router.post('/send-verification', async (req, res) => {
+  try {
+    const { login, email, password, verificationType = 'signup', googleData } = req.body;
+
+    // Validate email format
+    if (!email || !isValidEmail(email)) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Username and password are required' 
+        message: 'Please provide a valid email address' 
       });
     }
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ login });
-    if (existingUser) {
-      return res.status(409).json({ 
-        success: false, 
-        message: 'Username already exists' 
+    // For regular signup, validate other fields
+    if (verificationType === 'signup') {
+      if (!login || !password) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Username and password are required' 
+        });
+      }
+
+      // Check if user already exists
+      const existingUser = await User.findOne({ 
+        $or: [{ login }, { email }] 
       });
+      if (existingUser) {
+        return res.status(409).json({ 
+          success: false, 
+          message: 'Username or email already exists' 
+        });
+      }
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // For Google signup, check if email already exists
+    if (verificationType === 'google-signup') {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(409).json({ 
+          success: false, 
+          message: 'An account with this email already exists' 
+        });
+      }
+    }
 
-    // Create new user
-    const user = new User({
-      login,
+    // Generate verification code
+    const verificationCode = generateResetCode();
+
+    // Prepare user data to store temporarily
+    const userData = verificationType === 'signup' 
+      ? { login, email, password, authMethod: 'email' }
+      : { ...googleData, authMethod: 'google' };
+
+    // Delete any existing verification for this email
+    await EmailVerification.deleteMany({ email });
+
+    // Save verification code
+    await EmailVerification.create({
       email,
-      password: hashedPassword,
-      authMethod: 'email'
+      code: verificationCode,
+      userData,
+      verificationType
     });
 
+    // Send verification email
+    const userName = verificationType === 'signup' ? login : googleData?.name;
+    
+    // Always log verification code to console for development
+    console.log(`\n🔐 VERIFICATION CODE FOR ${email}: ${verificationCode}`);
+    console.log(`⏰ Code expires in 15 minutes\n`);
+    
+    try {
+      await sendVerificationEmail(email, verificationCode, userName);
+    } catch (emailError) {
+      console.error('Email sending failed, but verification code is available in console:', emailError);
+    }
+
+    res.json({
+      success: true,
+      message: 'Verification code sent to your email',
+      email: email
+    });
+
+  } catch (error) {
+    console.error('Send verification error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'An error occurred while sending verification code' 
+    });
+  }
+});
+
+// Verify code and complete signup
+router.post('/verify-signup', async (req, res) => {
+  try {
+    const { email, code } = req.body;
+
+    if (!email || !code) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email and verification code are required' 
+      });
+    }
+
+    // Find verification record
+    const verification = await EmailVerification.findOne({ email, code });
+    if (!verification) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Invalid or expired verification code' 
+      });
+    }
+
+    // Create user account
+    const userData = verification.userData;
+    
+    if (verification.verificationType === 'signup') {
+      // Hash password for regular signup
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      userData.password = hashedPassword;
+    }
+
+    const user = new User(userData);
     await user.save();
 
+    // Delete verification record
+    await EmailVerification.deleteOne({ _id: verification._id });
+
     // Send welcome email
-    if (email) {
-      await sendWelcomeEmail(email, login);
-    }
+    await sendWelcomeEmail(email, userData.login || userData.name);
 
     // Success
     res.status(201).json({
       success: true,
-      message: 'Account created successfully',
+      message: 'Account created successfully! Welcome email sent.',
       user: {
         id: user._id,
         login: user.login,
-        email: user.email
+        email: user.email,
+        name: user.name
       }
     });
 
   } catch (error) {
-    console.error('Signup error:', error);
+    console.error('Verify signup error:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'An error occurred during signup' 
+      message: 'An error occurred during account verification' 
     });
   }
 });
@@ -123,8 +222,8 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Google signup/login endpoint
-router.post('/google', async (req, res) => {
+// Google login (for existing users)
+router.post('/google-login', async (req, res) => {
   try {
     const { email, name, googleId } = req.body;
 
@@ -137,27 +236,22 @@ router.post('/google', async (req, res) => {
     }
 
     // Check if user exists
-    let user = await User.findOne({ googleId });
+    const user = await User.findOne({ 
+      $or: [{ googleId }, { email }] 
+    });
 
     if (!user) {
-      // Create new user
-      user = new User({
-        login: email,
-        email,
-        name,
-        googleId,
-        authMethod: 'google'
+      return res.status(404).json({ 
+        success: false, 
+        message: 'No account found. Please sign up first.',
+        needsSignup: true
       });
-      await user.save();
-      
-      // Send welcome email for new users
-      await sendWelcomeEmail(email, name);
     }
 
-    // Success
+    // Success - user exists
     res.json({
       success: true,
-      message: 'Google authentication successful',
+      message: 'Google login successful',
       user: {
         id: user._id,
         login: user.login,
@@ -167,10 +261,10 @@ router.post('/google', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Google auth error:', error);
+    console.error('Google login error:', error);
     res.status(500).json({ 
       success: false, 
-      message: 'An error occurred during Google authentication' 
+      message: 'An error occurred during Google login' 
     });
   }
 });
@@ -271,6 +365,38 @@ router.post('/reset-password', async (req, res) => {
     res.status(500).json({ 
       success: false, 
       message: 'An error occurred while resetting password' 
+    });
+  }
+});
+
+// Test email endpoint
+router.post('/test-email', async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email is required' 
+      });
+    }
+
+    // Send test verification email
+    const testCode = generateResetCode();
+    await sendVerificationEmail(email, testCode, 'Test User');
+
+    res.json({
+      success: true,
+      message: 'Test email sent successfully!',
+      code: testCode // Only for testing - remove in production
+    });
+
+  } catch (error) {
+    console.error('Test email error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to send test email',
+      error: error.message 
     });
   }
 });

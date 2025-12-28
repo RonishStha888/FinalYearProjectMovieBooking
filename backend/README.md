@@ -24,7 +24,7 @@ mongod
 The `.env` file is already created with:
 ```
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/rtx-cinema
+MONGODB_URI=mongodb://localhost:27017/rtx_cinema
 ```
 
 If using MongoDB Atlas, update `MONGODB_URI` with your connection string.

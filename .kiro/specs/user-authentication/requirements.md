@@ -18,6 +18,10 @@ This document specifies the requirements for a user authentication system that e
 - **MongoDB**: The NoSQL database system used to store user account information
 - **User Database**: The MongoDB collection that stores user credentials and profile information
 - **Backend API**: The server-side application that handles database operations and authentication logic
+- **Email Verification**: The process of confirming a user's email address ownership through a verification code
+- **Verification Code**: A 6-digit numeric code sent to the user's email for account verification
+- **Verification Email**: The email message containing the verification code and instructions
+- **Email Verification Database**: The MongoDB collection that temporarily stores verification codes and pending signup data
 
 ## Requirements
 
@@ -101,3 +105,17 @@ This document specifies the requirements for a user authentication system that e
 3. WHEN a user attempts to sign up with an email that already exists, THE Backend API SHALL return an error indicating the account already exists
 4. WHEN a user submits login credentials, THE Backend API SHALL query the User Database to verify the credentials
 5. WHEN the Backend API stores passwords, THE Backend API SHALL hash passwords using a secure hashing algorithm before storage
+
+### Requirement 8
+
+**User Story:** As a new user, I want to verify my email address during signup, so that I can confirm my account and prevent unauthorized access.
+
+#### Acceptance Criteria
+
+1. WHEN a user submits a valid signup form, THE Authentication System SHALL send a verification code to the user's email address and store the signup data temporarily
+2. WHEN a verification email is sent, THE Authentication System SHALL generate a random 6-digit numeric code and store it with an expiration time of 15 minutes
+3. WHEN a user receives the verification email, THE Authentication System SHALL display the verification code prominently and include clear instructions
+4. WHEN a user enters the correct verification code within the time limit, THE Authentication System SHALL create the user account and provide success feedback
+5. WHEN a user enters an incorrect verification code, THE Authentication System SHALL display an error message and allow retry without resending the email
+6. WHEN the verification code expires, THE Authentication System SHALL display an expiration message and provide an option to resend the verification email
+7. WHEN a user requests to resend the verification code, THE Authentication System SHALL generate a new code and send a new email with the updated code

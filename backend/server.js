@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
+import movieRoutes from './routes/movies.js';
+import cinemaRoutes from './routes/cinemas.js';
 
 dotenv.config();
 
@@ -20,6 +22,8 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/movies', movieRoutes);
+app.use('/api/cinemas', cinemaRoutes);
 
 // Test route
 app.get('/', (req, res) => {

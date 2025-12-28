@@ -18,25 +18,34 @@ The authentication system follows a full-stack architecture with clear separatio
 - **Routing**: Simple state-based navigation between login and signup views
 
 ### Backend (Node.js + Express)
-- **API Routes**: RESTful endpoints for signup, login, and OAuth callback
-- **Controllers**: Business logic for authentication operations
-- **Models**: Mongoose schemas for User data
+- **API Routes**: RESTful endpoints for signup, login, OAuth callback, and email verification
+- **Controllers**: Business logic for authentication and email verification operations
+- **Models**: Mongoose schemas for User and EmailVerification data
 - **Middleware**: Authentication, validation, and error handling middleware
 - **Database Layer**: MongoDB connection and query operations
-- **Security**: Password hashing with bcrypt, input sanitization
+- **Email Service**: SendGrid integration for sending verification emails
+- **Security**: Password hashing with bcrypt, input sanitization, verification code generation
 
 ### Data Flow
-1. **Signup Flow (Email/Password)**:
+1. **Signup Flow (Email/Password with Verification)**:
    - Frontend validates input → POST to `/api/auth/signup`
-   - Backend validates → hashes password → stores in MongoDB
-   - Returns success/error → Frontend displays feedback
+   - Backend validates → generates verification code → stores temporarily in EmailVerification collection
+   - Sends verification email → Returns verification required response
+   - User enters code → POST to `/api/auth/verify-email`
+   - Backend validates code → creates user account → Returns success/error
 
-2. **Login Flow (Email/Password)**:
+2. **Email Verification Flow**:
+   - Generate 6-digit numeric code → Store with 15-minute expiration
+   - Send formatted email with code → User receives and enters code
+   - Validate code and expiration → Create user account or show error
+   - Handle resend requests → Generate new code and invalidate old one
+
+3. **Login Flow (Email/Password)**:
    - Frontend validates input → POST to `/api/auth/login`
    - Backend queries MongoDB → verifies password hash
    - Returns JWT token/session → Frontend stores auth state
 
-3. **OAuth Flow (Google)**:
+4. **OAuth Flow (Google)**:
    - User clicks "Sign in with Google" button
    - Frontend initiates OAuth → redirects to Google
    - User authorizes → Google redirects to backend callback
@@ -109,6 +118,25 @@ interface GoogleUserInfo {
 }
 ```
 
+### EmailVerificationPage Component
+```typescript
+interface EmailVerificationPageProps {
+  email: string;
+  onVerificationSuccess?: (email: string) => void;
+  onBackToSignup?: () => void;
+}
+
+interface VerificationFormState {
+  code: string;
+  errors: {
+    code?: string;
+    general?: string;
+  };
+  isSubmitting: boolean;
+  isResending: boolean;
+}
+```
+
 ### Backend API Endpoints
 
 #### POST /api/auth/signup
@@ -117,7 +145,32 @@ Request Body: {
   email: string;
   password: string;
 }
+Response: {
+  success: boolean;
+  message: string;
+  requiresVerification: boolean;
+  email?: string;
+}
+```
+
+#### POST /api/auth/verify-email
+```typescript
+Request Body: {
+  email: string;
+  code: string;
+}
 Response: AuthResponse
+```
+
+#### POST /api/auth/resend-verification
+```typescript
+Request Body: {
+  email: string;
+}
+Response: {
+  success: boolean;
+  message: string;
+}
 ```
 
 #### POST /api/auth/login
@@ -141,8 +194,23 @@ Response: AuthResponse
 ```typescript
 interface AuthController {
   signup(req: Request, res: Response): Promise<void>;
+  verifyEmail(req: Request, res: Response): Promise<void>;
+  resendVerification(req: Request, res: Response): Promise<void>;
   login(req: Request, res: Response): Promise<void>;
   googleAuth(req: Request, res: Response): Promise<void>;
+}
+```
+
+### Email Service
+```typescript
+interface EmailService {
+  sendVerificationEmail(email: string, code: string): Promise<EmailResult>;
+  generateVerificationCode(): string;
+}
+
+interface EmailResult {
+  success: boolean;
+  error?: string;
 }
 ```
 
@@ -153,6 +221,13 @@ interface UserRepository {
   findByEmail(email: string): Promise<IUser | null>;
   findByGoogleId(googleId: string): Promise<IUser | null>;
   updateUser(id: string, updates: Partial<IUser>): Promise<IUser>;
+}
+
+interface EmailVerificationRepository {
+  createVerification(data: Partial<IEmailVerification>): Promise<IEmailVerification>;
+  findByEmail(email: string): Promise<IEmailVerification | null>;
+  findByEmailAndCode(email: string, code: string): Promise<IEmailVerification | null>;
+  deleteByEmail(email: string): Promise<void>;
 }
 ```
 
@@ -195,6 +270,11 @@ interface SignupFormData {
   password: string;
   confirmPassword: string;
 }
+
+interface VerificationFormData {
+  email: string;
+  code: string;
+}
 ```
 
 ### Backend User Model (MongoDB/Mongoose)
@@ -233,12 +313,73 @@ const UserSchema = new Schema({
 }, { timestamps: true });
 ```
 
+### EmailVerification Model (MongoDB/Mongoose)
+```typescript
+interface IEmailVerification {
+  _id: ObjectId;
+  email: string;
+  code: string;
+  userData: {
+    email: string;
+    password: string;
+    name?: string;
+  };
+  verificationType: 'signup' | 'google-signup';
+  createdAt: Date;
+  expiresAt: Date;
+}
+
+// Mongoose Schema
+const EmailVerificationSchema = new Schema({
+  email: {
+    type: String,
+    required: true,
+    lowercase: true,
+    trim: true
+  },
+  code: {
+    type: String,
+    required: true,
+    length: 6
+  },
+  userData: {
+    type: Object,
+    required: true
+  },
+  verificationType: {
+    type: String,
+    enum: ['signup', 'google-signup'],
+    required: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  expiresAt: {
+    type: Date,
+    default: () => new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+    expires: 0
+  }
+});
+```
+
 ### API Request/Response Types
 ```typescript
 // Signup Request
 interface SignupRequest {
   email: string;
   password: string;
+}
+
+// Email Verification Request
+interface VerifyEmailRequest {
+  email: string;
+  code: string;
+}
+
+// Resend Verification Request
+interface ResendVerificationRequest {
+  email: string;
 }
 
 // Login Request
@@ -257,6 +398,19 @@ interface AuthResponse {
     name?: string;
   };
   token?: string; // JWT token for session management
+  requiresVerification?: boolean; // For signup responses
+}
+
+// Verification Response
+interface VerificationResponse {
+  success: boolean;
+  message: string;
+  user?: {
+    id: string;
+    email: string;
+    name?: string;
+  };
+  token?: string;
 }
 
 // Error Response
@@ -271,6 +425,8 @@ interface ErrorResponse {
 - **Email**: Must match standard email regex pattern: `/^[^\s@]+@[^\s@]+\.[^\s@]+$/`
 - **Password**: Minimum 8 characters, must contain at least one letter and one number
 - **Confirm Password**: Must exactly match the password field
+- **Verification Code**: Must be exactly 6 digits, numeric only
+- **Code Expiration**: 15 minutes from generation time
 - **Password Hashing**: Use bcrypt with salt rounds of 10
 
 
@@ -359,6 +515,30 @@ After analyzing all acceptance criteria, several properties can be consolidated:
 *For any* user in the database, submitting their correct email and password should successfully authenticate, while submitting incorrect credentials should fail.
 **Validates: Requirements 7.4**
 
+**Property 19: Verification code generation and storage**
+*For any* valid signup submission, the system should generate a 6-digit numeric verification code and store it with the signup data and a 15-minute expiration time.
+**Validates: Requirements 8.1, 8.2**
+
+**Property 20: Verification email content**
+*For any* verification email sent, the email content should contain the verification code and clear instructions for completing verification.
+**Validates: Requirements 8.3**
+
+**Property 21: Correct verification code creates account**
+*For any* valid verification code entered within the time limit, the system should create the user account and provide success feedback.
+**Validates: Requirements 8.4**
+
+**Property 22: Incorrect verification code shows error**
+*For any* incorrect verification code entered, the system should display an error message and allow retry without resending the email.
+**Validates: Requirements 8.5**
+
+**Property 23: Expired verification code handling**
+*For any* verification code that has exceeded the 15-minute expiration time, the system should display an expiration message and provide an option to resend.
+**Validates: Requirements 8.6**
+
+**Property 24: Verification code resend functionality**
+*For any* resend verification request, the system should generate a new 6-digit code, invalidate the old code, and send a new email.
+**Validates: Requirements 8.7**
+
 ## Error Handling
 
 The authentication system handles errors at multiple levels:
@@ -368,10 +548,16 @@ The authentication system handles errors at multiple levels:
 - **Password Length**: Display "Password must be at least 8 characters" below the password field
 - **Password Mismatch**: Display "Passwords do not match" below the confirm password field
 - **Empty Fields**: Display "This field is required" below any empty required field
+- **Invalid Verification Code**: Display "Please enter a valid 6-digit code" below the code field
+- **Verification Code Format**: Display "Verification code must be 6 digits" below the code field
 
 ### Backend API Errors
 - **Duplicate Email** (409 Conflict): Return `{ success: false, message: "An account with this email already exists" }`
 - **Invalid Credentials** (401 Unauthorized): Return `{ success: false, message: "Invalid email or password" }`
+- **Invalid Verification Code** (400 Bad Request): Return `{ success: false, message: "Invalid verification code" }`
+- **Expired Verification Code** (400 Bad Request): Return `{ success: false, message: "Verification code has expired", canResend: true }`
+- **Verification Not Found** (404 Not Found): Return `{ success: false, message: "No verification request found for this email" }`
+- **Email Send Error** (500 Internal Server Error): Return `{ success: false, message: "Failed to send verification email. Please try again." }`
 - **Validation Error** (400 Bad Request): Return `{ success: false, message: "Validation failed", errors: {...} }`
 - **Database Error** (500 Internal Server Error): Return `{ success: false, message: "An error occurred. Please try again." }`
 - **OAuth Error** (401 Unauthorized): Return `{ success: false, message: "Google authentication failed" }`
@@ -460,6 +646,9 @@ Frontend property-based tests:
 - **Property 9**: Test error clearing behavior with random invalid-to-valid transitions
 - **Property 10**: Test submission state across random form data
 - **Property 11**: Test password visibility toggle state transitions
+- **Property 20**: Generate random verification emails and verify code and instructions are present
+- **Property 22**: Generate random incorrect verification codes and verify error display
+- **Property 23**: Test expired code handling and resend option display
 
 Backend property-based tests:
 - **Property 12**: Test OAuth flow initiation
@@ -469,6 +658,9 @@ Backend property-based tests:
 - **Property 16**: Generate random OAuth signups and verify data storage
 - **Property 17**: Test duplicate email rejection with random emails
 - **Property 18**: Test credential verification with random valid/invalid combinations
+- **Property 19**: Generate random signups and verify 6-digit codes with proper expiration
+- **Property 21**: Generate random valid verification codes and verify account creation
+- **Property 24**: Test verification code resend with random emails and verify new codes
 
 ### Test Organization
 - Frontend unit tests: `frontend/src/**/*.test.jsx` co-located with components

@@ -9,24 +9,46 @@ export default function SignupPage({ onBackToLogin }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  // Verification states
+  const [step, setStep] = useState("signup"); // "signup" or "verify"
+  const [verificationCode, setVerificationCode] = useState("");
+  const [pendingEmail, setPendingEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Email validation function
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
+    // Validate email format
+    if (!isValidEmail(email)) {
+      alert("Please enter a valid email address!");
+      setIsLoading(false);
+      return;
+    }
 
     // Validate passwords match
     if (password !== confirmPassword) {
       alert("Passwords do not match!");
+      setIsLoading(false);
       return;
     }
 
     // Validate password length
     if (password.length < 8) {
       alert("Password must be at least 8 characters long!");
+      setIsLoading(false);
       return;
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/signup', {
+      const response = await fetch('http://localhost:5000/api/auth/send-verification', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,17 +56,17 @@ export default function SignupPage({ onBackToLogin }) {
         body: JSON.stringify({ 
           login: username,
           email,
-          password 
+          password,
+          verificationType: 'signup'
         })
       });
 
       const data = await response.json();
 
       if (data.success) {
-        alert(`Welcome ${data.user.login}! Account created successfully.`);
-        console.log('User data:', data.user);
-        // Go back to login page
-        onBackToLogin();
+        setPendingEmail(email);
+        setStep("verify");
+        alert(`Verification code sent to ${email}. Please check your inbox!`);
       } else {
         alert(`Error: ${data.message}`);
       }
@@ -52,9 +74,52 @@ export default function SignupPage({ onBackToLogin }) {
       console.error('Error:', error);
       alert('Failed to connect to server. Make sure the backend is running!');
     }
+    
+    setIsLoading(false);
+  };
+
+  const handleVerification = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    if (!verificationCode || verificationCode.length !== 6) {
+      alert("Please enter the 6-digit verification code!");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/verify-signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          email: pendingEmail,
+          code: verificationCode
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert(`Welcome ${data.user.login}! Account created successfully. Check your email for welcome message!`);
+        console.log('User data:', data.user);
+        onBackToLogin();
+      } else {
+        alert(`Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to verify code. Please try again!');
+    }
+    
+    setIsLoading(false);
   };
 
   const handleGoogleSuccess = async (credentialResponse) => {
+    setIsLoading(true);
+    
     try {
       const token = credentialResponse.credential;
       const base64Url = token.split('.')[1];
@@ -68,10 +133,12 @@ export default function SignupPage({ onBackToLogin }) {
       const googleUser = {
         email: userInfo.email,
         name: userInfo.name,
-        googleId: userInfo.sub
+        googleId: userInfo.sub,
+        login: userInfo.email
       };
 
-      const response = await fetch('http://localhost:5000/api/auth/google', {
+      // First check if user already exists (try login)
+      const loginResponse = await fetch('http://localhost:5000/api/auth/google-login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -79,19 +146,48 @@ export default function SignupPage({ onBackToLogin }) {
         body: JSON.stringify(googleUser)
       });
 
-      const data = await response.json();
+      const loginData = await loginResponse.json();
 
-      if (data.success) {
-        alert(`Welcome ${data.user.name}! Signed up with Google successfully.`);
-        console.log('User data:', data.user);
+      if (loginData.success) {
+        alert(`Welcome back ${loginData.user.name}! Logged in successfully.`);
+        console.log('User data:', loginData.user);
         onBackToLogin();
+        setIsLoading(false);
+        return;
+      }
+
+      // If user doesn't exist, send verification for signup
+      if (loginData.needsSignup) {
+        const verifyResponse = await fetch('http://localhost:5000/api/auth/send-verification', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            email: googleUser.email,
+            verificationType: 'google-signup',
+            googleData: googleUser
+          })
+        });
+
+        const verifyData = await verifyResponse.json();
+
+        if (verifyData.success) {
+          setPendingEmail(googleUser.email);
+          setStep("verify");
+          alert(`Verification code sent to ${googleUser.email}. Please check your inbox to complete Google signup!`);
+        } else {
+          alert(`Error: ${verifyData.message}`);
+        }
       } else {
-        alert(`Error: ${data.message}`);
+        alert(`Error: ${loginData.message}`);
       }
     } catch (error) {
       console.error('Error:', error);
       alert('Failed to process Google sign-up!');
     }
+    
+    setIsLoading(false);
   };
 
   const handleGoogleError = () => {
@@ -116,9 +212,17 @@ export default function SignupPage({ onBackToLogin }) {
         </button>
         
         <div className="login-container">
-          <h1 className="welcome-title">Create Account</h1>
+          {/* Step indicator */}
+          <div className="step-indicator">
+            <div className={`step-dot ${step === "signup" ? "active" : ""}`}></div>
+            <div className={`step-dot ${step === "verify" ? "active" : ""}`}></div>
+          </div>
 
-          <form className="login-form" onSubmit={handleSignup}>
+          {step === "signup" ? (
+            <>
+              <h1 className="welcome-title">Create Account</h1>
+
+              <form className="login-form" onSubmit={handleSignup}>
             <div className="form-group">
               <label className="form-label">EMAIL</label>
               <input
@@ -181,24 +285,63 @@ export default function SignupPage({ onBackToLogin }) {
               </div>
             </div>
 
-            <button type="submit" className="login-btn">
-              Sign Up
-            </button>
-          </form>
+                <button type="submit" className="login-btn" disabled={isLoading}>
+                  {isLoading ? "Sending..." : "Send Verification Code"}
+                </button>
+              </form>
 
-          <p className="signup-text">Or sign up with</p>
+              <div className="auth-divider">Or sign up with</div>
 
-          <div className="google-signin-wrapper">
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={handleGoogleError}
-              text="signup_with"
-              shape="rectangular"
-              theme="outline"
-              size="large"
-              width="350"
-            />
-          </div>
+              <div className="google-signin-wrapper">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  text="signup_with"
+                  shape="rectangular"
+                  theme="outline"
+                  size="large"
+                  width="350"
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <h1 className="welcome-title">Verify Your Email</h1>
+              <p className="subtitle-text">
+                We've sent a 6-digit verification code to <strong>{pendingEmail}</strong>
+              </p>
+
+              <form className="login-form" onSubmit={handleVerification}>
+                <div className="form-group">
+                  <label className="form-label">VERIFICATION CODE</label>
+                  <input
+                    type="text"
+                    className="form-input verification-input"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    placeholder="000000"
+                    maxLength="6"
+                    required
+                  />
+                </div>
+
+                <button type="submit" className="login-btn" disabled={isLoading}>
+                  {isLoading ? "Verifying..." : "Verify & Create Account"}
+                </button>
+              </form>
+
+              <p className="signup-text">
+                Didn't receive the code? 
+                <button 
+                  className="link-button" 
+                  onClick={() => setStep("signup")}
+                  style={{ marginLeft: '5px' }}
+                >
+                  Try Again
+                </button>
+              </p>
+            </>
+          )}
 
           <footer className="footer-text">
             © 2020-2021, PT TIX ID

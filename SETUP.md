@@ -75,7 +75,7 @@ The app will open at `http://localhost:5173`
 ### Using MongoDB Compass (GUI)
 1. Download: https://www.mongodb.com/try/download/compass
 2. Connect to: `mongodb://localhost:27017`
-3. Browse database: `rtx-cinema`
+3. Browse database: `rtx_cinema`
 4. View collection: `users`
 
 ### Using MongoDB Shell
