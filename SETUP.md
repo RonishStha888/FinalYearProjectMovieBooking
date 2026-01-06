@@ -1,157 +1,103 @@
-# RTX Cinema - Setup Guide
+# 🚀 RTX Cinema - Quick Setup Guide
 
-## 🎬 Complete Setup Instructions
+## ⚡ Quick Start (5 Minutes)
 
-### Prerequisites
-- Node.js installed
-- MongoDB installed (or MongoDB Atlas account)
-
----
-
-## Backend Setup
-
-### 1. Install MongoDB
-
-**Option A: Local MongoDB (Windows)**
+### 1. Clone & Install
 ```bash
-# Download and install from:
-https://www.mongodb.com/try/download/community
+git clone https://github.com/RonishStha888/FinalYearProjectMovieBooking.git
+cd FinalYearProjectMovieBooking
 
-# Start MongoDB
-mongod
+# Install backend dependencies
+cd backend && npm install
+
+# Install frontend dependencies  
+cd ../frontend && npm install
 ```
 
-**Option B: MongoDB Atlas (Cloud - Recommended)**
-1. Go to https://www.mongodb.com/cloud/atlas
-2. Create free account
-3. Create a cluster
-4. Get connection string
-5. Update `backend/.env` with your connection string
+### 2. Environment Setup
+Create `backend/.env`:
+```env
+MONGODB_URI=mongodb://localhost:27017/rtx_cinema
+JWT_SECRET=rtx_cinema_secret_key_2024
+EMAIL_USER=your_gmail@gmail.com
+EMAIL_PASS=your_gmail_app_password
+```
 
-### 2. Start Backend Server
+### 3. Database Setup
 ```bash
 cd backend
-npm install
-npm run dev
+node seedData.js
 ```
 
-You should see:
+### 4. Start Application
+**Terminal 1 (Backend):**
+```bash
+cd backend
+npm start
 ```
-✅ Connected to MongoDB
-🚀 Server running on http://localhost:5000
-```
 
----
-
-## Frontend Setup
-
-### 1. Start Frontend
+**Terminal 2 (Frontend):**
 ```bash
 cd frontend
-npm install
 npm run dev
 ```
 
-The app will open at `http://localhost:5173`
+### 5. Access Application
+- **Frontend**: http://localhost:3000
+- **Backend**: http://localhost:5000
 
----
+## 🔑 Test Login
+- **Username**: `testuser`
+- **Password**: `password123`
 
-## 🧪 Testing the Application
+## 🎬 Experience Features
+1. Login with test credentials
+2. Browse 10 real movies with TMDB posters
+3. Select any movie → Choose date/time/cinema
+4. Experience professional seat selection
+5. Complete booking with realistic pricing
 
-### Test Google Signup
-1. Click the "SignUp" button (with Google icon)
-2. It will create a test user in MongoDB
-3. Check MongoDB to see the stored data
+## 🎭 Cinema Halls Available
+- **QFX Cinema**: Regular (156 seats) + Gold Class (48 recliners)
+- **FCube Cinema**: Standard (120 seats) + Premium (60 recliners)
+- **Big Movies**: Main Hall (140 seats)
 
-### Test Login
-1. First, you need to create a user manually or use Google signup
-2. Enter login and password
-3. Click "Login" button
-
----
-
-## 📊 View MongoDB Data
-
-### Using MongoDB Compass (GUI)
-1. Download: https://www.mongodb.com/try/download/compass
-2. Connect to: `mongodb://localhost:27017`
-3. Browse database: `rtx_cinema`
-4. View collection: `users`
-
-### Using MongoDB Shell
-```bash
-mongosh
-use rtx-cinema
-db.users.find()
-```
-
----
+## 💰 Pricing Features
+- Base prices: Rs. 380-700
+- Premium seats: +Rs. 100
+- Weekend surcharge: Automatic
+- Convenience fee: Rs. 25
 
 ## 🔧 Troubleshooting
 
-### Backend won't start
-- Make sure MongoDB is running
-- Check if port 5000 is available
-- Verify `.env` file exists in backend folder
+### MongoDB Connection Issues
+```bash
+# Make sure MongoDB is running
+mongod
 
-### Frontend can't connect to backend
-- Make sure backend is running on port 5000
-- Check browser console for CORS errors
-- Verify the API URL in frontend code
-
-### MongoDB connection error
-- Check if MongoDB service is running
-- Verify connection string in `.env`
-- For Atlas, check IP whitelist settings
-
----
-
-## 📁 Project Structure
-
-```
-├── backend/
-│   ├── models/
-│   │   └── User.js          # User schema
-│   ├── routes/
-│   │   └── auth.js          # Auth endpoints
-│   ├── .env                 # Environment variables
-│   ├── server.js            # Main server file
-│   └── package.json
-│
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx          # Main component
-│   │   └── App.css          # Styles
-│   └── package.json
+# Or use MongoDB Compass
+# Connection string: mongodb://localhost:27017/rtx_cinema
 ```
 
----
-
-## 🚀 Next Steps
-
-1. Implement real Google OAuth integration
-2. Add JWT tokens for authentication
-3. Create signup page for email/password
-4. Add password reset functionality
-5. Implement user profile page
-
----
-
-## 📝 API Endpoints
-
-### POST /api/auth/login
-```json
-{
-  "login": "username",
-  "password": "password123"
-}
+### Port Already in Use
+```bash
+# Kill processes on ports 3000 and 5000
+npx kill-port 3000
+npx kill-port 5000
 ```
 
-### POST /api/auth/google
-```json
-{
-  "email": "user@gmail.com",
-  "name": "User Name",
-  "googleId": "google-user-id"
-}
-```
+### Email Verification Setup
+1. Enable 2-factor authentication on Gmail
+2. Generate App Password in Google Account settings
+3. Use App Password in EMAIL_PASS (not your regular password)
+
+## 🎬 Ready to Experience Professional Cinema Booking!
+
+Your RTX Cinema system is now ready with:
+✅ Professional seat selection
+✅ Real movie data integration  
+✅ Realistic cinema layouts
+✅ Dynamic pricing system
+✅ Complete booking flow
+
+**Open http://localhost:3000 and start booking!** 🎭✨

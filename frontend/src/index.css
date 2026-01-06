@@ -1,3 +1,26 @@
+/* Global input field text visibility fix */
+input, textarea, select {
+  color: #333 !important;
+}
+
+/* Dark theme input fields */
+.form-input,
+input[type="text"],
+input[type="email"], 
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+textarea,
+select {
+  color: #ffffff !important;
+}
+
+/* Light theme input fields (admin panel) */
+.admin-login-card input,
+.payment-form input {
+  color: #333 !important;
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

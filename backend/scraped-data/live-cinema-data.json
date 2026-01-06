@@ -1,0 +1,180 @@
+{
+  "movies": [
+    {
+      "id": 1,
+      "title": "Aquaman and the Lost Kingdom",
+      "image": "https://image.tmdb.org/t/p/w500/7lTnXOy0iNtBAdRP3TZvaKJ77F6.jpg",
+      "genre": "Action, Adventure, Fantasy",
+      "duration": "124 min",
+      "rating": "7.2",
+      "description": "Aquaman balances his duties as king and as a member of the Justice League.",
+      "releaseDate": "2023-12-22",
+      "language": "English",
+      "director": "James Wan",
+      "cast": "Jason Momoa, Patrick Wilson, Yahya Abdul-Mateen II",
+      "source": "Current Popular Movies"
+    },
+    {
+      "id": 2,
+      "title": "Wonka",
+      "image": "https://image.tmdb.org/t/p/w500/qhb1qOilapbapxWQn9jtRCMwXJF.jpg",
+      "genre": "Family, Fantasy, Comedy",
+      "duration": "116 min",
+      "rating": "7.8",
+      "description": "The story of how the world's greatest inventor, magician and chocolate-maker became the beloved Willy Wonka.",
+      "releaseDate": "2023-12-15",
+      "language": "English",
+      "director": "Paul King",
+      "cast": "Timothée Chalamet, Olivia Colman, Hugh Grant",
+      "source": "Current Popular Movies"
+    },
+    {
+      "id": 3,
+      "title": "The Hunger Games: The Ballad of Songbirds & Snakes",
+      "image": "https://image.tmdb.org/t/p/w500/mBaXZ95R2OxueZhvQbcEWy2DqyO.jpg",
+      "genre": "Action, Adventure, Drama",
+      "duration": "157 min",
+      "rating": "7.4",
+      "description": "Years before he would become the tyrannical President of Panem, 18-year-old Coriolanus Snow is the last hope for his fading lineage.",
+      "releaseDate": "2023-11-17",
+      "language": "English",
+      "director": "Francis Lawrence",
+      "cast": "Tom Blyth, Rachel Zegler, Peter Dinklage",
+      "source": "Current Popular Movies"
+    }
+  ],
+  "cinemas": [
+    {
+      "id": 1,
+      "name": "FCube Cinema Durbarmarg",
+      "address": "Durbarmarg, Kathmandu",
+      "city": "Kathmandu",
+      "phone": "+977-1-5555555",
+      "facilities": [
+        "4DX",
+        "IMAX",
+        "Dolby Atmos"
+      ],
+      "source": "FCube Cinema Live"
+    },
+    {
+      "id": 2,
+      "name": "FCube Cinema Butwal",
+      "address": "Butwal, Rupandehi",
+      "city": "Butwal",
+      "phone": "+977-1-5555555",
+      "facilities": [
+        "4DX",
+        "IMAX",
+        "Dolby Atmos"
+      ],
+      "source": "FCube Cinema Live"
+    },
+    {
+      "id": 3,
+      "name": "FCube Cinema Durbarmarg",
+      "address": "Durbarmarg, Kathmandu",
+      "city": "Kathmandu",
+      "phone": "+977-1-5555555",
+      "facilities": [
+        "4DX",
+        "IMAX",
+        "Dolby Atmos"
+      ],
+      "source": "FCube Cinema Live"
+    },
+    {
+      "id": 4,
+      "name": "FCube Cinema Butwal",
+      "address": "Butwal, Rupandehi",
+      "city": "Butwal",
+      "phone": "+977-1-5555555",
+      "facilities": [
+        "4DX",
+        "IMAX",
+        "Dolby Atmos"
+      ],
+      "source": "FCube Cinema Live"
+    },
+    {
+      "id": 5,
+      "name": "FCube Cinema Durbarmarg",
+      "address": "Durbarmarg, Kathmandu",
+      "city": "Kathmandu",
+      "phone": "+977-1-5555555",
+      "facilities": [
+        "4DX",
+        "IMAX",
+        "Dolby Atmos"
+      ],
+      "source": "FCube Cinema Live"
+    },
+    {
+      "id": 6,
+      "name": "FCube Cinema Butwal",
+      "address": "Butwal, Rupandehi",
+      "city": "Butwal",
+      "phone": "+977-1-5555555",
+      "facilities": [
+        "4DX",
+        "IMAX",
+        "Dolby Atmos"
+      ],
+      "source": "FCube Cinema Live"
+    },
+    {
+      "id": 7,
+      "name": "FCube Cinema Durbarmarg",
+      "address": "Durbarmarg, Kathmandu",
+      "city": "Kathmandu",
+      "phone": "+977-1-5555555",
+      "facilities": [
+        "4DX",
+        "IMAX",
+        "Dolby Atmos"
+      ],
+      "source": "FCube Cinema Live"
+    },
+    {
+      "id": 8,
+      "name": "FCube Cinema Butwal",
+      "address": "Butwal, Rupandehi",
+      "city": "Butwal",
+      "phone": "+977-1-5555555",
+      "facilities": [
+        "4DX",
+        "IMAX",
+        "Dolby Atmos"
+      ],
+      "source": "FCube Cinema Live"
+    }
+  ],
+  "showtimes": [
+    "12:15 PM",
+    "11:00 AM",
+    "02:45 PM",
+    "06:45 PM",
+    "11:45 AM",
+    "06:30 PM",
+    "03:45 PM",
+    "03:15 PM",
+    "06:00 PM",
+    "11:30 AM",
+    "12:00 PM",
+    "07:30 PM",
+    "03:00 PM",
+    "07:00 PM",
+    "07:45 PM",
+    "02:15 PM",
+    "05:00 PM"
+  ],
+  "scrapedAt": "2026-01-04T05:39:03.500Z",
+  "source": "Live Cinema Data (QFX + FCube)",
+  "metadata": {
+    "qfxMovies": 0,
+    "fcubeMovies": 0,
+    "totalMovies": 0,
+    "totalCinemas": 8,
+    "totalShowtimes": 17
+  }
+}

@@ -1,0 +1,249 @@
+import fs from 'fs';
+import path from 'path';
+
+class ManualDataExtractor {
+  constructor() {
+    this.movies = [];
+    this.cinemas = [];
+    this.showtimes = [];
+  }
+
+  // Method to add movie data manually
+  addMovie(movieData) {
+    const movie = {
+      id: this.movies.length + 1,
+      title: movieData.title || 'Unknown Movie',
+      image: movieData.image || '',
+      genre: movieData.genre || 'Action',
+      duration: movieData.duration || '120 min',
+      rating: movieData.rating || '8.0',
+      description: movieData.description || `${movieData.title} - Currently showing at QFX Cinema`,
+      releaseDate: movieData.releaseDate || new Date().toISOString().split('T')[0],
+      language: movieData.language || 'English',
+      director: movieData.director || 'Director Name',
+      cast: movieData.cast || 'Cast Members'
+    };
+    
+    this.movies.push(movie);
+    console.log(`✅ Added movie: ${movie.title}`);
+    return movie;
+  }
+
+  // Method to add cinema data manually
+  addCinema(cinemaData) {
+    const cinema = {
+      id: this.cinemas.length + 1,
+      name: cinemaData.name || 'QFX Cinema',
+      address: cinemaData.address || 'Kathmandu, Nepal',
+      city: cinemaData.city || 'Kathmandu',
+      phone: cinemaData.phone || '+977-1-4444444',
+      facilities: cinemaData.facilities || ['IMAX', 'Dolby Atmos', '3D', 'Recliner Seats']
+    };
+    
+    this.cinemas.push(cinema);
+    console.log(`✅ Added cinema: ${cinema.name}`);
+    return cinema;
+  }
+
+  // Method to add showtime data manually
+  addShowtime(time) {
+    if (!this.showtimes.includes(time)) {
+      this.showtimes.push(time);
+      console.log(`✅ Added showtime: ${time}`);
+    }
+    return time;
+  }
+
+  // Load current QFX movies (you can update this with real data)
+  loadCurrentQFXMovies() {
+    console.log('🎬 Loading current QFX Cinema movies...');
+    console.log('📝 Please update this data with current movies from QFX website');
+    
+    // Current movies at QFX (update these with real data from website)
+    const currentMovies = [
+      {
+        title: 'Mufasa: The Lion King',
+        image: 'https://image.tmdb.org/t/p/w500/lurEK87kukWNaHd0zYnsi3yzJrs.jpg',
+        genre: 'Animation, Adventure, Drama',
+        duration: '118 min',
+        rating: '7.2',
+        description: 'Mufasa: The Lion King enlists Rafiki to relay the legend of Mufasa to young lion cub Kiara.',
+        releaseDate: '2024-12-20',
+        language: 'English',
+        director: 'Barry Jenkins',
+        cast: 'Aaron Pierre, Kelvin Harrison Jr., Tiffany Boone'
+      },
+      {
+        title: 'Sonic the Hedgehog 3',
+        image: 'https://image.tmdb.org/t/p/w500/d4eLBFr2HlRC2OjNJ0WJmBARhPF.jpg',
+        genre: 'Action, Adventure, Comedy',
+        duration: '109 min',
+        rating: '7.8',
+        description: 'Sonic, Knuckles, and Tails reunite against a powerful new adversary, Shadow.',
+        releaseDate: '2024-12-20',
+        language: 'English',
+        director: 'Jeff Fowler',
+        cast: 'Ben Schwartz, Jim Carrey, Keanu Reeves'
+      },
+      {
+        title: 'Nosferatu',
+        image: 'https://image.tmdb.org/t/p/w500/yDZuPJYZYzFaCbqyJuw0wv0TN7a.jpg',
+        genre: 'Horror, Mystery, Thriller',
+        duration: '132 min',
+        rating: '7.5',
+        description: 'A gothic tale of obsession between a haunted young woman and the terrifying vampire infatuated with her.',
+        releaseDate: '2024-12-25',
+        language: 'English',
+        director: 'Robert Eggers',
+        cast: 'Bill Skarsgård, Nicholas Hoult, Lily-Rose Depp'
+      },
+      {
+        title: 'Wicked',
+        image: 'https://image.tmdb.org/t/p/w500/c5Tqxeo1UpBvnAc3csUm7j3hlQl.jpg',
+        genre: 'Drama, Fantasy, Musical',
+        duration: '160 min',
+        rating: '8.1',
+        description: 'Elphaba, a young woman misunderstood because of her green skin, and Glinda, a popular aristocrat.',
+        releaseDate: '2024-11-22',
+        language: 'English',
+        director: 'Jon M. Chu',
+        cast: 'Cynthia Erivo, Ariana Grande, Jonathan Bailey'
+      },
+      {
+        title: 'Moana 2',
+        image: 'https://image.tmdb.org/t/p/w500/yh64qw9mgXBvlaWDi7Q9tpUBAvH.jpg',
+        genre: 'Animation, Adventure, Comedy',
+        duration: '100 min',
+        rating: '7.0',
+        description: 'After receiving an unexpected call from her wayfinding ancestors, Moana journeys alongside Maui.',
+        releaseDate: '2024-11-27',
+        language: 'English',
+        director: 'David Derrick Jr.',
+        cast: 'Auli\'i Cravalho, Dwayne Johnson, Hualalai Chung'
+      },
+      {
+        title: 'A Complete Unknown',
+        image: 'https://image.tmdb.org/t/p/w500/oEO19q7GZJbpYcxdJkJgvlo2LJx.jpg',
+        genre: 'Biography, Drama, Music',
+        duration: '141 min',
+        rating: '7.3',
+        description: 'At the Newport Folk Festival in 1965, a young Bob Dylan shakes up his act on the folk music scene.',
+        releaseDate: '2024-12-25',
+        language: 'English',
+        director: 'James Mangold',
+        cast: 'Timothée Chalamet, Edward Norton, Elle Fanning'
+      }
+    ];
+    
+    currentMovies.forEach(movie => this.addMovie(movie));
+    
+    return this.movies;
+  }
+
+  // Load QFX cinema locations
+  loadQFXCinemas() {
+    console.log('🏢 Loading QFX Cinema locations...');
+    
+    const qfxCinemas = [
+      {
+        name: 'QFX Cinema Kumari',
+        address: 'Kumari Mall, New Baneshwor, Kathmandu',
+        city: 'Kathmandu',
+        phone: '+977-1-4444444',
+        facilities: ['IMAX', 'Dolby Atmos', '3D', 'Recliner Seats']
+      },
+      {
+        name: 'QFX Cinema Labim Mall',
+        address: 'Labim Mall, Pulchowk, Lalitpur',
+        city: 'Lalitpur',
+        phone: '+977-1-5555555',
+        facilities: ['4DX', 'Dolby Atmos', '3D', 'Premium Seats']
+      },
+      {
+        name: 'QFX Cinema Civil Mall',
+        address: 'Civil Mall, Sundhara, Kathmandu',
+        city: 'Kathmandu',
+        phone: '+977-1-6666666',
+        facilities: ['IMAX', '3D', 'Dolby Digital', 'VIP Lounge']
+      },
+      {
+        name: 'QFX Cinema Jai Nepal',
+        address: 'Jai Nepal Hall, Kathmandu',
+        city: 'Kathmandu',
+        phone: '+977-1-7777777',
+        facilities: ['Standard', 'Digital Sound', 'Comfortable Seating']
+      }
+    ];
+    
+    qfxCinemas.forEach(cinema => this.addCinema(cinema));
+    
+    return this.cinemas;
+  }
+
+  // Load typical QFX showtimes
+  loadQFXShowtimes() {
+    console.log('⏰ Loading QFX Cinema showtimes...');
+    
+    const qfxShowtimes = [
+      '9:00 AM',
+      '12:00 PM',
+      '3:00 PM',
+      '6:00 PM',
+      '9:00 PM'
+    ];
+    
+    qfxShowtimes.forEach(time => this.addShowtime(time));
+    
+    return this.showtimes;
+  }
+
+  // Generate complete dataset
+  generateCompleteDataset() {
+    console.log('🔄 Generating complete QFX Cinema dataset...');
+    
+    this.loadCurrentQFXMovies();
+    this.loadQFXCinemas();
+    this.loadQFXShowtimes();
+    
+    const dataset = {
+      movies: this.movies,
+      cinemas: this.cinemas,
+      showtimes: this.showtimes,
+      scrapedAt: new Date().toISOString(),
+      source: 'Manual QFX Cinema Data (Current Movies)',
+      metadata: {
+        totalMovies: this.movies.length,
+        totalCinemas: this.cinemas.length,
+        totalShowtimes: this.showtimes.length,
+        dataMethod: 'Manual Entry with Current Movies'
+      }
+    };
+    
+    return dataset;
+  }
+
+  // Save dataset to file
+  saveDataset(filename = 'qfx-current-data.json') {
+    const dataset = this.generateCompleteDataset();
+    
+    const outputPath = path.join(process.cwd(), 'scraped-data', filename);
+    
+    // Create directory if it doesn't exist
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    
+    fs.writeFileSync(outputPath, JSON.stringify(dataset, null, 2));
+    
+    console.log('✅ Dataset saved successfully!');
+    console.log(`📁 File: ${outputPath}`);
+    console.log(`🎬 Movies: ${dataset.movies.length}`);
+    console.log(`🏢 Cinemas: ${dataset.cinemas.length}`);
+    console.log(`⏰ Showtimes: ${dataset.showtimes.length}`);
+    
+    return dataset;
+  }
+}
+
+export default ManualDataExtractor;

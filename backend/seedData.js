@@ -174,14 +174,115 @@ const seedData = async () => {
     const insertedHalls = await Hall.insertMany(halls);
     console.log('Seeded halls...');
 
-    // Seed Showtimes for the next 14 days
+    // Seed Showtimes for the next 14 days with realistic seat bookings
     const showtimes = [];
     const today = new Date();
+    
+    // Helper function to generate realistic seat layout for each hall
+    const getHallSeatLayout = (hallType, cinemaName) => {
+      const layouts = {
+        'QFX_REGULAR': {
+          rows: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'],
+          seatsPerRow: [10, 12, 14, 14, 16, 16, 16, 16, 14, 14, 12, 10],
+          premiumRows: ['F', 'G', 'H'],
+          disabledSeats: ['A1', 'A10', 'L1', 'L10']
+        },
+        'QFX_GOLD': {
+          rows: ['A', 'B', 'C', 'D', 'E', 'F'],
+          seatsPerRow: [6, 8, 8, 8, 8, 6],
+          premiumRows: ['C', 'D', 'E'],
+          disabledSeats: []
+        },
+        'FCUBE_STANDARD': {
+          rows: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+          seatsPerRow: [8, 10, 12, 12, 14, 14, 12, 12, 10, 8],
+          premiumRows: ['E', 'F', 'G'],
+          disabledSeats: ['A1', 'A8', 'J1', 'J8']
+        },
+        'FCUBE_PREMIUM': {
+          rows: ['A', 'B', 'C', 'D', 'E', 'F'],
+          seatsPerRow: [8, 10, 10, 10, 10, 8],
+          premiumRows: ['C', 'D', 'E'],
+          disabledSeats: []
+        },
+        'BIG_REGULAR': {
+          rows: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'],
+          seatsPerRow: [8, 8, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 8, 8],
+          premiumRows: ['G', 'H', 'I', 'J'],
+          disabledSeats: ['A1', 'A8', 'N1', 'N8']
+        }
+      };
+
+      let layoutKey = 'QFX_REGULAR';
+      if (cinemaName?.includes('QFX')) {
+        layoutKey = hallType?.includes('GOLD') ? 'QFX_GOLD' : 'QFX_REGULAR';
+      } else if (cinemaName?.includes('FCube')) {
+        layoutKey = hallType?.includes('PREMIUM') ? 'FCUBE_PREMIUM' : 'FCUBE_STANDARD';
+      } else if (cinemaName?.includes('Big Movies')) {
+        layoutKey = 'BIG_REGULAR';
+      }
+
+      return layouts[layoutKey];
+    };
+
+    // Helper function to generate all possible seats for a hall
+    const generateAllSeats = (layout) => {
+      const allSeats = [];
+      layout.rows.forEach((row, rowIndex) => {
+        const seatsInRow = layout.seatsPerRow[rowIndex];
+        for (let seatNum = 1; seatNum <= seatsInRow; seatNum++) {
+          const seatId = `${row}${seatNum}`;
+          if (!layout.disabledSeats.includes(seatId)) {
+            allSeats.push(seatId);
+          }
+        }
+      });
+      return allSeats;
+    };
+
+    // Helper function to generate realistic booked seats based on date
+    const generateBookedSeats = (allSeats, dayOffset, time, isWeekend, isPremiumTime) => {
+      let occupancyRate = 0.15; // Default 15%
+
+      // Set occupancy based on day
+      if (dayOffset === 0) { // Today
+        occupancyRate = 0.90; // 90% full
+      } else if (dayOffset === 1) { // Tomorrow
+        occupancyRate = 0.60; // 60% full
+      } else if (dayOffset <= 3) { // Next 2 days
+        occupancyRate = 0.45; // 45% full
+      } else if (dayOffset <= 7) { // Rest of week
+        occupancyRate = 0.30; // 30% full
+      } else { // Future dates
+        occupancyRate = 0.20; // 20% full
+      }
+
+      // Adjust for weekend
+      if (isWeekend) {
+        occupancyRate = Math.min(occupancyRate + 0.15, 0.95);
+      }
+
+      // Adjust for prime time (17:00 and 20:15)
+      if (isPremiumTime) {
+        occupancyRate = Math.min(occupancyRate + 0.10, 0.95);
+      }
+
+      const bookedCount = Math.floor(allSeats.length * occupancyRate);
+      const shuffledSeats = [...allSeats].sort(() => Math.random() - 0.5);
+      
+      return shuffledSeats.slice(0, bookedCount).map(seatId => ({
+        seatNumber: seatId,
+        userId: users[Math.floor(Math.random() * users.length)]._id,
+        bookedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000) // Random booking time in last 7 days
+      }));
+    };
     
     for (let day = 0; day < 14; day++) {
       const showDate = new Date(today);
       showDate.setDate(today.getDate() + day);
       showDate.setHours(0, 0, 0, 0);
+
+      const isWeekend = showDate.getDay() === 0 || showDate.getDay() === 6;
 
       // For each movie
       movies.forEach(movie => {
@@ -189,9 +290,17 @@ const seedData = async () => {
         insertedHalls.forEach(hall => {
           const times = ['10:30', '13:45', '17:00', '20:15'];
           
+          // Get the cinema for this hall
+          const cinema = cinemas.find(c => c._id.equals(hall.cinemaId));
+          const layout = getHallSeatLayout(hall.type, cinema.name);
+          const allSeats = generateAllSeats(layout);
+          
           times.forEach(time => {
-            const isWeekend = showDate.getDay() === 0 || showDate.getDay() === 6;
             const price = isWeekend ? hall.pricing.weekendPrice : hall.pricing.basePrice;
+            const isPremiumTime = time === '17:00' || time === '20:15';
+            
+            // Generate realistic booked seats for this specific showtime
+            const bookedSeats = generateBookedSeats(allSeats, day, time, isWeekend, isPremiumTime);
             
             showtimes.push({
               movieId: movie._id,
@@ -202,7 +311,7 @@ const seedData = async () => {
               price: price,
               originalPrice: price + 50, // Show discount
               availableSeats: hall.totalSeats,
-              bookedSeats: []
+              bookedSeats: bookedSeats
             });
           });
         });

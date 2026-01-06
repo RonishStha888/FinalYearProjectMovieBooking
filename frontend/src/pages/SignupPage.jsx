@@ -7,6 +7,7 @@ export default function SignupPage({ onBackToLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
@@ -57,6 +58,7 @@ export default function SignupPage({ onBackToLogin }) {
           login: username,
           email,
           password,
+          name: name || username,
           verificationType: 'signup'
         })
       });
@@ -134,7 +136,7 @@ export default function SignupPage({ onBackToLogin }) {
         email: userInfo.email,
         name: userInfo.name,
         googleId: userInfo.sub,
-        login: userInfo.email
+        picture: userInfo.picture
       };
 
       // First check if user already exists (try login)
@@ -156,7 +158,7 @@ export default function SignupPage({ onBackToLogin }) {
         return;
       }
 
-      // If user doesn't exist, send verification for signup
+      // If user doesn't exist, send verification for Google signup
       if (loginData.needsSignup) {
         const verifyResponse = await fetch('http://localhost:5000/api/auth/send-verification', {
           method: 'POST',
@@ -221,69 +223,81 @@ export default function SignupPage({ onBackToLogin }) {
           {step === "signup" ? (
             <>
               <h1 className="welcome-title">Create Account</h1>
+              <p className="subtitle-text">Join RTX Cinema for the best movie experience</p>
 
               <form className="login-form" onSubmit={handleSignup}>
-            <div className="form-group">
-              <label className="form-label">EMAIL</label>
-              <input
-                type="email"
-                className="form-input"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+                <div className="form-group">
+                  <label className="form-label">EMAIL</label>
+                  <input
+                    type="email"
+                    className="form-input"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
 
-            <div className="form-group">
-              <label className="form-label">USERNAME</label>
-              <input
-                type="text"
-                className="form-input"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </div>
+                <div className="form-group">
+                  <label className="form-label">USERNAME</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                  />
+                </div>
 
-            <div className="form-group">
-              <label className="form-label">PASSWORD</label>
-              <div className="password-input-wrapper">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="form-input"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? "👁️" : "👁️‍🗨️"}
-                </button>
-              </div>
-            </div>
+                <div className="form-group">
+                  <label className="form-label">FULL NAME (Optional)</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your full name"
+                  />
+                </div>
 
-            <div className="form-group">
-              <label className="form-label">CONFIRM PASSWORD</label>
-              <div className="password-input-wrapper">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  className="form-input"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
-                </button>
-              </div>
-            </div>
+                <div className="form-group">
+                  <label className="form-label">PASSWORD</label>
+                  <div className="password-input-wrapper">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      className="form-input"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="password-toggle"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? "👁️" : "👁️‍🗨️"}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">CONFIRM PASSWORD</label>
+                  <div className="password-input-wrapper">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      className="form-input"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="password-toggle"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
+                    </button>
+                  </div>
+                </div>
 
                 <button type="submit" className="login-btn" disabled={isLoading}>
                   {isLoading ? "Sending..." : "Send Verification Code"}
@@ -343,8 +357,19 @@ export default function SignupPage({ onBackToLogin }) {
             </>
           )}
 
+          <p className="signup-text">
+            Already have an account? 
+            <button 
+              className="link-button" 
+              onClick={onBackToLogin}
+              style={{ marginLeft: '5px' }}
+            >
+              Sign In
+            </button>
+          </p>
+
           <footer className="footer-text">
-            © 2020-2021, PT TIX ID
+            © 2024 RTX Cinema - Nepal's Premier Cinema Chain
           </footer>
         </div>
       </div>

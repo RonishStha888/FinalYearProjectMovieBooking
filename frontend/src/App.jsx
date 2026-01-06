@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import SignupPage from './pages/SignupPage';
 import HomePage from './pages/HomePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import EmailTestPage from './pages/EmailTestPage';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
 import "./App.css";
 
 const GOOGLE_CLIENT_ID = "482064319034-pu4frhppprsrmeh481o6620lg8bm3lor.apps.googleusercontent.com";
@@ -11,7 +13,6 @@ const GOOGLE_CLIENT_ID = "482064319034-pu4frhppprsrmeh481o6620lg8bm3lor.apps.goo
 function AppContent() {
   const [showSignup, setShowSignup] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [showEmailTest, setShowEmailTest] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -25,25 +26,10 @@ function AppContent() {
     setIsLoggedIn(false);
     setShowSignup(false);
     setShowForgotPassword(false);
-    setShowEmailTest(false);
   };
 
   if (isLoggedIn) {
     return <HomePage user={currentUser} onLogout={handleLogout} />;
-  }
-
-  if (showEmailTest) {
-    return (
-      <div>
-        <button 
-          onClick={() => setShowEmailTest(false)}
-          style={{ margin: '10px', padding: '10px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px' }}
-        >
-          ← Back to Login
-        </button>
-        <EmailTestPage />
-      </div>
-    );
   }
 
   if (showForgotPassword) {
@@ -57,12 +43,11 @@ function AppContent() {
   return <LoginPage 
     onGoToSignup={() => setShowSignup(true)} 
     onGoToForgotPassword={() => setShowForgotPassword(true)}
-    onGoToEmailTest={() => setShowEmailTest(true)}
     onLoginSuccess={handleLoginSuccess} 
   />;
 }
 
-function LoginPage({ onGoToSignup, onGoToForgotPassword, onGoToEmailTest, onLoginSuccess }) {
+function LoginPage({ onGoToSignup, onGoToForgotPassword, onLoginSuccess }) {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -201,10 +186,6 @@ function LoginPage({ onGoToSignup, onGoToForgotPassword, onGoToEmailTest, onLogi
             Don't have an account? <button className="link-button" onClick={onGoToSignup}>Sign Up</button>
           </p>
 
-          <p className="signup-text">
-            <button className="link-button" onClick={onGoToEmailTest}>🧪 Test Email System</button>
-          </p>
-
           <div className="google-signin-wrapper">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
@@ -229,7 +210,16 @@ function LoginPage({ onGoToSignup, onGoToForgotPassword, onGoToEmailTest, onLogi
 export default function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <AppContent />
+      <Router>
+        <Routes>
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          
+          {/* Main App Routes */}
+          <Route path="/" element={<AppContent />} />
+        </Routes>
+      </Router>
     </GoogleOAuthProvider>
   );
 }

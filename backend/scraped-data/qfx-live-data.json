@@ -1,0 +1,59 @@
+{
+  "movies": [],
+  "cinemas": [
+    {
+      "id": 1,
+      "name": "QFX Cinema Kumari",
+      "address": "Kumari Mall, New Baneshwor, Kathmandu",
+      "city": "Kathmandu",
+      "phone": "+977-1-4444444",
+      "facilities": [
+        "IMAX",
+        "Dolby Atmos",
+        "3D",
+        "Recliner Seats"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "QFX Cinema Labim Mall",
+      "address": "Labim Mall, Pulchowk, Lalitpur",
+      "city": "Lalitpur",
+      "phone": "+977-1-5555555",
+      "facilities": [
+        "4DX",
+        "Dolby Atmos",
+        "3D",
+        "Premium Seats"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "QFX Cinema Civil Mall",
+      "address": "Civil Mall, Sundhara, Kathmandu",
+      "city": "Kathmandu",
+      "phone": "+977-1-6666666",
+      "facilities": [
+        "IMAX",
+        "3D",
+        "Dolby Digital",
+        "VIP Lounge"
+      ]
+    }
+  ],
+  "showtimes": [
+    "10:00 AM",
+    "1:00 PM",
+    "4:00 PM",
+    "7:00 PM",
+    "10:00 PM"
+  ],
+  "scrapedAt": "2026-01-04T05:30:07.017Z",
+  "source": "QFX Cinema Website (Live Scraper)",
+  "metadata": {
+    "totalMovies": 0,
+    "totalCinemas": 3,
+    "totalShowtimes": 5,
+    "scrapingMethod": "Puppeteer Live Scraping"
+  }
+}

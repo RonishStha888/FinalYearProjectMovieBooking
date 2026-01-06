@@ -123,24 +123,40 @@ body {
 .form-input {
   width: 100%;
   padding: 16px 20px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.15) !important;
   font-size: 16px;
-  color: #ffffff;
+  color: #000000 !important;
   transition: all 0.3s ease;
   font-family: 'Inter', sans-serif;
+  -webkit-text-fill-color: #000000 !important;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.15) inset !important;
 }
 
 .form-input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(0, 0, 0, 0.5) !important;
+  -webkit-text-fill-color: rgba(0, 0, 0, 0.5) !important;
 }
 
 .form-input:focus {
   outline: none;
   border-color: #D84040;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.25) !important;
   box-shadow: 0 0 0 4px rgba(216, 64, 64, 0.1);
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+}
+
+/* Fix for browser autofill */
+.form-input:-webkit-autofill,
+.form-input:-webkit-autofill:hover,
+.form-input:-webkit-autofill:focus,
+.form-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.15) inset !important;
+  -webkit-text-fill-color: #000000 !important;
+  color: #000000 !important;
+  background: rgba(255, 255, 255, 0.15) !important;
 }
 
 /* Password input wrapper */

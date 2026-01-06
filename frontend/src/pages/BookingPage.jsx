@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import "./BookingPage.css";
 import SeatSelection from "./SeatSelection";
+import PaymentPage from "./PaymentPage";
+import TicketPage from "./TicketPage";
 
 export default function BookingPage({ movie, onBack }) {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -12,6 +14,10 @@ export default function BookingPage({ movie, onBack }) {
   const [showtimes, setShowtimes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showSeatSelection, setShowSeatSelection] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [showTicket, setShowTicket] = useState(false);
+  const [seatData, setSeatData] = useState(null);
+  const [bookingData, setBookingData] = useState(null);
 
   // Generate dates for the next 14 days
   const generateDates = () => {
@@ -95,19 +101,65 @@ export default function BookingPage({ movie, onBack }) {
     setShowSeatSelection(false);
   };
 
-  const handleProceedFromSeatSelection = (seatData) => {
-    // Handle seat selection completion
-    console.log('Selected seats:', seatData);
-    alert(`Booking confirmed!\n\nMovie: ${movie.title}\nSeats: ${seatData.seats.join(', ')}\nTotal: Rs. ${seatData.total}\n\nThank you for booking with RTX Cinema!`);
-    
-    // Reset booking state
+  const handleProceedFromSeatSelection = (seatSelectionData) => {
+    setSeatData(seatSelectionData);
     setShowSeatSelection(false);
+    setShowPayment(true);
+  };
+
+  const handleBackFromPayment = () => {
+    setShowPayment(false);
+    setShowSeatSelection(true);
+  };
+
+  const handlePaymentSuccess = (paymentData) => {
+    setBookingData(paymentData);
+    setShowPayment(false);
+    setShowTicket(true);
+  };
+
+  const handleBackToHome = () => {
+    // Reset all states
+    setShowSeatSelection(false);
+    setShowPayment(false);
+    setShowTicket(false);
     setSelectedDate(null);
     setSelectedTime(null);
     setSelectedCinema(null);
     setSelectedClass(null);
     setSelectedShowtime(null);
+    setSeatData(null);
+    setBookingData(null);
+    
+    // Navigate back to home
+    onBack();
   };
+
+  // If ticket is being shown, show ticket page
+  if (showTicket && bookingData) {
+    return (
+      <TicketPage
+        bookingData={bookingData}
+        onBackToHome={handleBackToHome}
+      />
+    );
+  }
+
+  // If payment is active, show payment page
+  if (showPayment && seatData) {
+    return (
+      <PaymentPage
+        movie={movie}
+        selectedShowtime={selectedShowtime}
+        selectedCinema={selectedCinema}
+        selectedHall={selectedClass}
+        selectedDate={selectedDate?.fullDate}
+        seatData={seatData}
+        onBack={handleBackFromPayment}
+        onPaymentSuccess={handlePaymentSuccess}
+      />
+    );
+  }
 
   // If seat selection is active, show seat selection component
   if (showSeatSelection) {
@@ -231,7 +283,7 @@ export default function BookingPage({ movie, onBack }) {
                 <path d="M7 7H17V17H7V7Z" stroke="currentColor" strokeWidth="2"/>
                 <path d="M3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7Z" stroke="currentColor" strokeWidth="2"/>
               </svg>
-              Select Cinema & Showtime
+              Choose Cinema & Time
             </h2>
             
             <div className="cinema-list">

@@ -6,6 +6,11 @@ const bookingSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  showtimeId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Showtime',
+    required: true
+  },
   movieId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Movie',
@@ -21,41 +26,38 @@ const bookingSchema = new mongoose.Schema({
     ref: 'Hall',
     required: true
   },
-  showtimeId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Showtime',
-    required: true
-  },
-  bookingId: {
-    type: String,
-    unique: true,
-    required: true
-  },
   seats: [{
     seatNumber: String,
+    seatType: {
+      type: String,
+      enum: ['regular', 'premium', 'vip'],
+      default: 'regular'
+    },
     price: Number
   }],
   totalAmount: {
     type: Number,
     required: true
   },
-  convenienceFee: {
-    type: Number,
-    default: 25
+  bookingReference: {
+    type: String,
+    unique: true,
+    required: true
   },
-  finalAmount: {
-    type: Number,
+  customerInfo: {
+    name: String,
+    email: String,
+    phone: String
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['card', 'esewa', 'khalti', 'cash'],
     required: true
   },
   paymentStatus: {
     type: String,
     enum: ['pending', 'completed', 'failed', 'refunded'],
     default: 'pending'
-  },
-  paymentMethod: {
-    type: String,
-    enum: ['card', 'wallet', 'upi', 'cash'],
-    default: 'card'
   },
   bookingStatus: {
     type: String,
@@ -73,24 +75,35 @@ const bookingSchema = new mongoose.Schema({
   showTime: {
     type: String,
     required: true
+  },
+  discountApplied: {
+    code: String,
+    amount: Number,
+    percentage: Number
+  },
+  refundInfo: {
+    refundAmount: Number,
+    refundDate: Date,
+    refundReason: String,
+    refundMethod: String
   }
 }, {
   timestamps: true
 });
 
-// Generate booking ID before saving
+// Generate booking reference
 bookingSchema.pre('save', function(next) {
-  if (!this.bookingId) {
-    const timestamp = Date.now().toString(36);
-    const random = Math.random().toString(36).substr(2, 5);
-    this.bookingId = `RTX${timestamp}${random}`.toUpperCase();
+  if (!this.bookingReference) {
+    this.bookingReference = 'RTX' + Date.now() + Math.random().toString(36).substr(2, 4).toUpperCase();
   }
   next();
 });
 
 // Indexes for efficient queries
 bookingSchema.index({ userId: 1, bookingDate: -1 });
-bookingSchema.index({ bookingId: 1 }, { unique: true });
 bookingSchema.index({ showtimeId: 1 });
+bookingSchema.index({ bookingReference: 1 });
+bookingSchema.index({ paymentStatus: 1 });
+bookingSchema.index({ bookingStatus: 1 });
 
 export default mongoose.model('Booking', bookingSchema);

@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import User from '../models/User.js';
 import PasswordReset from '../models/PasswordReset.js';
 import EmailVerification from '../models/EmailVerification.js';
-import { sendWelcomeEmail, sendPasswordResetEmail, sendVerificationEmail } from '../services/sendgridService.js';
+import { sendWelcomeEmail, sendPasswordResetEmail, sendVerificationEmail } from '../services/nodemailerService.js';
 
 const router = express.Router();
 
@@ -21,7 +21,9 @@ const isValidEmail = (email) => {
 // Send verification code for signup
 router.post('/send-verification', async (req, res) => {
   try {
-    const { login, email, password, verificationType = 'signup', googleData } = req.body;
+    const { login, email, password, name, verificationType = 'signup', googleData } = req.body;
+
+    console.log(`📧 Verification request for: ${email}, Type: ${verificationType}`);
 
     // Validate email format
     if (!email || !isValidEmail(email)) {
@@ -45,6 +47,7 @@ router.post('/send-verification', async (req, res) => {
         $or: [{ login }, { email }] 
       });
       if (existingUser) {
+        console.log(`❌ User already exists: ${existingUser.login} / ${existingUser.email}`);
         return res.status(409).json({ 
           success: false, 
           message: 'Username or email already exists' 
@@ -56,6 +59,7 @@ router.post('/send-verification', async (req, res) => {
     if (verificationType === 'google-signup') {
       const existingUser = await User.findOne({ email });
       if (existingUser) {
+        console.log(`❌ Google user already exists: ${existingUser.email}`);
         return res.status(409).json({ 
           success: false, 
           message: 'An account with this email already exists' 
@@ -63,34 +67,43 @@ router.post('/send-verification', async (req, res) => {
       }
     }
 
-    // Generate verification code
-    const verificationCode = generateResetCode();
+    // Generate random 6-digit OTP
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log(`🔐 Generated OTP: ${verificationCode} for ${email}`);
 
     // Prepare user data to store temporarily
     const userData = verificationType === 'signup' 
-      ? { login, email, password, authMethod: 'email' }
+      ? { login, email, password, name: name || login, authMethod: 'email' }
       : { ...googleData, authMethod: 'google' };
 
     // Delete any existing verification for this email
     await EmailVerification.deleteMany({ email });
+    console.log(`🗑️ Cleaned up old verifications for ${email}`);
 
-    // Save verification code
-    await EmailVerification.create({
+    // Save verification code with expiration
+    const verification = await EmailVerification.create({
       email,
       code: verificationCode,
       userData,
-      verificationType
+      verificationType,
+      createdAt: new Date() // Will expire in 15 minutes due to schema
     });
+    console.log(`💾 Saved verification record: ${verification._id}`);
 
     // Send verification email
-    const userName = verificationType === 'signup' ? login : googleData?.name;
+    const userName = verificationType === 'signup' ? (name || login) : googleData?.name;
     
     // Always log verification code to console for development
     console.log(`\n🔐 VERIFICATION CODE FOR ${email}: ${verificationCode}`);
     console.log(`⏰ Code expires in 15 minutes\n`);
     
     try {
-      await sendVerificationEmail(email, verificationCode, userName);
+      const emailResult = await sendVerificationEmail(email, verificationCode, userName);
+      if (emailResult.success) {
+        console.log(`✅ Email sent successfully to ${email}`);
+      } else {
+        console.log(`⚠️ Email sending failed, but code is available in console`);
+      }
     } catch (emailError) {
       console.error('Email sending failed, but verification code is available in console:', emailError);
     }
@@ -115,6 +128,8 @@ router.post('/verify-signup', async (req, res) => {
   try {
     const { email, code } = req.body;
 
+    console.log(`🔍 Verification attempt for: ${email} with code: ${code}`);
+
     if (!email || !code) {
       return res.status(400).json({ 
         success: false, 
@@ -125,29 +140,64 @@ router.post('/verify-signup', async (req, res) => {
     // Find verification record
     const verification = await EmailVerification.findOne({ email, code });
     if (!verification) {
+      console.log(`❌ Invalid verification: ${email} / ${code}`);
+      
+      // Check if there's any verification for this email
+      const anyVerification = await EmailVerification.findOne({ email });
+      if (anyVerification) {
+        console.log(`📧 Found verification for ${email} but code mismatch. Expected: ${anyVerification.code}`);
+      } else {
+        console.log(`📧 No verification found for ${email}`);
+      }
+      
       return res.status(400).json({ 
         success: false, 
         message: 'Invalid or expired verification code' 
       });
     }
 
-    // Create user account
+    console.log(`✅ Verification found: ${verification._id}`);
+
+    // Double-check that user doesn't already exist (race condition protection)
     const userData = verification.userData;
-    
+    if (verification.verificationType === 'signup') {
+      const existingUser = await User.findOne({ 
+        $or: [{ login: userData.login }, { email: userData.email }] 
+      });
+      if (existingUser) {
+        console.log(`❌ User already exists during verification: ${existingUser.login}`);
+        await EmailVerification.deleteOne({ _id: verification._id });
+        return res.status(409).json({ 
+          success: false, 
+          message: 'Username or email already exists' 
+        });
+      }
+    }
+
+    // Create user account
     if (verification.verificationType === 'signup') {
       // Hash password for regular signup
+      console.log(`🔐 Hashing password for ${userData.login}`);
       const hashedPassword = await bcrypt.hash(userData.password, 10);
       userData.password = hashedPassword;
     }
 
+    console.log(`👤 Creating user: ${userData.login || userData.name}`);
     const user = new User(userData);
     await user.save();
+    console.log(`✅ User created with ID: ${user._id}`);
 
     // Delete verification record
     await EmailVerification.deleteOne({ _id: verification._id });
+    console.log(`🗑️ Verification record cleaned up`);
 
     // Send welcome email
-    await sendWelcomeEmail(email, userData.login || userData.name);
+    try {
+      await sendWelcomeEmail(email, userData.name || userData.login);
+      console.log(`📧 Welcome email sent to ${email}`);
+    } catch (emailError) {
+      console.log(`⚠️ Welcome email failed, but user was created successfully`);
+    }
 
     // Success
     res.status(201).json({
@@ -163,6 +213,17 @@ router.post('/verify-signup', async (req, res) => {
 
   } catch (error) {
     console.error('Verify signup error:', error);
+    
+    // Provide more specific error messages
+    if (error.code === 11000) {
+      // Duplicate key error
+      const field = error.keyPattern?.login ? 'username' : 'email';
+      return res.status(409).json({ 
+        success: false, 
+        message: `This ${field} is already taken. Please choose a different one.` 
+      });
+    }
+    
     res.status(500).json({ 
       success: false, 
       message: 'An error occurred during account verification' 
@@ -301,7 +362,13 @@ router.post('/forgot-password', async (req, res) => {
     });
 
     // Send email with reset code
-    await sendPasswordResetEmail(email, resetCode);
+    try {
+      await sendPasswordResetEmail(email, resetCode, user.name || user.login);
+      console.log(`📧 Password reset email sent to ${email}`);
+    } catch (emailError) {
+      console.log(`⚠️ Password reset email failed:`, emailError.message);
+      // Still return success to not reveal if email exists
+    }
 
     res.json({
       success: true,
@@ -372,7 +439,7 @@ router.post('/reset-password', async (req, res) => {
 // Test email endpoint
 router.post('/test-email', async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, type = 'verification' } = req.body;
     
     if (!email) {
       return res.status(400).json({ 
@@ -381,14 +448,21 @@ router.post('/test-email', async (req, res) => {
       });
     }
 
-    // Send test verification email
-    const testCode = generateResetCode();
-    await sendVerificationEmail(email, testCode, 'Test User');
+    let result;
+    if (type === 'welcome') {
+      result = await sendWelcomeEmail(email, 'Test User');
+    } else if (type === 'reset') {
+      const testCode = generateResetCode();
+      result = await sendPasswordResetEmail(email, testCode, 'Test User');
+    } else if (type === 'verification') {
+      const testCode = generateResetCode();
+      result = await sendVerificationEmail(email, testCode, 'Test User');
+    }
 
     res.json({
-      success: true,
-      message: 'Test email sent successfully!',
-      code: testCode // Only for testing - remove in production
+      success: result.success,
+      message: result.success ? 'Test email sent successfully!' : 'Failed to send test email',
+      error: result.error || null
     });
 
   } catch (error) {

@@ -17,12 +17,12 @@ const emailVerificationSchema = new mongoose.Schema({
   verificationType: {
     type: String,
     enum: ['signup', 'google-signup'],
-    required: true
+    default: 'signup'
   },
   createdAt: {
     type: Date,
     default: Date.now,
-    expires: 900 // 15 minutes
+    expires: 900 // 15 minutes expiration
   }
 });
 
