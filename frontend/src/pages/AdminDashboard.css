@@ -24,21 +24,87 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+.admin-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .admin-header-left h1 {
   margin: 0;
   font-size: 1.8rem;
   font-weight: bold;
 }
 
-.admin-header-left span {
+.admin-header-left > span {
   font-size: 0.9rem;
   opacity: 0.8;
-  margin-left: 1rem;
+}
+
+.real-time-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.8rem;
+}
+
+.current-time {
+  color: #4CAF50;
+  font-weight: 500;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4CAF50;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #4CAF50;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
 }
 
 .admin-header-right {
   display: flex;
   gap: 1rem;
+  align-items: center;
+}
+
+.refresh-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.refresh-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .view-site-btn, .logout-btn {

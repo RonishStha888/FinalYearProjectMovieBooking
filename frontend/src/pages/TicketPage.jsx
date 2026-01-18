@@ -11,47 +11,144 @@ export default function TicketPage({ bookingData, onBackToHome }) {
   }, []);
 
   const handleDownloadTicket = () => {
-    // In a real app, this would generate a PDF ticket
+    // Create professional PDF-style ticket content
     const ticketData = {
       ...bookingData,
       qrCode: `RTX-${bookingData.bookingId}`,
-      downloadTime: new Date().toISOString()
+      downloadTime: new Date().toISOString(),
+      verificationCode: bookingData.bookingId.slice(-6).toUpperCase()
     };
     
-    // Create a downloadable text file (in real app, would be PDF)
+    // Create a professional ticket content
     const ticketContent = `
-RTX CINEMA - MOVIE TICKET
-========================
+═══════════════════════════════════════════════════════════════
+                        RTX CINEMA
+                   PREMIUM MOVIE EXPERIENCE
+═══════════════════════════════════════════════════════════════
+
+🎬 DIGITAL MOVIE TICKET 🎬
 
 Booking ID: ${bookingData.bookingId}
+Transaction ID: ${bookingData.transactionId}
+Verification Code: ${ticketData.verificationCode}
+
+───────────────────────────────────────────────────────────────
+MOVIE DETAILS
+───────────────────────────────────────────────────────────────
 Movie: ${bookingData.movie.title}
+Genre: ${bookingData.movie.genre}
+Rating: ⭐ ${bookingData.movie.rating}/10
+Duration: ${bookingData.movie.duration} minutes
+
+───────────────────────────────────────────────────────────────
+VENUE & TIMING
+───────────────────────────────────────────────────────────────
 Cinema: ${bookingData.cinema.name}
 Hall: ${bookingData.hall.type} - ${bookingData.hall.name}
-Date: ${bookingData.date}
-Time: ${bookingData.showtime.time}
-Seats: ${bookingData.seats.join(', ')}
-Total: Rs. ${bookingData.total}
+Date: ${formatDate(bookingData.date)}
+Time: ${formatTime(bookingData.showtime.time)}
 
-QR Code: ${ticketData.qrCode}
+───────────────────────────────────────────────────────────────
+SEAT INFORMATION
+───────────────────────────────────────────────────────────────
+Selected Seats: ${bookingData.seats.join(', ')}
+Number of Tickets: ${bookingData.seats.length}
+
+───────────────────────────────────────────────────────────────
+PAYMENT DETAILS
+───────────────────────────────────────────────────────────────
+Total Amount: Rs. ${bookingData.total}
+Payment Method: ${bookingData.paymentMethod.toUpperCase()}
+Payment Status: ✅ CONFIRMED
 Booking Time: ${new Date(bookingData.bookingTime).toLocaleString()}
 
+───────────────────────────────────────────────────────────────
+QR CODE & BARCODE
+───────────────────────────────────────────────────────────────
+QR Code: ${ticketData.qrCode}
+Barcode: ${bookingData.transactionId}
+
+───────────────────────────────────────────────────────────────
+IMPORTANT INFORMATION
+───────────────────────────────────────────────────────────────
+• Please arrive 15 minutes before showtime
+• Show this ticket and valid ID at the entrance
+• This ticket is non-refundable and non-transferable
+• Outside food and beverages are not allowed
+• Mobile phones must be switched off during the show
+• Photography and recording are strictly prohibited
+
+───────────────────────────────────────────────────────────────
+CONTACT INFORMATION
+───────────────────────────────────────────────────────────────
+RTX Cinema Customer Service
+📞 Phone: +977-1-4444444
+📧 Email: support@rtxcinema.com
+🌐 Website: www.rtxcinema.com
+
+═══════════════════════════════════════════════════════════════
 Thank you for choosing RTX Cinema!
+Enjoy your movie experience!
+═══════════════════════════════════════════════════════════════
+
+Generated on: ${new Date().toLocaleString()}
     `;
     
     const blob = new Blob([ticketContent], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `RTX-Ticket-${bookingData.bookingId}.txt`;
+    a.download = `RTX-Cinema-Ticket-${bookingData.bookingId}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    
+    // Show success message
+    alert('🎫 Professional ticket downloaded successfully!');
   };
 
-  const handleEmailTicket = () => {
-    // In a real app, this would send email via backend
-    alert('Ticket has been sent to your email address!');
+  const handleShareTicket = () => {
+    const shareText = `🎬 Just booked tickets for "${bookingData.movie.title}" at RTX Cinema! 
+📅 ${formatDate(bookingData.date)} at ${formatTime(bookingData.showtime.time)}
+🎭 ${bookingData.cinema.name} - ${bookingData.hall.type}
+💺 Seats: ${bookingData.seats.join(', ')}
+
+#RTXCinema #MovieNight #${bookingData.movie.title.replace(/\s+/g, '')}`;
+
+    if (navigator.share) {
+      // Use native sharing if available
+      navigator.share({
+        title: `RTX Cinema Ticket - ${bookingData.movie.title}`,
+        text: shareText,
+        url: window.location.origin
+      }).then(() => {
+        console.log('Ticket shared successfully');
+      }).catch((error) => {
+        console.log('Error sharing:', error);
+        fallbackShare(shareText);
+      });
+    } else {
+      fallbackShare(shareText);
+    }
+  };
+
+  const fallbackShare = (text) => {
+    // Fallback sharing options
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('🎬 Ticket details copied to clipboard! You can now share it on social media.');
+      });
+    } else {
+      // Create a temporary textarea for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      alert('🎬 Ticket details copied to clipboard! You can now share it on social media.');
+    }
   };
 
   const formatDate = (dateString) => {
@@ -165,8 +262,31 @@ Thank you for choosing RTX Cinema!
                   </div>
                 </div>
                 <div className="qr-info">
-                  <p>Show this QR code at the cinema</p>
+                  <p>Show this QR code at the cinema entrance</p>
                   <small>Booking Time: {new Date(bookingData.bookingTime).toLocaleString()}</small>
+                  <div className="verification-code">
+                    <span>Verification: {bookingData.bookingId.slice(-6).toUpperCase()}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Professional Barcode */}
+              <div className="barcode-section">
+                <div className="barcode">
+                  <div className="barcode-lines">
+                    {Array.from({length: 50}, (_, i) => (
+                      <div 
+                        key={i} 
+                        className="barcode-line" 
+                        style={{
+                          width: Math.random() > 0.5 ? '2px' : '1px',
+                          height: '40px',
+                          backgroundColor: '#333'
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <p className="barcode-number">{bookingData.transactionId}</p>
                 </div>
               </div>
             </div>
@@ -189,7 +309,7 @@ Thank you for choosing RTX Cinema!
               <button className="action-button email-btn" onClick={handleEmailTicket}>
                 📧 Email Ticket
               </button>
-              <button className="action-button share-btn">
+              <button className="action-button share-btn" onClick={handleShareTicket}>
                 📤 Share
               </button>
             </div>

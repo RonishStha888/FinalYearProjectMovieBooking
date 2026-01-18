@@ -221,7 +221,7 @@ export default function PaymentPage({
               </div>
             </div>
 
-            {/* Payment Security Info */}
+            {/* Enhanced Payment Security Info */}
             <div className="security-info">
               <div className="security-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -234,6 +234,18 @@ export default function PaymentPage({
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2"/>
                 </svg>
                 <span>PCI DSS Compliant</span>
+              </div>
+              <div className="security-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 1l3 6 6 .75-4.5 4.25L18 18l-6-3.25L6 18l1.5-6L3 7.75 9 7l3-6z" stroke="currentColor" strokeWidth="2"/>
+                </svg>
+                <span>Bank-Grade Security</span>
+              </div>
+              <div className="security-item">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z" stroke="currentColor" strokeWidth="2"/>
+                </svg>
+                <span>Fraud Protection</span>
               </div>
             </div>
           </div>

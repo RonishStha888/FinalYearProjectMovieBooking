@@ -93,7 +93,18 @@ const AdminDashboard = () => {
 
     setAdminUser(JSON.parse(user));
     loadDashboardData();
-  }, [navigate]);
+
+    // Set up auto-refresh for real-time data
+    const refreshInterval = setInterval(() => {
+      if (activeTab === 'dashboard') {
+        loadDashboardData();
+      } else if (activeTab === 'showtimes') {
+        loadShowtimes();
+      }
+    }, 30000); // Refresh every 30 seconds
+
+    return () => clearInterval(refreshInterval);
+  }, [navigate, activeTab]);
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('adminToken');
@@ -134,6 +145,17 @@ const AdminDashboard = () => {
       }
 
       // Load today's showtimes
+      await loadShowtimes();
+
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadShowtimes = async () => {
+    try {
       const today = new Date().toISOString().split('T')[0];
       const showtimesResponse = await fetch(`http://localhost:5000/api/admin/showtimes?date=${today}`, {
         headers: getAuthHeaders()
@@ -142,11 +164,8 @@ const AdminDashboard = () => {
         const showtimesData = await showtimesResponse.json();
         setShowtimes(showtimesData);
       }
-
     } catch (error) {
-      console.error('Error loading dashboard data:', error);
-    } finally {
-      setLoading(false);
+      console.error('Error loading showtimes:', error);
     }
   };
 
@@ -310,8 +329,27 @@ const AdminDashboard = () => {
         <div className="admin-header-left">
           <h1>🎬 RTX Cinema Admin</h1>
           <span>Welcome, {adminUser?.name}</span>
+          <div className="real-time-info">
+            <span className="current-time">
+              {new Date().toLocaleString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </span>
+            <div className="status-indicator">
+              <span className="status-dot"></span>
+              Live Data
+            </div>
+          </div>
         </div>
         <div className="admin-header-right">
+          <button onClick={() => loadDashboardData()} className="refresh-btn" disabled={loading}>
+            {loading ? '🔄' : '↻'} Refresh
+          </button>
           <button onClick={() => navigate('/')} className="view-site-btn">
             🌐 View Site
           </button>
@@ -572,6 +610,7 @@ const AdminDashboard = () => {
                     type="date"
                     value={movieForm.releaseDate}
                     onChange={(e) => setMovieForm({...movieForm, releaseDate: e.target.value})}
+                    min={new Date().toISOString().split('T')[0]}
                     required
                   />
                 </div>
@@ -681,6 +720,7 @@ const AdminDashboard = () => {
                       type="date"
                       value={showtimeForm.date}
                       onChange={(e) => setShowtimeForm({...showtimeForm, date: e.target.value})}
+                      min={new Date().toISOString().split('T')[0]}
                       required
                     />
                   </div>
