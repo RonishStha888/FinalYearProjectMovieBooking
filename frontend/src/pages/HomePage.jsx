@@ -9,11 +9,108 @@ export default function HomePage({ user, onLogout }) {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [featuredMovie, setFeaturedMovie] = useState(null);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [allMovies, setAllMovies] = useState([]);
 
   // Fetch movies when category changes
   useEffect(() => {
     fetchMovies();
   }, [selectedCategory]);
+
+  // Fetch all movies for search on initial load
+  useEffect(() => {
+    fetchAllMovies();
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showProfileDropdown && !event.target.closest('.profile-dropdown-container')) {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showProfileDropdown]);
+
+  const fetchAllMovies = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/movies');
+      const data = await response.json();
+      
+      if (data.success && data.movies) {
+        setAllMovies(data.movies);
+      } else {
+        console.error('Failed to fetch movies:', data.message);
+        setAllMovies([]);
+      }
+    } catch (error) {
+      console.error('Error fetching all movies:', error);
+      setAllMovies([]);
+    }
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    
+    if (query.trim() === '') {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    
+    // Use allMovies if available, otherwise fallback to current movies
+    const moviesToSearch = allMovies.length > 0 ? allMovies : movies;
+    
+    // Filter movies based on search query with improved matching
+    const searchTerm = query.toLowerCase().trim();
+    const filtered = moviesToSearch.filter(movie => {
+      // Title matching (most important)
+      const titleMatch = movie.title && movie.title.toLowerCase().includes(searchTerm);
+      
+      // Genre matching (split by comma, bullet, or other separators)
+      const genreMatch = movie.genre && movie.genre.toLowerCase().replace(/[•,]/g, ' ').includes(searchTerm);
+      
+      // Director matching
+      const directorMatch = movie.director && movie.director.toLowerCase().includes(searchTerm);
+      
+      // Cast matching (handle both array and string formats)
+      let castMatch = false;
+      if (movie.cast) {
+        if (Array.isArray(movie.cast)) {
+          castMatch = movie.cast.some(actor => 
+            actor && actor.toLowerCase().includes(searchTerm)
+          );
+        } else if (typeof movie.cast === 'string') {
+          castMatch = movie.cast.toLowerCase().includes(searchTerm);
+        }
+      }
+      
+      // Year matching
+      const yearMatch = movie.year && movie.year.toString().includes(searchTerm);
+      
+      // Category matching
+      const categoryMatch = movie.category && movie.category.toLowerCase().includes(searchTerm);
+      
+      return titleMatch || genreMatch || directorMatch || castMatch || yearMatch || categoryMatch;
+    });
+    
+    setSearchResults(filtered);
+  };
+
+  const clearSearch = () => {
+    setSearchQuery('');
+    setSearchResults([]);
+    setIsSearching(false);
+  };
 
   const fetchMovies = async () => {
     setLoading(true);
@@ -67,6 +164,9 @@ export default function HomePage({ user, onLogout }) {
     return <BookingPage movie={selectedMovie} onBack={handleBackToHome} />;
   }
 
+  // Determine which movies to display
+  const displayMovies = isSearching ? searchResults : movies;
+
   return (
     <div className="homepage-container">
       {/* Professional Header */}
@@ -85,19 +185,28 @@ export default function HomePage({ user, onLogout }) {
           <nav className="main-navigation">
             <button 
               className={`nav-link ${selectedCategory === 'now-showing' ? 'active' : ''}`}
-              onClick={() => setSelectedCategory('now-showing')}
+              onClick={() => {
+                setSelectedCategory('now-showing');
+                clearSearch();
+              }}
             >
               Now Showing
             </button>
             <button 
               className={`nav-link ${selectedCategory === 'coming-soon' ? 'active' : ''}`}
-              onClick={() => setSelectedCategory('coming-soon')}
+              onClick={() => {
+                setSelectedCategory('coming-soon');
+                clearSearch();
+              }}
             >
               Coming Soon
             </button>
             <button 
               className={`nav-link ${selectedCategory === 'top-rated' ? 'active' : ''}`}
-              onClick={() => setSelectedCategory('top-rated')}
+              onClick={() => {
+                setSelectedCategory('top-rated');
+                clearSearch();
+              }}
             >
               Top Rated
             </button>
@@ -109,15 +218,25 @@ export default function HomePage({ user, onLogout }) {
             <div className="search-container">
               <input 
                 type="text" 
-                placeholder="Search movies, cinemas..." 
+                placeholder="Search movies by title, genre, cast..." 
                 className="search-input"
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
               />
-              <button className="search-button">
+              <button className={`search-button ${isSearching ? 'searching' : ''}`}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
                   <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="2"/>
                 </svg>
               </button>
+              {searchQuery && (
+                <button className="clear-search-btn" onClick={clearSearch}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2"/>
+                    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                </button>
+              )}
             </div>
             
             <div className="user-section">
@@ -129,22 +248,106 @@ export default function HomePage({ user, onLogout }) {
                 <span>Kathmandu</span>
               </div>
               
-              <div className="user-menu">
-                <div className="user-avatar">
-                  <span>{(user?.name || user?.login || 'U')[0].toUpperCase()}</span>
+              <div className="profile-dropdown-container">
+                <div 
+                  className="user-menu"
+                  onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                >
+                  <div className="user-avatar">
+                    <span>{(user?.name || user?.login || 'U')[0].toUpperCase()}</span>
+                  </div>
+                  <div className="user-info">
+                    <span className="user-name">{user?.name || user?.login || 'User'}</span>
+                    <span className="user-role">Premium Member</span>
+                  </div>
+                  <svg 
+                    width="16" 
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill="none"
+                    className={`dropdown-arrow ${showProfileDropdown ? 'open' : ''}`}
+                  >
+                    <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
                 </div>
-                <div className="user-info">
-                  <span className="user-name">{user?.name || user?.login || 'User'}</span>
-                  <button className="logout-btn" onClick={onLogout}>Logout</button>
-                </div>
+
+                {showProfileDropdown && (
+                  <div className="profile-dropdown">
+                    <div className="dropdown-header">
+                      <div className="dropdown-avatar">
+                        <span>{(user?.name || user?.login || 'U')[0].toUpperCase()}</span>
+                      </div>
+                      <div className="dropdown-user-info">
+                        <h4>{user?.name || user?.login || 'User'}</h4>
+                        <p>{user?.email || 'user@rtxcinema.com'}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="dropdown-divider"></div>
+                    
+                    <div className="dropdown-menu">
+                      <button className="dropdown-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2"/>
+                          <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
+                        </svg>
+                        <span>My Profile</span>
+                      </button>
+                      
+                      <button className="dropdown-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                          <rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
+                          <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" strokeWidth="2"/>
+                          <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" strokeWidth="2"/>
+                        </svg>
+                        <span>My Bookings</span>
+                      </button>
+                      
+                      <button className="dropdown-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z" stroke="currentColor" strokeWidth="2"/>
+                        </svg>
+                        <span>Favorites</span>
+                      </button>
+                      
+                      <button className="dropdown-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                          <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+                          <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" stroke="currentColor" strokeWidth="2"/>
+                        </svg>
+                        <span>Settings</span>
+                      </button>
+                      
+                      <button className="dropdown-item">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" strokeWidth="2"/>
+                          <polyline points="16,17 21,12 16,7" stroke="currentColor" strokeWidth="2"/>
+                          <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" strokeWidth="2"/>
+                        </svg>
+                        <span>Help & Support</span>
+                      </button>
+                    </div>
+                    
+                    <div className="dropdown-divider"></div>
+                    
+                    <button className="dropdown-item logout-item" onClick={onLogout}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" strokeWidth="2"/>
+                        <polyline points="16,17 21,12 16,7" stroke="currentColor" strokeWidth="2"/>
+                        <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" strokeWidth="2"/>
+                      </svg>
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      {featuredMovie && (
+      {/* Hero Section - Only show when not searching */}
+      {!isSearching && featuredMovie && (
         <section className="hero-section">
           <div className="hero-background">
             <img src={featuredMovie.image} alt={featuredMovie.title} />
@@ -192,39 +395,42 @@ export default function HomePage({ user, onLogout }) {
         </section>
       )}
 
-      {/* Cinema Locations */}
-      <section className="cinema-locations">
-        <div className="container">
-          <h2 className="section-title">Our Premium Locations</h2>
-          <div className="locations-grid">
-            <div className="location-card">
-              <div className="location-icon">🏢</div>
-              <h3>QFX Jai Nepal</h3>
-              <p>Chabahil, Kathmandu</p>
-              <span className="halls">3 Premium Halls</span>
-            </div>
-            <div className="location-card">
-              <div className="location-icon">🎭</div>
-              <h3>FCube Labim Mall</h3>
-              <p>Lalitpur, Pulchowk</p>
-              <span className="halls">2 IMAX Halls</span>
-            </div>
-            <div className="location-card">
-              <div className="location-icon">🎪</div>
-              <h3>Big Movies Civil Mall</h3>
-              <p>Sundhara, Kathmandu</p>
-              <span className="halls">4 Regular Halls</span>
+      {/* Cinema Locations - Only show when not searching */}
+      {!isSearching && (
+        <section className="cinema-locations">
+          <div className="container">
+            <h2 className="section-title">Our Premium Locations</h2>
+            <div className="locations-grid">
+              <div className="location-card">
+                <div className="location-icon">🏢</div>
+                <h3>QFX Jai Nepal</h3>
+                <p>Chabahil, Kathmandu</p>
+                <span className="halls">3 Premium Halls</span>
+              </div>
+              <div className="location-card">
+                <div className="location-icon">🎭</div>
+                <h3>FCube Labim Mall</h3>
+                <p>Lalitpur, Pulchowk</p>
+                <span className="halls">2 IMAX Halls</span>
+              </div>
+              <div className="location-card">
+                <div className="location-icon">🎪</div>
+                <h3>Big Movies Civil Mall</h3>
+                <p>Sundhara, Kathmandu</p>
+                <span className="halls">4 Regular Halls</span>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Movies Section */}
       <section className="movies-section">
         <div className="container">
           <div className="section-header">
             <h2 className="section-title">
-              {selectedCategory === 'now-showing' ? 'Now Showing' : 
+              {isSearching ? `Search Results for "${searchQuery}"` :
+               selectedCategory === 'now-showing' ? 'Now Showing' : 
                selectedCategory === 'coming-soon' ? 'Coming Soon' : 
                selectedCategory === 'top-rated' ? 'Top Rated Movies' : 'Movies'}
             </h2>
@@ -250,20 +456,32 @@ export default function HomePage({ user, onLogout }) {
             </div>
           </div>
 
+
+
           {loading ? (
             <div className="loading-container">
               <div className="loading-spinner"></div>
               <p>Loading movies...</p>
             </div>
-          ) : movies.length === 0 ? (
+          ) : displayMovies.length === 0 ? (
             <div className="no-movies">
               <div className="no-movies-icon">🎬</div>
-              <h3>No Movies Available</h3>
-              <p>Please check back later or try a different category.</p>
+              <h3>{isSearching ? 'No Movies Found' : 'No Movies Available'}</h3>
+              <p>
+                {isSearching 
+                  ? `No movies found matching "${searchQuery}". Try searching with different keywords.`
+                  : 'Please check back later or try a different category.'
+                }
+              </p>
+              {isSearching && (
+                <button className="clear-search-button" onClick={clearSearch}>
+                  Clear Search
+                </button>
+              )}
             </div>
           ) : (
             <div className="movies-grid">
-              {movies.map((movie) => (
+              {displayMovies.map((movie) => (
                 <div 
                   key={movie._id} 
                   className="professional-movie-card"
@@ -310,79 +528,81 @@ export default function HomePage({ user, onLogout }) {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="professional-footer">
-        <div className="container">
-          <div className="footer-content">
-            <div className="footer-section">
-              <div className="footer-brand">
-                <div className="footer-logo">
-                  <div className="logo-icon">🎬</div>
-                  <span>RTX Cinema</span>
+      {/* Footer - Only show when not searching */}
+      {!isSearching && (
+        <footer className="professional-footer">
+          <div className="container">
+            <div className="footer-content">
+              <div className="footer-section">
+                <div className="footer-brand">
+                  <div className="footer-logo">
+                    <div className="logo-icon">🎬</div>
+                    <span>RTX Cinema</span>
+                  </div>
+                  <p>Nepal's premier cinema chain delivering world-class movie experiences with cutting-edge technology and premium comfort.</p>
+                  <div className="social-links">
+                    <a href="#" className="social-link">📘</a>
+                    <a href="#" className="social-link">📷</a>
+                    <a href="#" className="social-link">🐦</a>
+                    <a href="#" className="social-link">📺</a>
+                  </div>
                 </div>
-                <p>Nepal's premier cinema chain delivering world-class movie experiences with cutting-edge technology and premium comfort.</p>
-                <div className="social-links">
-                  <a href="#" className="social-link">📘</a>
-                  <a href="#" className="social-link">📷</a>
-                  <a href="#" className="social-link">🐦</a>
-                  <a href="#" className="social-link">📺</a>
+              </div>
+              
+              <div className="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                  <li><a href="#">Now Showing</a></li>
+                  <li><a href="#">Coming Soon</a></li>
+                  <li><a href="#">Cinema Locations</a></li>
+                  <li><a href="#">Gift Cards</a></li>
+                  <li><a href="#">Corporate Bookings</a></li>
+                </ul>
+              </div>
+              
+              <div className="footer-section">
+                <h4>Support</h4>
+                <ul>
+                  <li><a href="#">Help Center</a></li>
+                  <li><a href="#">Booking Guide</a></li>
+                  <li><a href="#">Cancellation Policy</a></li>
+                  <li><a href="#">Terms & Conditions</a></li>
+                  <li><a href="#">Privacy Policy</a></li>
+                </ul>
+              </div>
+              
+              <div className="footer-section">
+                <h4>Contact Us</h4>
+                <div className="contact-info">
+                  <div className="contact-item">
+                    <span className="contact-icon">📞</span>
+                    <span>+977-1-4444444</span>
+                  </div>
+                  <div className="contact-item">
+                    <span className="contact-icon">📧</span>
+                    <span>info@rtxcinema.com</span>
+                  </div>
+                  <div className="contact-item">
+                    <span className="contact-icon">📍</span>
+                    <span>Kathmandu, Nepal</span>
+                  </div>
                 </div>
               </div>
             </div>
             
-            <div className="footer-section">
-              <h4>Quick Links</h4>
-              <ul>
-                <li><a href="#">Now Showing</a></li>
-                <li><a href="#">Coming Soon</a></li>
-                <li><a href="#">Cinema Locations</a></li>
-                <li><a href="#">Gift Cards</a></li>
-                <li><a href="#">Corporate Bookings</a></li>
-              </ul>
-            </div>
-            
-            <div className="footer-section">
-              <h4>Support</h4>
-              <ul>
-                <li><a href="#">Help Center</a></li>
-                <li><a href="#">Booking Guide</a></li>
-                <li><a href="#">Cancellation Policy</a></li>
-                <li><a href="#">Terms & Conditions</a></li>
-                <li><a href="#">Privacy Policy</a></li>
-              </ul>
-            </div>
-            
-            <div className="footer-section">
-              <h4>Contact Us</h4>
-              <div className="contact-info">
-                <div className="contact-item">
-                  <span className="contact-icon">📞</span>
-                  <span>+977-1-4444444</span>
-                </div>
-                <div className="contact-item">
-                  <span className="contact-icon">📧</span>
-                  <span>info@rtxcinema.com</span>
-                </div>
-                <div className="contact-item">
-                  <span className="contact-icon">📍</span>
-                  <span>Kathmandu, Nepal</span>
+            <div className="footer-bottom">
+              <div className="footer-bottom-content">
+                <p>&copy; 2024 RTX Cinema. All rights reserved.</p>
+                <div className="footer-links">
+                  <a href="#">Privacy Policy</a>
+                  <a href="#">Terms of Service</a>
+                  <a href="#">Cookie Policy</a>
                 </div>
               </div>
             </div>
           </div>
-          
-          <div className="footer-bottom">
-            <div className="footer-bottom-content">
-              <p>&copy; 2024 RTX Cinema. All rights reserved.</p>
-              <div className="footer-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Cookie Policy</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      )}
     </div>
   );
 }
