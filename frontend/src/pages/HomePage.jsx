@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import "./HomePage.css";
 import BookingPage from "./BookingPage";
+import ProfilePage from "./ProfilePage";
+import MyBookingsPage from "./MyBookingsPage";
+import FavoritesPage from "./FavoritesPage";
+import SettingsPage from "./SettingsPage";
+import HelpSupportPage from "./HelpSupportPage";
 
 export default function HomePage({ user, onLogout }) {
   const [selectedCategory, setSelectedCategory] = useState("now-showing");
@@ -14,6 +19,7 @@ export default function HomePage({ user, onLogout }) {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [allMovies, setAllMovies] = useState([]);
+  const [currentPage, setCurrentPage] = useState('home'); // home, profile, bookings, favorites, settings, help
 
   // Fetch movies when category changes
   useEffect(() => {
@@ -158,10 +164,37 @@ export default function HomePage({ user, onLogout }) {
   const handleBackToHome = () => {
     setShowBooking(false);
     setSelectedMovie(null);
+    setCurrentPage('home');
+  };
+
+  const handleProfileNavigation = (page) => {
+    setShowProfileDropdown(false);
+    setCurrentPage(page);
   };
 
   if (showBooking && selectedMovie) {
     return <BookingPage movie={selectedMovie} onBack={handleBackToHome} />;
+  }
+
+  // Handle different page navigation
+  if (currentPage === 'profile') {
+    return <ProfilePage user={user} onBack={handleBackToHome} />;
+  }
+  
+  if (currentPage === 'bookings') {
+    return <MyBookingsPage user={user} onBack={handleBackToHome} />;
+  }
+  
+  if (currentPage === 'favorites') {
+    return <FavoritesPage user={user} onBack={handleBackToHome} onMovieClick={handleMovieClick} />;
+  }
+  
+  if (currentPage === 'settings') {
+    return <SettingsPage user={user} onBack={handleBackToHome} />;
+  }
+  
+  if (currentPage === 'help') {
+    return <HelpSupportPage user={user} onBack={handleBackToHome} />;
   }
 
   // Determine which movies to display
@@ -286,7 +319,10 @@ export default function HomePage({ user, onLogout }) {
                     <div className="dropdown-divider"></div>
                     
                     <div className="dropdown-menu">
-                      <button className="dropdown-item">
+                      <button 
+                        className="dropdown-item"
+                        onClick={() => handleProfileNavigation('profile')}
+                      >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2"/>
                           <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
@@ -294,7 +330,10 @@ export default function HomePage({ user, onLogout }) {
                         <span>My Profile</span>
                       </button>
                       
-                      <button className="dropdown-item">
+                      <button 
+                        className="dropdown-item"
+                        onClick={() => handleProfileNavigation('bookings')}
+                      >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                           <rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" strokeWidth="2"/>
                           <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" strokeWidth="2"/>
@@ -303,14 +342,20 @@ export default function HomePage({ user, onLogout }) {
                         <span>My Bookings</span>
                       </button>
                       
-                      <button className="dropdown-item">
+                      <button 
+                        className="dropdown-item"
+                        onClick={() => handleProfileNavigation('favorites')}
+                      >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                           <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z" stroke="currentColor" strokeWidth="2"/>
                         </svg>
                         <span>Favorites</span>
                       </button>
                       
-                      <button className="dropdown-item">
+                      <button 
+                        className="dropdown-item"
+                        onClick={() => handleProfileNavigation('settings')}
+                      >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                           <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
                           <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" stroke="currentColor" strokeWidth="2"/>
@@ -318,7 +363,10 @@ export default function HomePage({ user, onLogout }) {
                         <span>Settings</span>
                       </button>
                       
-                      <button className="dropdown-item">
+                      <button 
+                        className="dropdown-item"
+                        onClick={() => handleProfileNavigation('help')}
+                      >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" strokeWidth="2"/>
                           <polyline points="16,17 21,12 16,7" stroke="currentColor" strokeWidth="2"/>
