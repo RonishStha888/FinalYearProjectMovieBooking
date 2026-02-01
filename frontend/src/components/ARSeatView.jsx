@@ -13,6 +13,8 @@ export default function ARSeatView({
   const [cameraPermission, setCameraPermission] = useState(null);
   const [viewMode, setViewMode] = useState('ar'); // Only AR mode now
   const [zoomLevel, setZoomLevel] = useState(1); // Zoom functionality
+  const [isTrailerPlaying, setIsTrailerPlaying] = useState(false);
+  const [trailerVideoId, setTrailerVideoId] = useState('TcMBFSGVi1c'); // Avengers Endgame trailer
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [deviceOrientation, setDeviceOrientation] = useState({ alpha: 0, beta: 0, gamma: 0 });
@@ -284,15 +286,47 @@ export default function ARSeatView({
         >
           <div className="screen-main">
             <div className="screen-content">
-              <div className="movie-preview">
-                <div className="preview-text">NOW SHOWING</div>
-                <div className="movie-title">{selectedHall?.name || 'CINEMA HALL'}</div>
-                <div className="preview-effects">
-                  <div className="light-ray"></div>
-                  <div className="light-ray"></div>
-                  <div className="light-ray"></div>
+              {isTrailerPlaying ? (
+                <div className="trailer-container">
+                  <iframe
+                    className="youtube-trailer"
+                    src={`https://www.youtube.com/embed/${trailerVideoId}?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1`}
+                    title="Movie Trailer"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                  <button 
+                    className="close-trailer-btn"
+                    onClick={() => setIsTrailerPlaying(false)}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2"/>
+                      <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2"/>
+                    </svg>
+                  </button>
                 </div>
-              </div>
+              ) : (
+                <div className="movie-preview">
+                  <div className="preview-text">NOW SHOWING</div>
+                  <div className="movie-title">{selectedHall?.name || 'CINEMA HALL'}</div>
+                  <button 
+                    className="play-trailer-btn"
+                    onClick={() => setIsTrailerPlaying(true)}
+                  >
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                      <polygon points="10,8 16,12 10,16" fill="currentColor"/>
+                    </svg>
+                    <span>Watch Trailer</span>
+                  </button>
+                  <div className="preview-effects">
+                    <div className="light-ray"></div>
+                    <div className="light-ray"></div>
+                    <div className="light-ray"></div>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="screen-frame"></div>
           </div>
@@ -455,6 +489,35 @@ export default function ARSeatView({
               Zoom In
             </button>
           </div>
+          
+          <div className="trailer-controls">
+            <select 
+              className="trailer-selector"
+              value={trailerVideoId}
+              onChange={(e) => setTrailerVideoId(e.target.value)}
+            >
+              <option value="TcMBFSGVi1c">Avengers: Endgame</option>
+              <option value="hA6hldpSTF8">Spider-Man: No Way Home</option>
+              <option value="6ZfuNTqbHE8">Interstellar</option>
+              <option value="YQHsXMglC9A">Inception</option>
+              <option value="dQw4w9WgXcQ">The Dark Knight</option>
+              <option value="hFZFjoX2cGg">Joker</option>
+            </select>
+            
+            <button 
+              className="trailer-btn"
+              onClick={() => setIsTrailerPlaying(!isTrailerPlaying)}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                {isTrailerPlaying ? (
+                  <rect x="6" y="4" width="4" height="16" fill="currentColor"/>
+                ) : (
+                  <polygon points="5,3 19,12 5,21" fill="currentColor"/>
+                )}
+              </svg>
+              {isTrailerPlaying ? 'Stop' : 'Play'} Trailer
+            </button>
+          </div>
         </div>
 
         <div className="ar-info">
@@ -503,7 +566,7 @@ export default function ARSeatView({
           
           {/* Movement guide */}
           <div className="movement-guide">
-            <div className="guide-text">Move mouse to look around • Scroll to zoom</div>
+            <div className="guide-text">Move mouse to look around • Scroll to zoom • Play trailers</div>
             <div className="guide-arrows">
               <div className="arrow arrow-up">↑</div>
               <div className="arrow arrow-down">↓</div>
@@ -524,7 +587,7 @@ export default function ARSeatView({
               <path d="M15 10l4.553-2.276A1 1 0 0 1 21 8.618v6.764a1 1 0 0 1-1.447.894L15 14M5 18h8a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2z" stroke="currentColor" strokeWidth="2"/>
             </svg>
             <p>Cinema-Goer's AR View</p>
-            <small>Move mouse to look around • Scroll to zoom in/out</small>
+            <small>Move mouse to look around • Scroll to zoom • Click screen to play trailer</small>
           </div>
         </div>
 
