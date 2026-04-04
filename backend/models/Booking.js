@@ -86,6 +86,49 @@ const bookingSchema = new mongoose.Schema({
     refundDate: Date,
     refundReason: String,
     refundMethod: String
+  },
+  // Food & Beverage data
+  fbItems: [{
+    itemId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'FBItem'
+    },
+    name: String,
+    category: String,
+    quantity: {
+      type: Number,
+      min: 1
+    },
+    selectedSize: String,
+    pricePerUnit: Number,
+    subtotal: Number
+  }],
+  fbSubtotal: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  fbOffers: [{
+    offerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'FBOffer'
+    },
+    title: String,
+    discountAmount: Number
+  }],
+  fbDiscount: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  fbTotal: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  fbSpecialInstructions: {
+    type: String,
+    maxlength: 500
   }
 }, {
   timestamps: true

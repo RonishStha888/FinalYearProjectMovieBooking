@@ -187,6 +187,14 @@ router.post('/verify-signup', async (req, res) => {
     await user.save();
     console.log(`✅ User created with ID: ${user._id}`);
 
+    // Award welcome bonus points
+    try {
+      await user.addPoints(10, 'Welcome bonus - new account', null, 'bonus');
+      console.log(`🎁 Welcome bonus (10 pts) awarded to ${user.login}`);
+    } catch (bonusErr) {
+      console.log('Welcome bonus failed (non-critical):', bonusErr.message);
+    }
+
     // Delete verification record
     await EmailVerification.deleteOne({ _id: verification._id });
     console.log(`🗑️ Verification record cleaned up`);
@@ -204,6 +212,7 @@ router.post('/verify-signup', async (req, res) => {
       success: true,
       message: 'Account created successfully! Welcome email sent.',
       user: {
+        _id: user._id,
         id: user._id,
         login: user.login,
         email: user.email,
@@ -267,10 +276,12 @@ router.post('/login', async (req, res) => {
       success: true,
       message: 'Login successful',
       user: {
+        _id: user._id,
         id: user._id,
         login: user.login,
         email: user.email,
-        name: user.name
+        name: user.name,
+        loyaltyPoints: user.loyaltyPoints?.available || 0
       }
     });
 
@@ -314,10 +325,12 @@ router.post('/google-login', async (req, res) => {
       success: true,
       message: 'Google login successful',
       user: {
+        _id: user._id,
         id: user._id,
         login: user.login,
         email: user.email,
-        name: user.name
+        name: user.name,
+        loyaltyPoints: user.loyaltyPoints?.available || 0
       }
     });
 

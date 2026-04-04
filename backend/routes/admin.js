@@ -11,6 +11,8 @@ import Promotion from '../models/Promotion.js';
 import Revenue from '../models/Revenue.js';
 import SystemLog from '../models/SystemLog.js';
 import Banner from '../models/Banner.js';
+import FBItem from '../models/FBItem.js';
+import FBOffer from '../models/FBOffer.js';
 
 const router = express.Router();
 
@@ -877,6 +879,194 @@ router.delete('/banners/:id', authenticateAdmin, async (req, res) => {
   } catch (error) {
     console.error('Delete banner error:', error);
     res.status(500).json({ message: 'Error deleting banner' });
+  }
+});
+
+// ==========================================
+// FOOD & BEVERAGE MANAGEMENT ENDPOINTS
+// ==========================================
+
+// Get all F&B items
+router.get('/fb/items', authenticateAdmin, async (req, res) => {
+  try {
+    const { category, cinemaId, active } = req.query;
+    
+    let filter = {};
+    if (category) filter.category = category;
+    if (cinemaId) filter.cinemaId = cinemaId;
+    if (active !== undefined) filter.isActive = active === 'true';
+
+    const items = await FBItem.find(filter)
+      .populate('cinemaId', 'name')
+      .sort({ category: 1, displayOrder: 1, name: 1 });
+
+    res.json({
+      success: true,
+      count: items.length,
+      items
+    });
+  } catch (error) {
+    console.error('Get F&B items error:', error);
+    res.status(500).json({ success: false, message: 'Error fetching F&B items' });
+  }
+});
+
+// Add new F&B item
+router.post('/fb/items', authenticateAdmin, async (req, res) => {
+  try {
+    const item = new FBItem(req.body);
+    await item.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'F&B item added successfully',
+      item
+    });
+  } catch (error) {
+    console.error('Add F&B item error:', error);
+    res.status(500).json({ success: false, message: 'Error adding F&B item' });
+  }
+});
+
+// Update F&B item
+router.put('/fb/items/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const item = await FBItem.findByIdAndUpdate(
+      id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!item) {
+      return res.status(404).json({ success: false, message: 'F&B item not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'F&B item updated successfully',
+      item
+    });
+  } catch (error) {
+    console.error('Update F&B item error:', error);
+    res.status(500).json({ success: false, message: 'Error updating F&B item' });
+  }
+});
+
+// Delete F&B item (soft delete)
+router.delete('/fb/items/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const item = await FBItem.findByIdAndUpdate(
+      id,
+      { isActive: false },
+      { new: true }
+    );
+
+    if (!item) {
+      return res.status(404).json({ success: false, message: 'F&B item not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'F&B item deleted successfully'
+    });
+  } catch (error) {
+    console.error('Delete F&B item error:', error);
+    res.status(500).json({ success: false, message: 'Error deleting F&B item' });
+  }
+});
+
+// Get all F&B offers
+router.get('/fb/offers', authenticateAdmin, async (req, res) => {
+  try {
+    const { active, cinemaId } = req.query;
+    
+    let filter = {};
+    if (active !== undefined) filter.isActive = active === 'true';
+    if (cinemaId) filter.cinemaId = cinemaId;
+
+    const offers = await FBOffer.find(filter)
+      .populate('applicableItems', 'name category')
+      .populate('cinemaId', 'name')
+      .populate('createdBy', 'name')
+      .sort({ priority: -1, createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: offers.length,
+      offers
+    });
+  } catch (error) {
+    console.error('Get F&B offers error:', error);
+    res.status(500).json({ success: false, message: 'Error fetching F&B offers' });
+  }
+});
+
+// Add new F&B offer
+router.post('/fb/offers', authenticateAdmin, async (req, res) => {
+  try {
+    const offerData = {
+      ...req.body,
+      createdBy: req.user._id
+    };
+
+    const offer = new FBOffer(offerData);
+    await offer.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'F&B offer added successfully',
+      offer
+    });
+  } catch (error) {
+    console.error('Add F&B offer error:', error);
+    res.status(500).json({ success: false, message: 'Error adding F&B offer' });
+  }
+});
+
+// Update F&B offer
+router.put('/fb/offers/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const offer = await FBOffer.findByIdAndUpdate(
+      id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!offer) {
+      return res.status(404).json({ success: false, message: 'F&B offer not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'F&B offer updated successfully',
+      offer
+    });
+  } catch (error) {
+    console.error('Update F&B offer error:', error);
+    res.status(500).json({ success: false, message: 'Error updating F&B offer' });
+  }
+});
+
+// Delete F&B offer
+router.delete('/fb/offers/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const offer = await FBOffer.findByIdAndDelete(id);
+
+    if (!offer) {
+      return res.status(404).json({ success: false, message: 'F&B offer not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'F&B offer deleted successfully'
+    });
+  } catch (error) {
+    console.error('Delete F&B offer error:', error);
+    res.status(500).json({ success: false, message: 'Error deleting F&B offer' });
   }
 });
 

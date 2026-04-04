@@ -17,11 +17,13 @@ function AppContent() {
   const [currentUser, setCurrentUser] = useState(null);
 
   const handleLoginSuccess = (user) => {
+    localStorage.setItem('user', JSON.stringify(user));
     setCurrentUser(user);
     setIsLoggedIn(true);
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('user');
     setCurrentUser(null);
     setIsLoggedIn(false);
     setShowSignup(false);

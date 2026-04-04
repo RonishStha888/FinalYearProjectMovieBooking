@@ -6,6 +6,7 @@ import MyBookingsPage from "./MyBookingsPage";
 import FavoritesPage from "./FavoritesPage";
 import SettingsPage from "./SettingsPage";
 import HelpSupportPage from "./HelpSupportPage";
+import LoyaltyPage from "./LoyaltyPage";
 
 export default function HomePage({ user, onLogout }) {
   const [selectedCategory, setSelectedCategory] = useState("now-showing");
@@ -20,6 +21,8 @@ export default function HomePage({ user, onLogout }) {
   const [isSearching, setIsSearching] = useState(false);
   const [allMovies, setAllMovies] = useState([]);
   const [currentPage, setCurrentPage] = useState('home'); // home, profile, bookings, favorites, settings, help
+  const [loyaltyRefreshKey, setLoyaltyRefreshKey] = useState(0);
+  const [lastEarnedPoints, setLastEarnedPoints] = useState(0);
 
   // Fetch movies when category changes
   useEffect(() => {
@@ -164,6 +167,11 @@ export default function HomePage({ user, onLogout }) {
   const handleBackToHome = () => {
     setShowBooking(false);
     setSelectedMovie(null);
+    // Read points earned from last booking (set by PaymentPage)
+    const earned = parseInt(sessionStorage.getItem('lastEarnedPoints') || '0', 10);
+    setLastEarnedPoints(earned);
+    sessionStorage.removeItem('lastEarnedPoints');
+    setLoyaltyRefreshKey(k => k + 1);
     setCurrentPage('home');
   };
 
@@ -195,6 +203,10 @@ export default function HomePage({ user, onLogout }) {
   
   if (currentPage === 'help') {
     return <HelpSupportPage user={user} onBack={handleBackToHome} />;
+  }
+
+  if (currentPage === 'loyalty') {
+    return <LoyaltyPage key={loyaltyRefreshKey} user={user} onBack={handleBackToHome} newPoints={lastEarnedPoints} />;
   }
 
   // Determine which movies to display
@@ -245,6 +257,12 @@ export default function HomePage({ user, onLogout }) {
             </button>
             <button className="nav-link">Cinemas</button>
             <button className="nav-link">Offers</button>
+            <button
+              className={`nav-link ${currentPage === 'loyalty' ? 'active' : ''}`}
+              onClick={() => { setCurrentPage('loyalty'); clearSearch(); }}
+            >
+              Loyalty
+            </button>
           </nav>
 
           <div className="header-actions">
@@ -341,6 +359,16 @@ export default function HomePage({ user, onLogout }) {
                         </svg>
                         <span>My Bookings</span>
                       </button>
+
+                      <button
+                        className="dropdown-item"
+                        onClick={() => handleProfileNavigation('loyalty')}
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke="currentColor" strokeWidth="2"/>
+                        </svg>
+                        <span>Loyalty Rewards</span>
+                      </button>
                       
                       <button 
                         className="dropdown-item"
@@ -405,7 +433,7 @@ export default function HomePage({ user, onLogout }) {
             <div className="hero-info">
               <div className="movie-badges">
                 <span className="badge featured">Featured</span>
-                <span className="badge rating">⭐ {featuredMovie.rating}</span>
+                <span className="badge rating">{featuredMovie.rating}</span>
               </div>
               <h1 className="hero-title">{featuredMovie.title}</h1>
               <p className="hero-description">
@@ -450,19 +478,19 @@ export default function HomePage({ user, onLogout }) {
             <h2 className="section-title">Our Premium Locations</h2>
             <div className="locations-grid">
               <div className="location-card">
-                <div className="location-icon">🏢</div>
+                <div className="location-icon"></div>
                 <h3>QFX Jai Nepal</h3>
                 <p>Chabahil, Kathmandu</p>
                 <span className="halls">3 Premium Halls</span>
               </div>
               <div className="location-card">
-                <div className="location-icon">🎭</div>
+                <div className="location-icon"></div>
                 <h3>FCube Labim Mall</h3>
                 <p>Lalitpur, Pulchowk</p>
                 <span className="halls">2 IMAX Halls</span>
               </div>
               <div className="location-card">
-                <div className="location-icon">🎪</div>
+                <div className="location-icon"></div>
                 <h3>Big Movies Civil Mall</h3>
                 <p>Sundhara, Kathmandu</p>
                 <span className="halls">4 Regular Halls</span>
@@ -513,7 +541,7 @@ export default function HomePage({ user, onLogout }) {
             </div>
           ) : displayMovies.length === 0 ? (
             <div className="no-movies">
-              <div className="no-movies-icon">🎬</div>
+              <div className="no-movies-icon"></div>
               <h3>{isSearching ? 'No Movies Found' : 'No Movies Available'}</h3>
               <p>
                 {isSearching 
@@ -584,15 +612,15 @@ export default function HomePage({ user, onLogout }) {
               <div className="footer-section">
                 <div className="footer-brand">
                   <div className="footer-logo">
-                    <div className="logo-icon">🎬</div>
+                    <div className="logo-icon"></div>
                     <span>RTX Cinema</span>
                   </div>
                   <p>Nepal's premier cinema chain delivering world-class movie experiences with cutting-edge technology and premium comfort.</p>
                   <div className="social-links">
-                    <a href="#" className="social-link">📘</a>
-                    <a href="#" className="social-link">📷</a>
-                    <a href="#" className="social-link">🐦</a>
-                    <a href="#" className="social-link">📺</a>
+                    <a href="#" className="social-link">FB</a>
+                    <a href="#" className="social-link">IG</a>
+                    <a href="#" className="social-link">TW</a>
+                    <a href="#" className="social-link">YT</a>
                   </div>
                 </div>
               </div>
@@ -623,15 +651,15 @@ export default function HomePage({ user, onLogout }) {
                 <h4>Contact Us</h4>
                 <div className="contact-info">
                   <div className="contact-item">
-                    <span className="contact-icon">📞</span>
+                    <span className="contact-icon"></span>
                     <span>+977-1-4444444</span>
                   </div>
                   <div className="contact-item">
-                    <span className="contact-icon">📧</span>
+                    <span className="contact-icon"></span>
                     <span>info@rtxcinema.com</span>
                   </div>
                   <div className="contact-item">
-                    <span className="contact-icon">📍</span>
+                    <span className="contact-icon"></span>
                     <span>Kathmandu, Nepal</span>
                   </div>
                 </div>

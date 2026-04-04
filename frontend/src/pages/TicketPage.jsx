@@ -57,7 +57,18 @@ Number of Tickets: ${bookingData.seats.length}
 ───────────────────────────────────────────────────────────────
 PAYMENT DETAILS
 ───────────────────────────────────────────────────────────────
-Total Amount: Rs. ${bookingData.total}
+Ticket Amount: Rs. ${bookingData.ticketTotal || bookingData.total}
+${bookingData.fbItems && bookingData.fbItems.length > 0 ? `
+Food & Beverages:
+${bookingData.fbItems.map(item => 
+  `  • ${item.item.name}${item.selectedSize ? ` (${item.selectedSize})` : ''} × ${item.quantity} - Rs. ${item.price * item.quantity}`
+).join('\n')}
+${bookingData.fbDiscount > 0 ? `  F&B Discount: - Rs. ${bookingData.fbDiscount}` : ''}
+  F&B Total: Rs. ${bookingData.fbTotal}
+
+⚠️ IMPORTANT: Collect your F&B items at the counter before the show
+` : ''}
+Total Amount Paid: Rs. ${bookingData.total}
 Payment Method: ${bookingData.paymentMethod.toUpperCase()}
 Payment Status: ✅ CONFIRMED
 Booking Time: ${new Date(bookingData.bookingTime).toLocaleString()}
@@ -106,6 +117,28 @@ Generated on: ${new Date().toLocaleString()}
     
     // Show success message
     alert('🎫 Professional ticket downloaded successfully!');
+  };
+
+  const handleEmailTicket = () => {
+    const emailSubject = `RTX Cinema Ticket - ${bookingData.movie.title}`;
+    const emailBody = `
+Booking Confirmation - RTX Cinema
+
+Booking ID: ${bookingData.bookingId}
+Movie: ${bookingData.movie.title}
+Cinema: ${bookingData.cinema.name}
+Date: ${formatDate(bookingData.date)}
+Time: ${formatTime(bookingData.showtime.time)}
+Seats: ${bookingData.seats.join(', ')}
+
+Total Amount: Rs. ${bookingData.total}
+
+Please show this email and a valid ID at the cinema entrance.
+
+Thank you for choosing RTX Cinema!
+    `.trim();
+
+    window.location.href = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
   };
 
   const handleShareTicket = () => {
@@ -170,7 +203,7 @@ Generated on: ${new Date().toLocaleString()}
       {/* Header */}
       <header className="ticket-header">
         <div className="header-content">
-          <div className="success-icon">✅</div>
+          <div className="success-icon"></div>
           <div className="success-message">
             <h1>Booking Confirmed!</h1>
             <p>Your tickets have been successfully booked</p>
@@ -207,7 +240,7 @@ Generated on: ${new Date().toLocaleString()}
                   <h3>{bookingData.movie.title}</h3>
                   <div className="movie-meta">
                     <span className="genre">{bookingData.movie.genre}</span>
-                    <span className="rating">⭐ {bookingData.movie.rating}/10</span>
+                    <span className="rating">{bookingData.movie.rating}/10</span>
                   </div>
                 </div>
               </div>
@@ -248,10 +281,74 @@ Generated on: ${new Date().toLocaleString()}
 
                 <div className="detail-row total-row">
                   <div className="detail-item">
-                    <span className="label">Total Amount</span>
+                    <span className="label">Ticket Amount</span>
+                    <span className="value total-amount">Rs. {bookingData.ticketTotal || bookingData.total}</span>
+                  </div>
+                </div>
+
+                {bookingData.fbItems && bookingData.fbItems.length > 0 && (
+                  <div className="fb-details-section">
+                    <h4 className="fb-section-title">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 2L7 6H3L5 20H19L21 6H17L15 2H9Z" stroke="currentColor" strokeWidth="2"/>
+                      </svg>
+                      Food & Beverages
+                    </h4>
+                    <div className="fb-items-list">
+                      {bookingData.fbItems.map((item, index) => (
+                        <div key={index} className="fb-item-row">
+                          <span className="fb-item-name">
+                            {item.item.name} {item.selectedSize && `(${item.selectedSize})`}
+                          </span>
+                          <span className="fb-item-qty">× {item.quantity}</span>
+                          <span className="fb-item-price">Rs. {item.price * item.quantity}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {bookingData.fbDiscount > 0 && (
+                      <div className="fb-discount-row">
+                        <span>F&B Discount</span>
+                        <span className="discount-amount">- Rs. {bookingData.fbDiscount}</span>
+                      </div>
+                    )}
+                    <div className="fb-total-row">
+                      <span className="label">F&B Total</span>
+                      <span className="value">Rs. {bookingData.fbTotal}</span>
+                    </div>
+                    <div className="fb-collection-note">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z" stroke="currentColor" strokeWidth="2"/>
+                      </svg>
+                      <span>Collect your F&B items at the counter before the show</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="booking-details">
+                <div className="detail-row final-total-row">
+                  <div className="detail-item">
+                    <span className="label">Total Paid</span>
                     <span className="value total-amount">Rs. {bookingData.total}</span>
                   </div>
                 </div>
+
+                {(bookingData.pointsRedeemed > 0 || bookingData.pointsEarned > 0) && (
+                  <div className="detail-row loyalty-row">
+                    {bookingData.pointsRedeemed > 0 && (
+                      <div className="detail-item">
+                        <span className="label">Points Redeemed</span>
+                        <span className="value" style={{color:'#e50914'}}>-{bookingData.pointsRedeemed} pts (Rs. {bookingData.loyaltyDiscount} off)</span>
+                      </div>
+                    )}
+                    {bookingData.pointsEarned > 0 && (
+                      <div className="detail-item">
+                        <span className="label">Points Earned</span>
+                        <span className="value" style={{color:'#4caf50'}}>+{bookingData.pointsEarned} pts added to your account</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="qr-section">
@@ -304,23 +401,23 @@ Generated on: ${new Date().toLocaleString()}
           {showDownload && (
             <div className="ticket-actions">
               <button className="action-button download-btn" onClick={handleDownloadTicket}>
-                📥 Download Ticket
+                Download Ticket
               </button>
               <button className="action-button email-btn" onClick={handleEmailTicket}>
-                📧 Email Ticket
+                Email Ticket
               </button>
               <button className="action-button share-btn" onClick={handleShareTicket}>
-                📤 Share
+                Share
               </button>
             </div>
           )}
 
           <div className="navigation-actions">
             <button className="back-home-btn" onClick={onBackToHome}>
-              🏠 Back to Home
+              Back to Home
             </button>
             <button className="view-bookings-btn">
-              📋 View All Bookings
+              View All Bookings
             </button>
           </div>
         </div>

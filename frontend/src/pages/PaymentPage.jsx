@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./PaymentPage.css";
+import KhaltiSandboxPage from "./KhaltiSandboxPage";
+import EsewaSandboxPage from "./EsewaSandboxPage";
 
 export default function PaymentPage({ 
   movie, 
@@ -8,10 +10,12 @@ export default function PaymentPage({
   selectedHall, 
   selectedDate, 
   seatData,
+  fbData,
+  holdExpiresAt,
   onBack, 
   onPaymentSuccess 
 }) {
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [paymentMethod, setPaymentMethod] = useState('khalti');
   const [cardDetails, setCardDetails] = useState({
     cardNumber: '',
     expiryDate: '',
@@ -21,48 +25,126 @@ export default function PaymentPage({
   const [processing, setProcessing] = useState(false);
   const [errors, setErrors] = useState({});
   const [showCardPreview, setShowCardPreview] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [showKhaltiSandbox, setShowKhaltiSandbox] = useState(false);
+  const [showEsewaSandbox, setShowEsewaSandbox] = useState(false);
+  const [loyaltyPoints, setLoyaltyPoints] = useState(0);
+  const [pointsToRedeem, setPointsToRedeem] = useState(0);
+  const [loyaltyDiscount, setLoyaltyDiscount] = useState(0);
+
+  // Derived totals
+  const ticketTotal = seatData?.total || 0;
+  const fbTotal = fbData?.finalTotal || 0;
+  const total = Math.max(0, ticketTotal + fbTotal - loyaltyDiscount);
+
+  // Fetch user loyalty points
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const userId = user?._id || user?.id;
+    if (!userId) return;
+    fetch(`http://localhost:5000/api/loyalty/user/${userId}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) setLoyaltyPoints(data.loyaltyPoints?.available || 0);
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleRedeemChange = (pts) => {
+    const clamped = Math.min(Math.max(0, pts), Math.min(100, loyaltyPoints));
+    setPointsToRedeem(clamped);
+    setLoyaltyDiscount(clamped * 5);
+  };
+
+  // Timer countdown
+  useEffect(() => {
+    if (!holdExpiresAt) return;
+    const updateTimer = () => {
+      const remaining = Math.max(0, Math.floor((holdExpiresAt - Date.now()) / 1000));
+      setTimeRemaining(remaining);
+      if (remaining === 0) {
+        alert('Your seat hold has expired. Please select seats again.');
+        onBack();
+      }
+    };
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, [holdExpiresAt, onBack]);
+
+  // Handle Khalti return (after redirect back from Khalti)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pidx = urlParams.get('pidx');
+    const status = urlParams.get('status');
+
+    if (pidx && status === 'Completed') {
+      verifyKhaltiPayment(pidx);
+    }
+  }, []);
+
+  const verifyKhaltiPayment = async (pidx) => {
+    try {
+      setProcessing(true);
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const pendingBooking = JSON.parse(sessionStorage.getItem('pendingBooking') || '{}');
+
+      const response = await fetch('http://localhost:5000/api/payment/khalti/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pidx, bookingData: pendingBooking })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        sessionStorage.removeItem('pendingBooking');
+        onPaymentSuccess({
+          ...pendingBooking,
+          bookingId: data.booking._id,
+          bookingReference: data.bookingReference,
+          transactionId: pidx,
+          paymentMethod: 'khalti',
+          paymentStatus: 'completed',
+          bookingTime: new Date().toISOString(),
+          movie, cinema: selectedCinema, hall: selectedHall,
+          date: selectedDate, showtime: selectedShowtime
+        });
+      } else {
+        alert('Payment verification failed. Please contact support.');
+        setProcessing(false);
+      }
+    } catch (error) {
+      console.error('Khalti verify error:', error);
+      alert('Error verifying payment.');
+      setProcessing(false);
+    }
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleInputChange = (field, value) => {
-    setCardDetails(prev => ({
-      ...prev,
-      [field]: value
-    }));
-    
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: ''
-      }));
-    }
-
-    // Show card preview when user starts typing card number
-    if (field === 'cardNumber' && value.length > 0) {
-      setShowCardPreview(true);
-    }
+    setCardDetails(prev => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
+    if (field === 'cardNumber' && value.length > 0) setShowCardPreview(true);
   };
 
   const formatCardNumber = (value) => {
     const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
     const matches = v.match(/\d{4,16}/g);
-    const match = matches && matches[0] || '';
+    const match = (matches && matches[0]) || '';
     const parts = [];
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4));
-    }
-    if (parts.length) {
-      return parts.join(' ');
-    } else {
-      return v;
-    }
+    for (let i = 0, len = match.length; i < len; i += 4) parts.push(match.substring(i, i + 4));
+    return parts.length ? parts.join(' ') : v;
   };
 
   const formatExpiryDate = (value) => {
     const v = value.replace(/\D/g, '');
-    if (v.length >= 2) {
-      return v.substring(0, 2) + '/' + v.substring(2, 4);
-    }
-    return v;
+    return v.length >= 2 ? v.substring(0, 2) + '/' + v.substring(2, 4) : v;
   };
 
   const getCardType = (cardNumber) => {
@@ -75,75 +157,183 @@ export default function PaymentPage({
 
   const validateForm = () => {
     const newErrors = {};
-    
-    if (paymentMethod === 'card') {
-      if (!cardDetails.cardNumber || cardDetails.cardNumber.replace(/\s/g, '').length < 16) {
-        newErrors.cardNumber = 'Please enter a valid 16-digit card number';
-      }
-      
-      if (!cardDetails.expiryDate || cardDetails.expiryDate.length < 5) {
-        newErrors.expiryDate = 'Please enter a valid expiry date (MM/YY)';
-      }
-      
-      if (!cardDetails.cvv || cardDetails.cvv.length < 3) {
-        newErrors.cvv = 'Please enter a valid CVV';
-      }
-      
-      if (!cardDetails.cardholderName.trim()) {
-        newErrors.cardholderName = 'Please enter the cardholder name';
-      }
-    }
-    
+    if (!cardDetails.cardNumber || cardDetails.cardNumber.replace(/\s/g, '').length < 16)
+      newErrors.cardNumber = 'Please enter a valid 16-digit card number';
+    if (!cardDetails.expiryDate || cardDetails.expiryDate.length < 5)
+      newErrors.expiryDate = 'Please enter a valid expiry date (MM/YY)';
+    if (!cardDetails.cvv || cardDetails.cvv.length < 3)
+      newErrors.cvv = 'Please enter a valid CVV';
+    if (!cardDetails.cardholderName.trim())
+      newErrors.cardholderName = 'Please enter the cardholder name';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleKhaltiSandboxSuccess = (pidx) => {
+    setShowKhaltiSandbox(false);
+    completeSandboxBooking(pidx);
+  };
+
+  const handleEsewaSandboxSuccess = (txnId) => {
+    setShowEsewaSandbox(false);
+    completeSandboxBooking(txnId);
+  };
+
+  const completeSandboxBooking = async (transactionId) => {
+    const bookingReference = `RTX${Date.now()}${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const userId = user?._id || user?.id;
+
+    // Redeem points if selected
+    if (userId && pointsToRedeem > 0) {
+      try {
+        await fetch('http://localhost:5000/api/loyalty/redeem', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, points: pointsToRedeem, bookingReference })
+        });
+      } catch (e) { console.log('Points redeem failed (non-critical)', e); }
+    }
+
+    // Award points for ticket purchase
+    if (userId && ticketTotal > 0) {
+      try {
+        await fetch('http://localhost:5000/api/loyalty/award', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId,
+            bookingData: {
+              ticketAmount: ticketTotal,
+              bookingReference,
+              bookingId: `sandbox-${Date.now()}`,
+              bookingDate: new Date().toISOString()
+            }
+          })
+        });
+      } catch (e) { console.log('Points award failed (non-critical)', e); }
+    }
+
+    // Store earned points for loyalty page banner
+    const earnedPts = Math.floor(ticketTotal / 100);
+    if (earnedPts > 0) sessionStorage.setItem('lastEarnedPoints', String(earnedPts));
+
+    onPaymentSuccess({
+      bookingId: `sandbox-${Date.now()}`,
+      bookingReference,
+      transactionId,
+      paymentMethod,
+      paymentStatus: 'completed',
+      bookingTime: new Date().toISOString(),
+      movie, cinema: selectedCinema, hall: selectedHall,
+      date: selectedDate, showtime: selectedShowtime,
+      seats: seatData.seats, seatDetails: seatData.seatDetails,
+      ticketTotal, fbItems: fbData?.items || [],
+      fbSubtotal: fbData?.subtotal || 0,
+      fbDiscount: fbData?.totalDiscount || 0,
+      fbTotal,
+      loyaltyDiscount,
+      pointsRedeemed: pointsToRedeem,
+      pointsEarned: Math.floor(ticketTotal / 100),
+      total, user
+    });
+  };
+
   const handlePayment = async () => {
-    if (!validateForm()) return;
-    
-    setProcessing(true);
-    
-    try {
-      // Simulate payment processing with realistic delay
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      // Generate booking data
-      const bookingData = {
-        bookingId: `RTX${Date.now()}`,
-        movie: movie,
-        cinema: selectedCinema,
-        hall: selectedHall,
-        date: selectedDate,
-        showtime: selectedShowtime,
-        seats: seatData.seats,
-        seatDetails: seatData.seatDetails,
-        total: seatData.total + 25, // Include convenience fee
-        paymentMethod: paymentMethod,
-        paymentStatus: 'completed',
-        bookingTime: new Date().toISOString(),
-        user: JSON.parse(localStorage.getItem('user') || '{}'),
-        transactionId: `TXN${Date.now()}${Math.random().toString(36).substr(2, 9).toUpperCase()}`
-      };
-      
-      // Store booking in localStorage (in real app, this would be saved to database)
-      const existingBookings = JSON.parse(localStorage.getItem('bookings') || '[]');
-      existingBookings.push(bookingData);
-      localStorage.setItem('bookings', JSON.stringify(existingBookings));
-      
-      onPaymentSuccess(bookingData);
-    } catch (error) {
-      console.error('Payment failed:', error);
-      alert('Payment failed. Please try again.');
-    } finally {
-      setProcessing(false);
+    if (paymentMethod === 'khalti') {
+      setShowKhaltiSandbox(true);
+    } else if (paymentMethod === 'esewa') {
+      setShowEsewaSandbox(true);
+    } else {
+      if (paymentMethod === 'card' && !validateForm()) return;
+      setProcessing(true);
+      try {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        const bookingReference = `RTX${Date.now()}${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
+        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const userId = storedUser?._id || storedUser?.id;
+
+        // Redeem points if selected
+        if (userId && pointsToRedeem > 0) {
+          try {
+            await fetch('http://localhost:5000/api/loyalty/redeem', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId, points: pointsToRedeem, bookingReference })
+            });
+          } catch (e) { console.log('Points redeem failed', e); }
+        }
+
+        // Award points
+        if (userId && ticketTotal > 0) {
+          try {
+            await fetch('http://localhost:5000/api/loyalty/award', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId,
+                bookingData: {
+                  ticketAmount: ticketTotal,
+                  bookingReference,
+                  bookingId: `RTX${Date.now()}`,
+                  bookingDate: new Date().toISOString()
+                }
+              })
+            });
+          } catch (e) { console.log('Points award failed', e); }
+        }
+
+        // Store earned points for loyalty page banner
+        const earnedPts = Math.floor(ticketTotal / 100);
+        if (earnedPts > 0) sessionStorage.setItem('lastEarnedPoints', String(earnedPts));
+
+        const bookingData = {
+          bookingId: `RTX${Date.now()}`,
+          bookingReference,
+          movie, cinema: selectedCinema, hall: selectedHall,
+          date: selectedDate, showtime: selectedShowtime,
+          seats: seatData.seats, seatDetails: seatData.seatDetails,
+          ticketTotal, fbItems: fbData?.items || [],
+          fbSubtotal: fbData?.subtotal || 0,
+          fbDiscount: fbData?.totalDiscount || 0,
+          fbTotal, loyaltyDiscount, pointsRedeemed: pointsToRedeem,
+          pointsEarned: Math.floor(ticketTotal / 100),
+          total,
+          paymentMethod, paymentStatus: 'completed',
+          bookingTime: new Date().toISOString(),
+          user: storedUser,
+          transactionId: `TXN${Date.now()}${Math.random().toString(36).substr(2, 9).toUpperCase()}`
+        };
+        onPaymentSuccess(bookingData);
+      } catch (error) {
+        alert('Payment failed. Please try again.');
+      } finally {
+        setProcessing(false);
+      }
     }
   };
 
-  const convenienceFee = 25;
-  const total = seatData.total + convenienceFee;
-
   return (
     <div className="payment-page">
+      {/* Khalti Sandbox Modal */}
+      {showKhaltiSandbox && (
+        <KhaltiSandboxPage
+          amount={total * 100}
+          orderName={`${movie.title} - ${seatData.seats.length} Ticket(s)`}
+          onSuccess={handleKhaltiSandboxSuccess}
+          onCancel={() => setShowKhaltiSandbox(false)}
+        />
+      )}
+      {/* eSewa Sandbox Modal */}
+      {showEsewaSandbox && (
+        <EsewaSandboxPage
+          amount={total}
+          orderName={`${movie.title} - ${seatData.seats.length} Ticket(s)`}
+          onSuccess={handleEsewaSandboxSuccess}
+          onCancel={() => setShowEsewaSandbox(false)}
+        />
+      )}
+      {/* Internet Banking Sandbox Modal - removed */}
       {/* Header */}
       <header className="payment-header">
         <div className="header-left">
@@ -159,6 +349,15 @@ export default function PaymentPage({
           </div>
         </div>
         <div className="header-right">
+          {holdExpiresAt && timeRemaining > 0 && (
+            <div className={`timer-display ${timeRemaining <= 60 ? 'warning' : ''}`}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              <span>Time Remaining: {formatTime(timeRemaining)}</span>
+            </div>
+          )}
           <div className="security-badge">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="2"/>
@@ -189,39 +388,73 @@ export default function PaymentPage({
               <h4>Selected Seats</h4>
               <div className="seat-tags">
                 {seatData.seats.map(seat => (
-                  <span key={seat} className="seat-tag">
-                    {seat}
-                  </span>
+                  <span key={seat} className="seat-tag">{seat}</span>
                 ))}
               </div>
             </div>
 
             <div className="price-summary">
-              <div className="price-item">
-                <span>Tickets ({seatData.seats.length})</span>
-                <span>Rs. {seatData.total - (seatData.seatDetails.filter(s => s.isPremium).length * 100)}</span>
-              </div>
-              {seatData.seatDetails.filter(s => s.isPremium).length > 0 && (
+              <div className="price-section">
+                <h4 className="price-section-title">Tickets</h4>
                 <div className="price-item">
-                  <span>Premium Surcharge</span>
-                  <span>Rs. {seatData.seatDetails.filter(s => s.isPremium).length * 100}</span>
+                  <span>Tickets ({seatData.seats.length})</span>
+                  <span>Rs. {seatData.seats.length * (seatData.ticketPrice || selectedShowtime?.price || 500)}</span>
+                </div>
+                {seatData.seatDetails.filter(s => s.isPremium).length > 0 && (
+                  <div className="price-item">
+                    <span>Premium Surcharge</span>
+                    <span>Rs. {seatData.seatDetails.filter(s => s.isPremium).length * 100}</span>
+                  </div>
+                )}
+                <div className="price-subtotal">
+                  <span>Ticket Subtotal</span>
+                  <span>Rs. {ticketTotal}</span>
+                </div>
+              </div>
+
+              {fbData && fbData.items && fbData.items.length > 0 && (
+                <div className="price-section fb-section">
+                  <h4 className="price-section-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 2L7 6H3L5 20H19L21 6H17L15 2H9Z" stroke="currentColor" strokeWidth="2"/>
+                    </svg>
+                    Food & Beverages
+                  </h4>
+                  {fbData.items.map((item, index) => (
+                    <div key={index} className="price-item fb-item">
+                      <span>{item.item.name} {item.selectedSize && `(${item.selectedSize})`} × {item.quantity}</span>
+                      <span>Rs. {item.price * item.quantity}</span>
+                    </div>
+                  ))}
+                  {fbData.totalDiscount > 0 && (
+                    <div className="price-item discount">
+                      <span>F&B Discount</span>
+                      <span>- Rs. {fbData.totalDiscount}</span>
+                    </div>
+                  )}
+                  <div className="price-subtotal">
+                    <span>F&B Subtotal</span>
+                    <span>Rs. {fbTotal}</span>
+                  </div>
                 </div>
               )}
-              <div className="price-item">
-                <span>Convenience Fee</span>
-                <span>Rs. {convenienceFee}</span>
-              </div>
-              <div className="price-item">
-                <span>GST (18%)</span>
-                <span>Rs. {Math.round(total * 0.18)}</span>
-              </div>
+
               <div className="price-total">
+                <span>Subtotal</span>
+                <span>Rs. {ticketTotal + fbTotal}</span>
+              </div>
+              {loyaltyDiscount > 0 && (
+                <div className="price-item discount">
+                  <span>Loyalty Discount ({pointsToRedeem} pts)</span>
+                  <span>- Rs. {loyaltyDiscount}</span>
+                </div>
+              )}
+              <div className="price-total" style={loyaltyDiscount > 0 ? {color: '#4caf50'} : {}}>
                 <span>Total Amount</span>
-                <span>Rs. {Math.round(total * 1.18)}</span>
+                <span>Rs. {total}</span>
               </div>
             </div>
 
-            {/* Enhanced Payment Security Info */}
             <div className="security-info">
               <div className="security-item">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -234,18 +467,6 @@ export default function PaymentPage({
                   <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2"/>
                 </svg>
                 <span>PCI DSS Compliant</span>
-              </div>
-              <div className="security-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 1l3 6 6 .75-4.5 4.25L18 18l-6-3.25L6 18l1.5-6L3 7.75 9 7l3-6z" stroke="currentColor" strokeWidth="2"/>
-                </svg>
-                <span>Bank-Grade Security</span>
-              </div>
-              <div className="security-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z" stroke="currentColor" strokeWidth="2"/>
-                </svg>
-                <span>Fraud Protection</span>
               </div>
             </div>
           </div>
@@ -273,14 +494,12 @@ export default function PaymentPage({
                   className={`method-tab ${paymentMethod === 'esewa' ? 'active' : ''}`}
                   onClick={() => setPaymentMethod('esewa')}
                 >
-                  <span className="wallet-icon">📱</span>
                   eSewa
                 </button>
                 <button 
                   className={`method-tab ${paymentMethod === 'khalti' ? 'active' : ''}`}
                   onClick={() => setPaymentMethod('khalti')}
                 >
-                  <span className="wallet-icon">💜</span>
                   Khalti
                 </button>
               </div>
@@ -289,14 +508,11 @@ export default function PaymentPage({
             {/* Card Payment Form */}
             {paymentMethod === 'card' && (
               <div className="card-form">
-                {/* Card Preview */}
                 {showCardPreview && (
                   <div className="card-preview">
                     <div className={`credit-card ${getCardType(cardDetails.cardNumber)}`}>
                       <div className="card-chip"></div>
-                      <div className="card-number">
-                        {cardDetails.cardNumber || '•••• •••• •••• ••••'}
-                      </div>
+                      <div className="card-number">{cardDetails.cardNumber || '•••• •••• •••• ••••'}</div>
                       <div className="card-info">
                         <div className="card-holder">
                           <span className="label">CARD HOLDER</span>
@@ -322,11 +538,6 @@ export default function PaymentPage({
                       maxLength="19"
                       className={errors.cardNumber ? 'error' : ''}
                     />
-                    <div className="card-type-icon">
-                      {getCardType(cardDetails.cardNumber) === 'visa' && '💳'}
-                      {getCardType(cardDetails.cardNumber) === 'mastercard' && '💳'}
-                      {getCardType(cardDetails.cardNumber) === 'amex' && '💳'}
-                    </div>
                   </div>
                   {errors.cardNumber && <span className="error-text">{errors.cardNumber}</span>}
                 </div>
@@ -369,34 +580,58 @@ export default function PaymentPage({
                   />
                   {errors.cardholderName && <span className="error-text">{errors.cardholderName}</span>}
                 </div>
-
-                <div className="save-card-option">
-                  <label className="checkbox-label">
-                    <input type="checkbox" />
-                    <span className="checkmark"></span>
-                    Save this card for future payments
-                  </label>
-                </div>
               </div>
             )}
 
-            {/* Digital Wallet Forms */}
+            {/* Digital Wallet Info */}
             {(paymentMethod === 'esewa' || paymentMethod === 'khalti') && (
               <div className="wallet-form">
                 <div className="wallet-info">
                   <div className="wallet-icon-large">
-                    {paymentMethod === 'esewa' ? '📱' : '💜'}
+                    {paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'}
                   </div>
                   <div className="wallet-details">
                     <h4>{paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'} Payment</h4>
-                    <p>You will be redirected to {paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'} to complete the payment securely</p>
+                    <p>A secure payment window will open to complete your transaction.</p>
                     <div className="wallet-features">
+                      {paymentMethod === 'khalti' && (
+                        <div className="feature">✓ Mobile: <strong>9800000000</strong> | MPIN: <strong>1111</strong> | OTP: <strong>987654</strong></div>
+                      )}
+                      {paymentMethod === 'esewa' && (
+                        <div className="feature">✓ ID: <strong>9800000001</strong> | Password: <strong>Nepal@123</strong> | OTP: <strong>123456</strong></div>
+                      )}
                       <div className="feature">✓ Instant payment confirmation</div>
-                      <div className="feature">✓ No additional charges</div>
-                      <div className="feature">✓ Secure transaction</div>
                     </div>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Loyalty Points Redemption */}
+            {loyaltyPoints >= 20 && (
+              <div className="loyalty-redeem-section">
+                <div className="loyalty-redeem-header">
+                  <div>
+                    <h4>Redeem Loyalty Points</h4>
+                    <p>You have <strong>{loyaltyPoints}</strong> points (worth Rs. {loyaltyPoints * 5})</p>
+                  </div>
+                </div>
+                <div className="loyalty-redeem-options">
+                  {[0, 20, 40, 60, 80, 100].filter(p => p === 0 || p <= loyaltyPoints).map(pts => (
+                    <button
+                      key={pts}
+                      className={`redeem-opt-btn ${pointsToRedeem === pts ? 'active' : ''}`}
+                      onClick={() => handleRedeemChange(pts)}
+                    >
+                      {pts === 0 ? 'None' : `${pts} pts\n-Rs.${pts * 5}`}
+                    </button>
+                  ))}
+                </div>
+                {loyaltyDiscount > 0 && (
+                  <div className="loyalty-discount-applied">
+                    Discount applied: Rs. {loyaltyDiscount} ({pointsToRedeem} points)
+                  </div>
+                )}
               </div>
             )}
 
@@ -409,14 +644,14 @@ export default function PaymentPage({
               {processing ? (
                 <>
                   <div className="spinner"></div>
-                  Processing Payment...
+                  {paymentMethod === 'khalti' ? 'Redirecting to Khalti...' : 'Processing Payment...'}
                 </>
               ) : (
                 <>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="2"/>
                   </svg>
-                  Pay Rs. {Math.round(total * 1.18)}
+                  {paymentMethod === 'khalti' ? `Pay Rs. ${total} via Khalti` : paymentMethod === 'esewa' ? `Pay Rs. ${total} via eSewa` : `Pay Rs. ${total}`}
                 </>
               )}
             </button>

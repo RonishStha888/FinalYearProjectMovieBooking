@@ -379,6 +379,117 @@
   color: #4CAF50;
 }
 
+/* F&B Details Section */
+.fb-details-section {
+  background: rgba(255, 193, 7, 0.05);
+  border: 1px solid rgba(255, 193, 7, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.fb-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #FFC107;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.fb-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.fb-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #666666;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.fb-item-row:last-child {
+  border-bottom: none;
+}
+
+.fb-item-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.fb-item-qty {
+  color: #999999;
+  margin: 0 12px;
+}
+
+.fb-item-price {
+  font-weight: 600;
+  color: #333333;
+}
+
+.fb-discount-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #4CAF50;
+  font-weight: 600;
+  padding: 8px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.discount-amount {
+  font-weight: 700;
+}
+
+.fb-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 12px 0 8px 0;
+  border-top: 2px solid rgba(255, 193, 7, 0.3);
+  color: #333333;
+}
+
+.fb-collection-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 152, 0, 0.1);
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: #FF9800;
+  font-weight: 600;
+}
+
+.fb-collection-note svg {
+  flex-shrink: 0;
+}
+
+.detail-row.final-total-row {
+  grid-template-columns: 1fr;
+  padding-top: 20px;
+  margin-top: 16px;
+  border-top: 3px double #e0e0e0;
+}
+
+.detail-row.final-total-row .total-amount {
+  font-size: 28px;
+  color: #D84040;
+}
+
 /* QR Section */
 .qr-section {
   display: flex;

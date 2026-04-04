@@ -13,9 +13,14 @@ export default function SeatSelection({
 }) {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [bookedSeats, setBookedSeats] = useState([]);
+  const [heldSeats, setHeldSeats] = useState([]); // Seats held by other users
   const [seatLayout, setSeatLayout] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showARView, setShowARView] = useState(false);
+  const [holdId, setHoldId] = useState(null);
+  const [timeRemaining, setTimeRemaining] = useState(600); // 10 minutes in seconds
+  const [timerActive, setTimerActive] = useState(false);
+  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
 
   // Realistic seat layouts based on actual cinema configurations
   const getRealisticSeatLayout = (hallType, cinemaName) => {
@@ -81,6 +86,9 @@ export default function SeatSelection({
     const layout = getRealisticSeatLayout(selectedHall?.type, selectedCinema?.name);
     setSeatLayout(layout);
 
+    // Fetch held seats from server
+    fetchHeldSeats();
+
     // Simulate some booked seats (random for demo)
     const generateBookedSeats = () => {
       const booked = [];
@@ -102,18 +110,151 @@ export default function SeatSelection({
 
     setBookedSeats(generateBookedSeats());
     setLoading(false);
+
+    // Poll for held seats every 5 seconds
+    const pollInterval = setInterval(fetchHeldSeats, 5000);
+
+    // Cleanup on unmount
+    return () => {
+      clearInterval(pollInterval);
+      releaseSeats();
+    };
   }, [selectedHall, selectedCinema]);
 
+  // Timer countdown effect
+  useEffect(() => {
+    if (!timerActive) return;
+
+    const timer = setInterval(() => {
+      setTimeRemaining(prev => {
+        if (prev <= 1) {
+          // Time expired
+          clearInterval(timer);
+          handleTimeExpired();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timerActive]);
+
+  const fetchHeldSeats = async () => {
+    try {
+      // Use a mock showtime ID if not available
+      const showtimeId = selectedShowtime?._id || `showtime_${selectedCinema?._id}_${selectedDate}_${selectedShowtime?.time}`;
+      
+      const response = await fetch(`http://localhost:5000/api/seat-hold/showtime/${showtimeId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setHeldSeats(data.heldSeats || []);
+      }
+    } catch (error) {
+      console.error('Error fetching held seats:', error);
+    }
+  };
+
+  const holdSeats = async (seats) => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      // Use a mock showtime ID if not available
+      const showtimeId = selectedShowtime?._id || `showtime_${selectedCinema?._id}_${selectedDate}_${selectedShowtime?.time}`;
+      
+      const response = await fetch('http://localhost:5000/api/seat-hold/hold', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          showtimeId: showtimeId,
+          userId: user._id || 'guest',
+          sessionId: sessionId,
+          seats: seats.map(seat => ({
+            seatNumber: seat,
+            seatType: seatLayout.premiumRows.includes(seat.charAt(0)) ? 'premium' : 'regular'
+          }))
+        })
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setHoldId(data.holdId);
+        setTimeRemaining(data.expiresIn);
+        setTimerActive(true);
+        console.log('🔒 Seats held successfully');
+      } else {
+        alert(data.message || 'Failed to hold seats');
+        // Refresh held seats
+        fetchHeldSeats();
+      }
+    } catch (error) {
+      console.error('Error holding seats:', error);
+      alert('Failed to hold seats. Please try again.');
+    }
+  };
+
+  const releaseSeats = async () => {
+    if (!holdId) return;
+
+    try {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      await fetch('http://localhost:5000/api/seat-hold/release', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user._id || 'guest',
+          sessionId: sessionId
+        })
+      });
+
+      console.log('🔓 Seats released');
+      setHoldId(null);
+      setTimerActive(false);
+    } catch (error) {
+      console.error('Error releasing seats:', error);
+    }
+  };
+
+  const handleTimeExpired = () => {
+    alert('Your seat selection has expired. Please select seats again.');
+    setSelectedSeats([]);
+    setHoldId(null);
+    setTimerActive(false);
+    fetchHeldSeats();
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   const handleSeatClick = (seatId) => {
-    if (bookedSeats.includes(seatId) || seatLayout.disabledSeats.includes(seatId)) {
-      return; // Can't select booked or disabled seats
+    if (bookedSeats.includes(seatId) || seatLayout.disabledSeats.includes(seatId) || heldSeats.includes(seatId)) {
+      return; // Can't select booked, disabled, or held seats
     }
 
     if (selectedSeats.includes(seatId)) {
-      setSelectedSeats(selectedSeats.filter(seat => seat !== seatId));
+      const newSeats = selectedSeats.filter(seat => seat !== seatId);
+      setSelectedSeats(newSeats);
+      
+      // If no seats selected, release hold
+      if (newSeats.length === 0) {
+        releaseSeats();
+      } else {
+        // Update hold with new seats
+        holdSeats(newSeats);
+      }
     } else {
       if (selectedSeats.length < 8) { // Max 8 seats per booking
-        setSelectedSeats([...selectedSeats, seatId]);
+        const newSeats = [...selectedSeats, seatId];
+        setSelectedSeats(newSeats);
+        
+        // Hold the seats
+        holdSeats(newSeats);
       }
     }
   };
@@ -125,6 +266,8 @@ export default function SeatSelection({
       classes.push('disabled');
     } else if (bookedSeats.includes(seatId)) {
       classes.push('booked');
+    } else if (heldSeats.includes(seatId) && !selectedSeats.includes(seatId)) {
+      classes.push('held'); // Held by another user
     } else if (selectedSeats.includes(seatId)) {
       classes.push('selected');
     } else {
@@ -146,9 +289,8 @@ export default function SeatSelection({
   };
 
   const calculateTotal = () => {
-    const basePrice = selectedHall?.pricing?.basePrice || 500;
-    const isWeekend = selectedDate && (new Date(selectedDate).getDay() === 0 || new Date(selectedDate).getDay() === 6);
-    const price = isWeekend ? selectedHall?.pricing?.weekendPrice || basePrice + 50 : basePrice;
+    // Use the actual showtime price selected by user
+    const ticketPrice = selectedShowtime?.price || 500;
     
     // Premium seat surcharge
     const premiumSeats = selectedSeats.filter(seat => 
@@ -156,7 +298,7 @@ export default function SeatSelection({
     ).length;
     
     const premiumSurcharge = premiumSeats * 100;
-    return (selectedSeats.length * price) + premiumSurcharge;
+    return (selectedSeats.length * ticketPrice) + premiumSurcharge;
   };
 
   if (loading) {
@@ -196,6 +338,15 @@ export default function SeatSelection({
           </div>
         </div>
         <div className="header-right">
+          {timerActive && (
+            <div className={`timer-display ${timeRemaining <= 60 ? 'warning' : ''}`}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              <span>Time Remaining: {formatTime(timeRemaining)}</span>
+            </div>
+          )}
           <button 
             className="ar-view-btn"
             onClick={() => setShowARView(true)}
@@ -236,7 +387,7 @@ export default function SeatSelection({
                       <button
                         className={getSeatClass(seatId, rowIndex)}
                         onClick={() => handleSeatClick(seatId)}
-                        disabled={bookedSeats.includes(seatId) || seatLayout.disabledSeats.includes(seatId)}
+                        disabled={bookedSeats.includes(seatId) || seatLayout.disabledSeats.includes(seatId) || (heldSeats.includes(seatId) && !selectedSeats.includes(seatId))}
                       >
                         {seatNumber}
                       </button>
@@ -265,6 +416,10 @@ export default function SeatSelection({
           <div className="legend-item">
             <div className="seat booked"></div>
             <span>Booked</span>
+          </div>
+          <div className="legend-item">
+            <div className="seat held"></div>
+            <span>Being Held</span>
           </div>
           <div className="legend-item">
             <div className="seat premium available"></div>
@@ -303,7 +458,7 @@ export default function SeatSelection({
               <div className="price-breakdown">
                 <div className="price-item">
                   <span>Seats ({selectedSeats.length})</span>
-                  <span>Rs. {selectedSeats.length * (selectedHall?.pricing?.basePrice || 500)}</span>
+                  <span>Rs. {selectedSeats.length * (selectedShowtime?.price || 500)}</span>
                 </div>
                 {selectedSeats.filter(seat => seatLayout.premiumRows.includes(seat.charAt(0))).length > 0 && (
                   <div className="price-item">
@@ -321,6 +476,7 @@ export default function SeatSelection({
                 onClick={() => onProceed({ 
                   seats: selectedSeats, 
                   total: calculateTotal(),
+                  ticketPrice: selectedShowtime?.price || 500,
                   seatDetails: selectedSeats.map(seat => ({
                     id: seat,
                     row: seat.charAt(0),

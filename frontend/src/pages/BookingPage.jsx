@@ -3,6 +3,9 @@ import "./BookingPage.css";
 import SeatSelection from "./SeatSelection";
 import PaymentPage from "./PaymentPage";
 import TicketPage from "./TicketPage";
+import CinemaRecommendations from "../components/CinemaRecommendations";
+import FBPromptModal from "../components/FBPromptModal";
+import FoodBeveragePage from "./FoodBeveragePage";
 
 export default function BookingPage({ movie, onBack }) {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -14,10 +17,14 @@ export default function BookingPage({ movie, onBack }) {
   const [showtimes, setShowtimes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showSeatSelection, setShowSeatSelection] = useState(false);
+  const [showFBPrompt, setShowFBPrompt] = useState(false);
+  const [showFBMenu, setShowFBMenu] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [showTicket, setShowTicket] = useState(false);
   const [seatData, setSeatData] = useState(null);
+  const [fbData, setFBData] = useState(null);
   const [bookingData, setBookingData] = useState(null);
+  const [holdExpiresAt, setHoldExpiresAt] = useState(null); // Track when hold expires
 
   // Generate dates for the next 14 days
   const generateDates = () => {
@@ -103,7 +110,33 @@ export default function BookingPage({ movie, onBack }) {
 
   const handleProceedFromSeatSelection = (seatSelectionData) => {
     setSeatData(seatSelectionData);
+    // Store the expiration time (10 minutes from now)
+    setHoldExpiresAt(Date.now() + 10 * 60 * 1000);
     setShowSeatSelection(false);
+    // Show F&B prompt modal instead of going directly to payment
+    setShowFBPrompt(true);
+  };
+
+  const handleFBYes = () => {
+    setShowFBPrompt(false);
+    // Navigate to F&B menu page
+    setShowFBMenu(true);
+  };
+
+  const handleFBNo = () => {
+    setShowFBPrompt(false);
+    // Go directly to payment without F&B
+    setShowPayment(true);
+  };
+
+  const handleBackFromFBMenu = () => {
+    setShowFBMenu(false);
+    setShowSeatSelection(true);
+  };
+
+  const handleContinueFromFBMenu = (fbSelectionData) => {
+    setFBData(fbSelectionData);
+    setShowFBMenu(false);
     setShowPayment(true);
   };
 
@@ -155,8 +188,24 @@ export default function BookingPage({ movie, onBack }) {
         selectedHall={selectedClass}
         selectedDate={selectedDate?.fullDate}
         seatData={seatData}
+        fbData={fbData}
+        holdExpiresAt={holdExpiresAt}
         onBack={handleBackFromPayment}
         onPaymentSuccess={handlePaymentSuccess}
+      />
+    );
+  }
+
+  // If F&B menu is active, show F&B menu page
+  if (showFBMenu) {
+    return (
+      <FoodBeveragePage
+        cinema={selectedCinema}
+        ticketCount={seatData?.selectedSeats?.length || 1}
+        bookingDate={selectedDate?.fullDate}
+        holdExpiresAt={holdExpiresAt}
+        onBack={handleBackFromFBMenu}
+        onContinue={handleContinueFromFBMenu}
       />
     );
   }
@@ -285,6 +334,18 @@ export default function BookingPage({ movie, onBack }) {
               </svg>
               Choose Cinema & Time
             </h2>
+
+            {/* Recommendation Component */}
+            {selectedDate && showtimes.length > 0 && (
+              <CinemaRecommendations
+                cinemas={showtimes}
+                selectedDate={selectedDate}
+                user={null}
+                onCinemaSelect={(cinema) => {
+                  console.log('Recommended cinema:', cinema);
+                }}
+              />
+            )}
             
             <div className="cinema-list">
               {loading ? (
@@ -387,13 +448,9 @@ export default function BookingPage({ movie, onBack }) {
                   <span>Ticket Price</span>
                   <span>Rs. {selectedShowtime.price}</span>
                 </div>
-                <div className="price-item">
-                  <span>Convenience Fee</span>
-                  <span>Rs. 25</span>
-                </div>
                 <div className="price-total">
                   <span>Total</span>
-                  <span>Rs. {selectedShowtime.price + 25}</span>
+                  <span>Rs. {selectedShowtime.price}</span>
                 </div>
               </div>
               <button className="proceed-button" onClick={handleBuyTicket}>
@@ -406,6 +463,14 @@ export default function BookingPage({ movie, onBack }) {
           </div>
         </div>
       )}
+      
+      {/* F&B Prompt Modal */}
+      <FBPromptModal
+        isOpen={showFBPrompt}
+        onYes={handleFBYes}
+        onNo={handleFBNo}
+        ticketCount={seatData?.selectedSeats?.length || 1}
+      />
     </div>
   );
 }

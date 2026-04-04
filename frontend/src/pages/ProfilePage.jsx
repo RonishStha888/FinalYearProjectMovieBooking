@@ -16,11 +16,21 @@ export default function ProfilePage({ user, onBack }) {
     favoriteGenres: []
   });
   
+  const [loyaltyData, setLoyaltyData] = useState(null);
+  const [pointsHistory, setPointsHistory] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loyaltyLoading, setLoyaltyLoading] = useState(true);
 
   useEffect(() => {
+    console.log('ProfilePage mounted with user:', user);
     fetchUserProfile();
+    if (user && user._id) {
+      fetchLoyaltyData();
+    } else {
+      console.error('User or user._id is missing:', user);
+      setLoyaltyLoading(false);
+    }
   }, []);
 
   const fetchUserProfile = async () => {
@@ -38,6 +48,68 @@ export default function ProfilePage({ user, onBack }) {
       }));
     } catch (error) {
       console.error('Error fetching profile:', error);
+    }
+  };
+
+  const fetchLoyaltyData = async () => {
+    try {
+      setLoyaltyLoading(true);
+      console.log('Fetching loyalty data for user:', user._id);
+      const response = await fetch(`http://localhost:5000/api/loyalty/user/${user._id}`);
+      const data = await response.json();
+      
+      console.log('Loyalty data response:', data);
+      
+      if (data.success) {
+        setLoyaltyData({
+          points: data.loyaltyPoints,
+          tierInfo: data.tierInfo,
+          redemptionOptions: data.redemptionOptions
+        });
+        setPointsHistory(data.recentHistory || []);
+      } else {
+        console.error('Failed to fetch loyalty data:', data.message);
+        // Set default Bronze tier data if API fails
+        setLoyaltyData({
+          points: {
+            total: 0,
+            available: 0,
+            lifetime: 0,
+            tier: 'Bronze'
+          },
+          tierInfo: {
+            name: 'Bronze',
+            icon: '🥉',
+            color: '#CD7F32',
+            benefits: ['Earn 10 points per ticket', 'Earn 5 points per Rs. 100 spent', 'Redeem points for discounts'],
+            nextTier: 'Silver',
+            pointsNeeded: 500
+          },
+          redemptionOptions: []
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching loyalty data:', error);
+      // Set default Bronze tier data on error
+      setLoyaltyData({
+        points: {
+          total: 0,
+          available: 0,
+          lifetime: 0,
+          tier: 'Bronze'
+        },
+        tierInfo: {
+          name: 'Bronze',
+          icon: '🥉',
+          color: '#CD7F32',
+          benefits: ['Earn 10 points per ticket', 'Earn 5 points per Rs. 100 spent', 'Redeem points for discounts'],
+          nextTier: 'Silver',
+          pointsNeeded: 500
+        },
+        redemptionOptions: []
+      });
+    } finally {
+      setLoyaltyLoading(false);
     }
   };
 
@@ -87,6 +159,74 @@ export default function ProfilePage({ user, onBack }) {
             <p className="membership-badge">{profileData.membershipType}</p>
             <p className="join-date">Member since {profileData.joinDate}</p>
           </div>
+
+          {/* Loyalty Points Section */}
+          {loyaltyLoading ? (
+            <div className="loyalty-section">
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }}>
+                <div className="loading-spinner-small"></div>
+                <p style={{ textAlign: 'center', marginTop: '10px', color: 'rgba(255,255,255,0.6)', fontSize: '14px' }}>Loading loyalty data...</p>
+              </div>
+            </div>
+          ) : loyaltyData ? (
+            <div className="loyalty-section">
+              <div className="loyalty-header">
+                <h3>Loyalty Rewards</h3>
+                <span className="tier-badge" style={{ backgroundColor: loyaltyData.tierInfo.color }}>
+                  {loyaltyData.tierInfo.name}
+                </span>
+              </div>
+              
+              <div className="points-display">
+                <div className="points-main">
+                  <div className="points-number">{loyaltyData.points.available}</div>
+                  <div className="points-label">Available Points</div>
+                </div>
+                <div className="points-value">
+                  ≈ Rs. {Math.floor(loyaltyData.points.available / 2)}
+                </div>
+              </div>
+
+              <div className="tier-progress">
+                <div className="progress-label">
+                  <span>Lifetime Points: {loyaltyData.points.lifetime}</span>
+                  {loyaltyData.tierInfo.nextTier && (
+                    <span className="next-tier">
+                      {loyaltyData.tierInfo.pointsNeeded - loyaltyData.points.lifetime} to {loyaltyData.tierInfo.nextTier}
+                    </span>
+                  )}
+                </div>
+                {loyaltyData.tierInfo.nextTier && (
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill" 
+                      style={{ 
+                        width: `${Math.min((loyaltyData.points.lifetime / loyaltyData.tierInfo.pointsNeeded) * 100, 100)}%`,
+                        backgroundColor: loyaltyData.tierInfo.color
+                      }}
+                    ></div>
+                  </div>
+                )}
+              </div>
+
+              <div className="tier-benefits">
+                <h4>Your Benefits</h4>
+                <ul>
+                  {loyaltyData.tierInfo.benefits.map((benefit, index) => (
+                    <li key={index}>✓ {benefit}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <div className="loyalty-section">
+              <div style={{ textAlign: 'center', padding: '20px' }}>
+                <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px' }}>
+                  Unable to load loyalty data. Please check console for details.
+                </p>
+              </div>
+            </div>
+          )}
 
           <div className="profile-stats">
             <div className="stat-item">
@@ -256,6 +396,37 @@ export default function ProfilePage({ user, onBack }) {
               </div>
             </div>
           </div>
+
+          {/* Points History Section */}
+          {pointsHistory.length > 0 && (
+            <div className="profile-section">
+              <h3>Recent Points Activity</h3>
+              <div className="points-history">
+                {pointsHistory.map((entry, index) => (
+                  <div key={index} className="history-item">
+                    <div className="history-icon">
+                      {entry.type === 'earned' ? '+' : 'B'}
+                    </div>
+                    <div className="history-details">
+                      <div className="history-description">{entry.description}</div>
+                      <div className="history-date">
+                        {new Date(entry.date).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </div>
+                    </div>
+                    <div className={`history-points ${entry.type}`}>
+                      {entry.type === 'earned' ? '+' : '-'}{entry.points}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

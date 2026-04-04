@@ -765,3 +765,294 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================
+   FOOD & BEVERAGE MANAGEMENT STYLES
+   ========================================== */
+
+.fb-content {
+  padding: 20px;
+}
+
+.fb-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.fb-tab {
+  padding: 12px 24px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.3s ease;
+}
+
+.fb-tab:hover {
+  color: #e50914;
+  background: rgba(229, 9, 20, 0.05);
+}
+
+.fb-tab.active {
+  color: #e50914;
+  border-bottom-color: #e50914;
+}
+
+.fb-item-form,
+.fb-offer-form {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.tags-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.tags-checkboxes label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background 0.2s;
+}
+
+.tags-checkboxes label:hover {
+  background: #f5f5f5;
+}
+
+.tags-checkboxes input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.fb-items-list,
+.fb-offers-list {
+  margin-top: 40px;
+}
+
+.fb-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.fb-item-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.fb-item-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.fb-item-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.fb-item-details {
+  padding: 15px;
+}
+
+.fb-item-details h4 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.fb-item-category {
+  font-size: 14px;
+  color: #666;
+  margin: 5px 0;
+  text-transform: capitalize;
+}
+
+.fb-item-description {
+  font-size: 14px;
+  color: #777;
+  margin: 10px 0;
+  line-height: 1.4;
+}
+
+.fb-item-price {
+  font-size: 18px;
+  font-weight: bold;
+  color: #e50914;
+  margin: 10px 0;
+}
+
+.fb-item-price .original-price {
+  font-size: 14px;
+  color: #999;
+  text-decoration: line-through;
+  font-weight: normal;
+  margin-left: 8px;
+}
+
+.combo-badge,
+.inactive-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 5px 5px 5px 0;
+}
+
+.combo-badge {
+  background: #4CAF50;
+  color: white;
+}
+
+.inactive-badge {
+  background: #999;
+  color: white;
+}
+
+.cinema-specific {
+  font-size: 13px;
+  color: #666;
+  margin: 8px 0;
+}
+
+.fb-item-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.fb-item-tags .tag {
+  padding: 3px 8px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  font-size: 11px;
+  color: #666;
+  text-transform: capitalize;
+}
+
+.fb-item-actions {
+  display: flex;
+  gap: 10px;
+  padding: 15px;
+  border-top: 1px solid #eee;
+}
+
+.fb-item-actions button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.fb-offers-table {
+  margin-top: 20px;
+}
+
+.fb-offer-row {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.fb-offer-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.fb-offer-details {
+  flex: 1;
+}
+
+.fb-offer-details h4 {
+  margin: 0 0 10px 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.offer-code {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #e50914;
+  color: white;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.offer-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #4CAF50;
+  margin: 10px 0;
+}
+
+.offer-dates {
+  font-size: 14px;
+  color: #666;
+  margin: 8px 0;
+}
+
+.fb-offer-actions {
+  display: flex;
+  gap: 10px;
+  margin-left: 20px;
+}
+
+.fb-offer-actions button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .fb-items-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fb-offer-row {
+    flex-direction: column;
+  }
+
+  .fb-offer-actions {
+    margin-left: 0;
+    margin-top: 15px;
+    width: 100%;
+  }
+
+  .fb-offer-actions button {
+    flex: 1;
+  }
+}
