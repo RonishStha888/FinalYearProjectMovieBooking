@@ -593,7 +593,7 @@ const AdminDashboard = () => {
       {/* Header */}
       <header className="admin-header">
         <div className="admin-header-left">
-          <h1>🎬 RTX Cinema Admin</h1>
+          <h1>RTX Cinema Admin</h1>
           <span>Welcome, {adminUser?.name}</span>
           <div className="real-time-info">
             <span className="current-time">
@@ -614,13 +614,13 @@ const AdminDashboard = () => {
         </div>
         <div className="admin-header-right">
           <button onClick={() => loadDashboardData()} className="refresh-btn" disabled={loading}>
-            {loading ? '🔄' : '↻'} Refresh
+            {loading ? 'Refreshing...' : 'Refresh'}
           </button>
           <button onClick={() => navigate('/')} className="view-site-btn">
-            🌐 View Site
+            View Site
           </button>
           <button onClick={handleLogout} className="logout-btn">
-            🚪 Logout
+            Logout
           </button>
         </div>
       </header>
@@ -631,57 +631,57 @@ const AdminDashboard = () => {
           <ul>
             <li className={activeTab === 'dashboard' ? 'active' : ''}>
               <button onClick={() => setActiveTab('dashboard')}>
-                📊 Dashboard
+                Dashboard
               </button>
             </li>
             <li className={activeTab === 'movies' ? 'active' : ''}>
               <button onClick={() => setActiveTab('movies')}>
-                🎬 Movies
+                Movies
               </button>
             </li>
             <li className={activeTab === 'showtimes' ? 'active' : ''}>
               <button onClick={() => setActiveTab('showtimes')}>
-                ⏰ Showtimes
+                Showtimes
               </button>
             </li>
             <li className={activeTab === 'users' ? 'active' : ''}>
               <button onClick={() => setActiveTab('users')}>
-                👥 Users
+                Users
               </button>
             </li>
             <li className={activeTab === 'bookings' ? 'active' : ''}>
               <button onClick={() => setActiveTab('bookings')}>
-                🎫 Bookings
+                Bookings
               </button>
             </li>
             <li className={activeTab === 'analytics' ? 'active' : ''}>
               <button onClick={() => setActiveTab('analytics')}>
-                📈 Analytics
+                Analytics
               </button>
             </li>
             <li className={activeTab === 'promotions' ? 'active' : ''}>
               <button onClick={() => setActiveTab('promotions')}>
-                🎁 Promotions
+                Promotions
               </button>
             </li>
             <li className={activeTab === 'cinemas' ? 'active' : ''}>
               <button onClick={() => setActiveTab('cinemas')}>
-                🏢 Cinemas
+                Cinemas
               </button>
             </li>
             <li className={activeTab === 'banners' ? 'active' : ''}>
               <button onClick={() => setActiveTab('banners')}>
-                📢 Banners
+                Banners
               </button>
             </li>
             <li className={activeTab === 'fb' ? 'active' : ''}>
               <button onClick={() => setActiveTab('fb')}>
-                🍿 Food & Beverages
+                Food & Beverages
               </button>
             </li>
             <li className={activeTab === 'system' ? 'active' : ''}>
               <button onClick={() => setActiveTab('system')}>
-                🔧 System
+                System
               </button>
             </li>
           </ul>
@@ -735,7 +735,7 @@ const AdminDashboard = () => {
                       <img src={movie.image} alt={movie.title} />
                       <div className="movie-info">
                         <h4>{movie.title}</h4>
-                        <p>⭐ {movie.rating}/10</p>
+                        <p>Rating: {movie.rating}/10</p>
                       </div>
                     </div>
                   ))}
@@ -912,15 +912,15 @@ const AdminDashboard = () => {
                       <img src={movie.image} alt={movie.title} className="movie-thumb" />
                       <div className="movie-details">
                         <h4>{movie.title}</h4>
-                        <p>{movie.genre} • {movie.duration} min • ⭐ {movie.rating}/10</p>
+                        <p>{movie.genre} • {movie.duration} min • Rating: {movie.rating}/10</p>
                         <p>{movie.director} • {movie.year}</p>
                       </div>
                       <div className="movie-actions">
                         <button onClick={() => editMovie(movie)} className="edit-btn">
-                          ✏️ Edit
+                          Edit
                         </button>
                         <button onClick={() => deleteMovie(movie._id)} className="delete-btn">
-                          🗑️ Delete
+                          Delete
                         </button>
                       </div>
                     </div>
@@ -1069,10 +1069,10 @@ const AdminDashboard = () => {
                           });
                           setEditingShowtime(showtime);
                         }} className="edit-btn">
-                          ✏️ Edit
+                          Edit
                         </button>
                         <button onClick={() => deleteShowtime(showtime._id)} className="delete-btn">
-                          🗑️ Delete
+                          Delete
                         </button>
                       </div>
                     </div>
@@ -1100,7 +1100,7 @@ const AdminDashboard = () => {
                     });
                   }}
                 >
-                  🍿 Menu Items
+                  Menu Items
                 </button>
                 <button 
                   className={`fb-tab ${editingFBOffer || fbOfferForm.title ? 'active' : ''}`}
@@ -1113,7 +1113,7 @@ const AdminDashboard = () => {
                     });
                   }}
                 >
-                  🎁 Offers
+                  Offers
                 </button>
               </div>
 
@@ -1141,11 +1141,11 @@ const AdminDashboard = () => {
                           onChange={(e) => setFBItemForm({...fbItemForm, category: e.target.value})}
                           required
                         >
-                          <option value="popcorn">🍿 Popcorn</option>
-                          <option value="drinks">🥤 Drinks</option>
-                          <option value="combos">🎁 Combos</option>
-                          <option value="snacks">🍕 Snacks</option>
-                          <option value="candy">🍬 Candy</option>
+                          <option value="popcorn">Popcorn</option>
+                          <option value="drinks">Drinks</option>
+                          <option value="combos">Combos</option>
+                          <option value="snacks">Snacks</option>
+                          <option value="candy">Candy</option>
                         </select>
                       </div>
                     </div>
@@ -1326,12 +1326,7 @@ const AdminDashboard = () => {
                           <div className="fb-item-details">
                             <h4>{item.name}</h4>
                             <p className="fb-item-category">
-                              {item.category === 'popcorn' && '🍿'}
-                              {item.category === 'drinks' && '🥤'}
-                              {item.category === 'combos' && '🎁'}
-                              {item.category === 'snacks' && '🍕'}
-                              {item.category === 'candy' && '🍬'}
-                              {' '}{item.category}
+                              {item.category}
                             </p>
                             <p className="fb-item-description">{item.description}</p>
                             <p className="fb-item-price">
@@ -1343,7 +1338,7 @@ const AdminDashboard = () => {
                             {item.isCombo && <span className="combo-badge">Combo</span>}
                             {!item.isActive && <span className="inactive-badge">Inactive</span>}
                             {item.cinemaId && (
-                              <p className="cinema-specific">📍 {item.cinemaId.name}</p>
+                              <p className="cinema-specific">{item.cinemaId.name}</p>
                             )}
                             {item.tags && item.tags.length > 0 && (
                               <div className="fb-item-tags">
@@ -1355,10 +1350,10 @@ const AdminDashboard = () => {
                           </div>
                           <div className="fb-item-actions">
                             <button onClick={() => editFBItem(item)} className="edit-btn">
-                              ✏️ Edit
+                              Edit
                             </button>
                             <button onClick={() => deleteFBItem(item._id)} className="delete-btn">
-                              🗑️ Delete
+                              Delete
                             </button>
                           </div>
                         </div>
@@ -1621,14 +1616,14 @@ const AdminDashboard = () => {
                             {offer.minAmount && <p>Min NPR {offer.minAmount}</p>}
                             {offer.usageLimit && <p>Used: {offer.usedCount}/{offer.usageLimit}</p>}
                             {!offer.isActive && <span className="inactive-badge">Inactive</span>}
-                            {offer.cinemaId && <p className="cinema-specific">📍 {offer.cinemaId.name}</p>}
+                            {offer.cinemaId && <p className="cinema-specific">{offer.cinemaId.name}</p>}
                           </div>
                           <div className="fb-offer-actions">
                             <button onClick={() => editFBOffer(offer)} className="edit-btn">
-                              ✏️ Edit
+                              Edit
                             </button>
                             <button onClick={() => deleteFBOffer(offer._id)} className="delete-btn">
-                              🗑️ Delete
+                              Delete
                             </button>
                           </div>
                         </div>
@@ -1668,7 +1663,7 @@ const UsersSection = () => (
     </div>
     <div className="users-table">
       <h3>All Users</h3>
-      <p>🚧 User management functionality - View users, activate/deactivate accounts, view booking history</p>
+      <p>User management functionality - View users, activate/deactivate accounts, view booking history</p>
     </div>
   </div>
 );

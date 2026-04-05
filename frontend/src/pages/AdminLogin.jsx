@@ -71,7 +71,7 @@ const AdminLogin = () => {
     <div className="admin-login-container">
       <div className="admin-login-card">
         <div className="admin-login-header">
-          <h1>🎬 RTX Cinema</h1>
+          <h1>RTX Cinema</h1>
           <h2>Admin Panel</h2>
           <p>Administrator Access Only</p>
         </div>
@@ -115,7 +115,7 @@ const AdminLogin = () => {
         </form>
 
         <div className="admin-login-footer">
-          <p>🔒 Secure Admin Access</p>
+          <p>Secure Admin Access</p>
           <button 
             onClick={() => navigate('/')}
             className="back-to-site-btn"
