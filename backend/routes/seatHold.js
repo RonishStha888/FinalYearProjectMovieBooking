@@ -161,6 +161,38 @@ router.get('/showtime/:showtimeId', async (req, res) => {
 });
 
 /**
+ * Get permanently booked seats for a showtime
+ */
+router.get('/booked/:showtimeId', async (req, res) => {
+  try {
+    const { showtimeId } = req.params;
+
+    const completedHolds = await SeatHold.find({
+      showtimeId,
+      status: 'completed'
+    });
+
+    const bookedSeats = completedHolds.flatMap(hold => 
+      hold.seats.map(s => s.seatNumber)
+    );
+
+    res.json({
+      success: true,
+      bookedSeats,
+      totalBooked: bookedSeats.length
+    });
+
+  } catch (error) {
+    console.error('❌ Get booked seats error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+});
+
+/**
  * Extend hold time (add 5 more minutes)
  */
 router.post('/extend', async (req, res) => {

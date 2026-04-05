@@ -37,7 +37,7 @@ class CinemaRecommendationService {
     const scoredCinemas = [];
 
     for (const cinema of cinemas) {
-      const score = await this.calculateCinemaScore(cinema, userContext, bookingContext);
+      const score = await this.calculateCinemaScore(cinema, userContext, bookingContext, cinemas);
       scoredCinemas.push({
         cinema,
         score: score.totalScore,
@@ -45,6 +45,7 @@ class CinemaRecommendationService {
         reasons: score.reasons,
         savings: score.savings,
         finalPrice: score.finalPrice,
+        basePrice: score.basePrice,
         badge: this.getBadge(score)
       });
     }
@@ -62,13 +63,13 @@ class CinemaRecommendationService {
   /**
    * Calculate comprehensive score for a cinema
    */
-  async calculateCinemaScore(cinema, userContext, bookingContext) {
+  async calculateCinemaScore(cinema, userContext, bookingContext, allCinemas = []) {
     const breakdown = {};
     const reasons = [];
     let totalSavings = 0;
 
-    // 1. Price Score (35 points)
-    const priceScore = this.calculatePriceScore(cinema, bookingContext);
+    // 1. Price Score (35 points) - now uses relative comparison
+    const priceScore = this.calculatePriceScore(cinema, bookingContext, allCinemas);
     breakdown.price = priceScore;
 
     // 2. Discount Score (25 points)
@@ -110,7 +111,7 @@ class CinemaRecommendationService {
 
     // Calculate final price after all discounts
     const basePrice = cinema.pricing?.basePrice || 500;
-    const finalPrice = basePrice - totalSavings;
+    const finalPrice = Math.max(0, basePrice - totalSavings);
 
     return {
       totalScore: Math.round(personalizedScore * 10) / 10,
@@ -124,12 +125,41 @@ class CinemaRecommendationService {
 
   /**
    * Calculate price competitiveness score
+   * Now uses relative pricing - compares against other cinemas
    */
-  calculatePriceScore(cinema, bookingContext) {
+  calculatePriceScore(cinema, bookingContext, allCinemas = []) {
     const basePrice = cinema.pricing?.basePrice || 500;
     const seats = bookingContext.seats || 1;
     
-    // Price ranges for scoring (in NPR)
+    // If we have multiple cinemas, use relative pricing
+    if (allCinemas.length > 1) {
+      const allPrices = allCinemas.map(c => c.pricing?.basePrice || 500);
+      const minPrice = Math.min(...allPrices);
+      const maxPrice = Math.max(...allPrices);
+      const priceRange = maxPrice - minPrice;
+      
+      // If all prices are the same, give everyone a good score
+      if (priceRange === 0) {
+        return {
+          score: 80,
+          basePrice,
+          totalPrice: basePrice * seats
+        };
+      }
+      
+      // Calculate relative score (cheaper = higher score)
+      // Cheapest gets 100, most expensive gets 20
+      const relativePosition = (basePrice - minPrice) / priceRange;
+      const score = Math.round(100 - (relativePosition * 80));
+      
+      return {
+        score,
+        basePrice,
+        totalPrice: basePrice * seats
+      };
+    }
+    
+    // Fallback to absolute price ranges if only one cinema
     const priceRanges = {
       budget: { max: 400, score: 100 },
       affordable: { max: 600, score: 80 },
@@ -347,11 +377,11 @@ class CinemaRecommendationService {
    * Determine badge for cinema
    */
   getBadge(score) {
-    if (score.savings >= 200) return { text: '🏆 Best Value', color: 'gold' };
-    if (score.reasons.length >= 3) return { text: '🎁 Most Offers', color: 'purple' };
-    if (score.totalScore >= 90) return { text: '⭐ Top Pick', color: 'blue' };
-    if (score.finalPrice < 400) return { text: '💰 Budget Friendly', color: 'green' };
-    return { text: '✨ Recommended', color: 'gray' };
+    if (score.savings >= 200) return { text: 'Best Value', color: 'gold' };
+    if (score.reasons.length >= 3) return { text: 'Most Offers', color: 'purple' };
+    if (score.totalScore >= 90) return { text: 'Top Pick', color: 'blue' };
+    if (score.finalPrice < 400) return { text: 'Budget Friendly', color: 'green' };
+    return { text: 'Recommended', color: 'gray' };
   }
 
   /**
@@ -368,17 +398,51 @@ class CinemaRecommendationService {
   }
 
   /**
-   * Generate comparison matrix for UI display
+   * Generate comprehensive comparison matrix for UI display
    */
   generateComparisonMatrix(scoredCinemas) {
-    return scoredCinemas.map(sc => ({
-      name: sc.cinema.name,
-      score: sc.score,
-      price: sc.finalPrice,
-      savings: sc.savings,
-      topReasons: sc.reasons.slice(0, 2),
-      badge: sc.badge
-    }));
+    // Calculate relative metrics for better comparison
+    const allPrices = scoredCinemas.map(sc => sc.finalPrice);
+    const allSavings = scoredCinemas.map(sc => sc.savings);
+    const minPrice = Math.min(...allPrices);
+    const maxSavings = Math.max(...allSavings);
+
+    return scoredCinemas.map((sc, index) => {
+      // Calculate value rating (combination of price and savings)
+      const priceRating = minPrice === sc.finalPrice ? 100 : Math.round((minPrice / sc.finalPrice) * 100);
+      const savingsRating = maxSavings === 0 ? 0 : Math.round((sc.savings / maxSavings) * 100);
+      const valueRating = Math.round((priceRating + savingsRating) / 2);
+
+      // Determine if this is the best in specific categories
+      const isCheapest = sc.finalPrice === minPrice;
+      const hasMostSavings = sc.savings === maxSavings;
+      const isTopRated = index === 0;
+
+      return {
+        name: sc.cinema.name,
+        score: sc.score,
+        price: sc.finalPrice,
+        basePrice: sc.basePrice,
+        savings: sc.savings,
+        savingsPercentage: sc.basePrice > 0 ? Math.round((sc.savings / sc.basePrice) * 100) : 0,
+        topReasons: sc.reasons.slice(0, 2),
+        allReasons: sc.reasons,
+        badge: sc.badge,
+        breakdown: sc.breakdown,
+        // Comparison metrics
+        priceRating,
+        savingsRating,
+        valueRating,
+        isCheapest,
+        hasMostSavings,
+        isTopRated,
+        // Additional details
+        features: sc.cinema.features || [],
+        location: sc.cinema.location,
+        type: sc.cinema.type,
+        rank: index + 1
+      };
+    });
   }
 
   /**

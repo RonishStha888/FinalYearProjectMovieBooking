@@ -475,3 +475,235 @@
     min-width: 800px;
   }
 }
+
+/* Enhanced Comparison Table Styles */
+.rank-cell {
+  text-align: center;
+  font-weight: 700;
+}
+
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #f5f5f5;
+  color: #666;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.rank-badge.gold {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+}
+
+.cinema-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cinema-info strong {
+  color: #333;
+  font-size: 15px;
+}
+
+.cinema-info small {
+  color: #999;
+  font-size: 12px;
+}
+
+.base-price {
+  text-decoration: line-through;
+  color: #999;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.final-price-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.final-price {
+  font-weight: 700;
+  color: #D84040;
+  font-size: 16px;
+}
+
+.best-tag {
+  display: inline-block;
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.savings-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.savings-percent {
+  color: #4CAF50;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.value-cell {
+  min-width: 120px;
+}
+
+.value-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rating-bar {
+  flex: 1;
+  height: 20px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.rating-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.rating-text {
+  font-weight: 700;
+  color: #333;
+  font-size: 13px;
+  min-width: 40px;
+}
+
+.offers-list .offer-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(76, 175, 80, 0.1);
+  color: #2E7D32;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.more-offers {
+  color: #1976D2;
+  font-size: 11px;
+  font-weight: 600;
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.features-cell {
+  max-width: 200px;
+}
+
+.features-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.feature-badge {
+  display: inline-block;
+  background: rgba(156, 39, 176, 0.1);
+  color: #7B1FA2;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid rgba(156, 39, 176, 0.2);
+}
+
+.more-features {
+  color: #7B1FA2;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.no-features {
+  color: #999;
+  font-style: italic;
+  font-size: 12px;
+}
+
+/* Comparison Legend */
+.comparison-legend {
+  margin-top: 24px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+  border-radius: 12px;
+  border-left: 4px solid #D84040;
+}
+
+.comparison-legend h5 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 16px 0;
+}
+
+.legend-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.legend-item {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.legend-item strong {
+  color: #333;
+  font-weight: 700;
+}
+
+/* Responsive Enhancements */
+@media (max-width: 1024px) {
+  .comparison-table table {
+    min-width: 1000px;
+  }
+  
+  .legend-items {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .rank-badge {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .cinema-info strong {
+    font-size: 13px;
+  }
+  
+  .final-price {
+    font-size: 14px;
+  }
+  
+  .comparison-legend {
+    padding: 16px;
+  }
+}

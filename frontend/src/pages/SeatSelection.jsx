@@ -89,26 +89,9 @@ export default function SeatSelection({
     // Fetch held seats from server
     fetchHeldSeats();
 
-    // Simulate some booked seats (random for demo)
-    const generateBookedSeats = () => {
-      const booked = [];
-      const totalSeats = layout.rows.length * Math.max(...layout.seatsPerRow);
-      const bookedCount = Math.floor(totalSeats * 0.15); // 15% occupancy
+    // Fetch permanently booked seats from database
+    fetchBookedSeats();
 
-      for (let i = 0; i < bookedCount; i++) {
-        const randomRow = layout.rows[Math.floor(Math.random() * layout.rows.length)];
-        const maxSeatsInRow = layout.seatsPerRow[layout.rows.indexOf(randomRow)];
-        const randomSeat = Math.floor(Math.random() * maxSeatsInRow) + 1;
-        const seatId = `${randomRow}${randomSeat}`;
-        
-        if (!booked.includes(seatId) && !layout.disabledSeats.includes(seatId)) {
-          booked.push(seatId);
-        }
-      }
-      return booked;
-    };
-
-    setBookedSeats(generateBookedSeats());
     setLoading(false);
 
     // Poll for held seats every 5 seconds
@@ -153,6 +136,24 @@ export default function SeatSelection({
       }
     } catch (error) {
       console.error('Error fetching held seats:', error);
+    }
+  };
+
+  const fetchBookedSeats = async () => {
+    try {
+      // Use a mock showtime ID if not available
+      const showtimeId = selectedShowtime?._id || `showtime_${selectedCinema?._id}_${selectedDate}_${selectedShowtime?.time}`;
+      
+      const response = await fetch(`http://localhost:5000/api/seat-hold/booked/${showtimeId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setBookedSeats(data.bookedSeats || []);
+      }
+    } catch (error) {
+      console.error('Error fetching booked seats:', error);
+      // Fallback to empty array if API fails
+      setBookedSeats([]);
     }
   };
 

@@ -225,67 +225,149 @@ export default function CinemaRecommendations({
       {/* Comparison Table */}
       {showComparison && (
         <div className="comparison-table-container">
-          <h4 className="comparison-title">Cinema Comparison</h4>
+          <h4 className="comparison-title">Detailed Cinema Comparison</h4>
           <div className="comparison-table">
             <table>
               <thead>
                 <tr>
+                  <th>Rank</th>
                   <th>Cinema</th>
-                  <th>Score</th>
-                  <th>Price</th>
-                  <th>Savings</th>
+                  <th>Overall Score</th>
+                  <th>Base Price</th>
+                  <th>Final Price</th>
+                  <th>Total Savings</th>
+                  <th>Value Rating</th>
                   <th>Top Offers</th>
-                  <th>Badge</th>
+                  <th>Features</th>
                 </tr>
               </thead>
               <tbody>
                 {recommendations.comparisonMatrix.map((cinema, index) => (
                   <tr key={index} className={index === 0 ? 'best-choice-row' : ''}>
-                    <td className="cinema-name-cell">
-                      {index === 0 && (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700" className="crown-icon">
-                          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-                        </svg>
+                    <td className="rank-cell">
+                      {index === 0 ? (
+                        <div className="rank-badge gold">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFD700">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                          </svg>
+                          #{cinema.rank}
+                        </div>
+                      ) : (
+                        <div className="rank-badge">#{cinema.rank}</div>
                       )}
-                      {cinema.name}
+                    </td>
+                    <td className="cinema-name-cell">
+                      <div className="cinema-info">
+                        <strong>{cinema.name}</strong>
+                        {cinema.location && <small>{cinema.location}</small>}
+                      </div>
                     </td>
                     <td className="score-cell">
                       <div className="score-bar">
                         <div 
                           className="score-fill" 
-                          style={{ width: `${cinema.score}%` }}
+                          style={{ 
+                            width: `${cinema.score}%`,
+                            backgroundColor: cinema.score >= 80 ? '#4CAF50' : cinema.score >= 60 ? '#FFC107' : '#FF9800'
+                          }}
                         ></div>
-                        <span className="score-text">{cinema.score}</span>
+                        <span className="score-text">{cinema.score}/100</span>
                       </div>
                     </td>
-                    <td className="price-cell">Rs. {cinema.price}</td>
+                    <td className="price-cell">
+                      <span className="base-price">Rs. {cinema.basePrice}</span>
+                    </td>
+                    <td className="price-cell">
+                      <div className="final-price-wrapper">
+                        <span className="final-price">Rs. {cinema.price}</span>
+                        {cinema.isCheapest && (
+                          <span className="best-tag">Cheapest</span>
+                        )}
+                      </div>
+                    </td>
                     <td className="savings-cell">
                       {cinema.savings > 0 ? (
-                        <span className="savings-amount">Rs. {cinema.savings}</span>
+                        <div className="savings-wrapper">
+                          <span className="savings-amount">Rs. {cinema.savings}</span>
+                          <span className="savings-percent">({cinema.savingsPercentage}% off)</span>
+                          {cinema.hasMostSavings && (
+                            <span className="best-tag">Best Savings</span>
+                          )}
+                        </div>
                       ) : (
-                        <span className="no-savings">-</span>
+                        <span className="no-savings">No savings</span>
                       )}
+                    </td>
+                    <td className="value-cell">
+                      <div className="value-rating">
+                        <div className="rating-bar">
+                          <div 
+                            className="rating-fill" 
+                            style={{ 
+                              width: `${cinema.valueRating}%`,
+                              backgroundColor: cinema.valueRating >= 80 ? '#4CAF50' : cinema.valueRating >= 60 ? '#FFC107' : '#FF5722'
+                            }}
+                          ></div>
+                        </div>
+                        <span className="rating-text">{cinema.valueRating}%</span>
+                      </div>
                     </td>
                     <td className="offers-cell">
                       {cinema.topReasons && cinema.topReasons.length > 0 ? (
                         <div className="offers-list">
                           {cinema.topReasons.map((reason, i) => (
-                            <span key={i} className="offer-tag">{reason}</span>
+                            <div key={i} className="offer-tag">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                <path d="M20 6L9 17L4 12" stroke="#4CAF50" strokeWidth="2"/>
+                              </svg>
+                              {reason}
+                            </div>
                           ))}
+                          {cinema.allReasons && cinema.allReasons.length > 2 && (
+                            <span className="more-offers">+{cinema.allReasons.length - 2} more</span>
+                          )}
                         </div>
                       ) : (
                         <span className="no-offers">No special offers</span>
                       )}
                     </td>
-                    <td className="badge-cell">
-                      <span className={`table-badge badge-${cinema.badge.color}`}>
-                        {cinema.badge.text}
-                      </span>
+                    <td className="features-cell">
+                      {cinema.features && cinema.features.length > 0 ? (
+                        <div className="features-list">
+                          {cinema.features.slice(0, 3).map((feature, i) => (
+                            <span key={i} className="feature-badge">{feature}</span>
+                          ))}
+                          {cinema.features.length > 3 && (
+                            <span className="more-features">+{cinema.features.length - 3}</span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="no-features">Standard</span>
+                      )}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+          
+          {/* Comparison Legend */}
+          <div className="comparison-legend">
+            <h5>Understanding the Comparison:</h5>
+            <div className="legend-items">
+              <div className="legend-item">
+                <strong>Overall Score:</strong> Weighted score based on price (35%), discounts (25%), promotions (20%), food offers (15%), and amenities (5%)
+              </div>
+              <div className="legend-item">
+                <strong>Value Rating:</strong> Combined rating of price competitiveness and total savings offered
+              </div>
+              <div className="legend-item">
+                <strong>Base Price:</strong> Original ticket price before any discounts
+              </div>
+              <div className="legend-item">
+                <strong>Final Price:</strong> Actual price you'll pay after all applicable discounts
+              </div>
+            </div>
           </div>
         </div>
       )}

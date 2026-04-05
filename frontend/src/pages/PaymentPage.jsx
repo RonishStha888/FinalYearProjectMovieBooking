@@ -184,6 +184,24 @@ export default function PaymentPage({
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const userId = user?._id || user?.id;
 
+    // Mark seats as permanently booked
+    try {
+      const showtimeId = selectedShowtime?._id || `showtime_${selectedCinema?._id}_${selectedDate}_${selectedShowtime?.time}`;
+      await fetch('http://localhost:5000/api/seat-hold/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: userId || 'guest',
+          sessionId: `session_${Date.now()}`,
+          showtimeId,
+          seats: seatData.seats
+        })
+      });
+      console.log('✅ Seats permanently booked');
+    } catch (e) {
+      console.error('Seat booking error:', e);
+    }
+
     // Redeem points if selected
     if (userId && pointsToRedeem > 0) {
       try {
@@ -252,6 +270,24 @@ export default function PaymentPage({
         const bookingReference = `RTX${Date.now()}${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
         const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
         const userId = storedUser?._id || storedUser?.id;
+
+        // Mark seats as permanently booked
+        try {
+          const showtimeId = selectedShowtime?._id || `showtime_${selectedCinema?._id}_${selectedDate}_${selectedShowtime?.time}`;
+          await fetch('http://localhost:5000/api/seat-hold/complete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: userId || 'guest',
+              sessionId: `session_${Date.now()}`,
+              showtimeId,
+              seats: seatData.seats
+            })
+          });
+          console.log('✅ Seats permanently booked');
+        } catch (e) {
+          console.error('Seat booking error:', e);
+        }
 
         // Redeem points if selected
         if (userId && pointsToRedeem > 0) {
@@ -608,32 +644,55 @@ export default function PaymentPage({
             )}
 
             {/* Loyalty Points Redemption */}
-            {loyaltyPoints >= 20 && (
-              <div className="loyalty-redeem-section">
-                <div className="loyalty-redeem-header">
-                  <div>
-                    <h4>Redeem Loyalty Points</h4>
-                    <p>You have <strong>{loyaltyPoints}</strong> points (worth Rs. {loyaltyPoints * 5})</p>
-                  </div>
+            <div className="loyalty-redeem-section">
+              <div className="loyalty-redeem-header">
+                <div className="loyalty-redeem-icon">🎁</div>
+                <div>
+                  <h4>Use Loyalty Points</h4>
+                  <p>Your total loyalty points are <strong>{loyaltyPoints}</strong></p>
+                  <p style={{fontSize: '12px', color: '#888', marginTop: '4px'}}>Current total: Rs. {ticketTotal + fbTotal}</p>
                 </div>
-                <div className="loyalty-redeem-options">
-                  {[0, 20, 40, 60, 80, 100].filter(p => p === 0 || p <= loyaltyPoints).map(pts => (
-                    <button
-                      key={pts}
-                      className={`redeem-opt-btn ${pointsToRedeem === pts ? 'active' : ''}`}
-                      onClick={() => handleRedeemChange(pts)}
-                    >
-                      {pts === 0 ? 'None' : `${pts} pts\n-Rs.${pts * 5}`}
-                    </button>
-                  ))}
-                </div>
-                {loyaltyDiscount > 0 && (
-                  <div className="loyalty-discount-applied">
-                    Discount applied: Rs. {loyaltyDiscount} ({pointsToRedeem} points)
-                  </div>
-                )}
               </div>
-            )}
+              <div className="loyalty-input-group">
+                <label>Points to redeem (1 point = Rs. 5)</label>
+                <div className="loyalty-input-wrapper">
+                  <input
+                    type="number"
+                    min="0"
+                    max={Math.min(100, loyaltyPoints)}
+                    value={pointsToRedeem}
+                    onChange={(e) => handleRedeemChange(parseInt(e.target.value) || 0)}
+                    placeholder="Enter points (20-100)"
+                    className="loyalty-input"
+                  />
+                  <button
+                    className="apply-loyalty-btn"
+                    onClick={() => handleRedeemChange(pointsToRedeem)}
+                    disabled={pointsToRedeem < 20 || pointsToRedeem > Math.min(100, loyaltyPoints)}
+                  >
+                    Apply
+                  </button>
+                </div>
+                <p className="loyalty-hint">Minimum 20 points, Maximum 100 points</p>
+              </div>
+              <div className="loyalty-redeem-options">
+                <p style={{fontSize: '13px', color: '#aaa', marginBottom: '8px'}}>Quick select:</p>
+                {[20, 40, 60, 80, 100].filter(p => p <= loyaltyPoints).map(pts => (
+                  <button
+                    key={pts}
+                    className={`redeem-opt-btn ${pointsToRedeem === pts ? 'active' : ''}`}
+                    onClick={() => handleRedeemChange(pts)}
+                  >
+                    {pts} pts = Rs.{pts * 5} off
+                  </button>
+                ))}
+              </div>
+              {loyaltyDiscount > 0 && (
+                <div className="loyalty-discount-applied">
+                  ✓ Discount applied: Rs. {loyaltyDiscount} ({pointsToRedeem} points redeemed)
+                </div>
+              )}
+            </div>
 
             {/* Payment Button */}
             <button 
