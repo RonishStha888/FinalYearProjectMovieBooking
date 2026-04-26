@@ -841,3 +841,40 @@ html, body {
     padding: 16px 32px;
   }
 }
+
+/* Section Title Row with Compare Button */
+.section-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.compare-cinemas-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #D84040 0%, #8E1616 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(216, 64, 64, 0.3);
+}
+
+.compare-cinemas-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(216, 64, 64, 0.4);
+}
+
+.compare-cinemas-btn svg {
+  stroke: currentColor;
+}
+
+.compare-cinemas-btn:active {
+  transform: translateY(0);
+}

@@ -4,6 +4,7 @@ import SeatSelection from "./SeatSelection";
 import PaymentPage from "./PaymentPage";
 import TicketPage from "./TicketPage";
 import CinemaRecommendations from "../components/CinemaRecommendations";
+import CinemaComparison from "../components/CinemaComparison";
 import FBPromptModal from "../components/FBPromptModal";
 import FoodBeveragePage from "./FoodBeveragePage";
 
@@ -21,6 +22,7 @@ export default function BookingPage({ movie, onBack }) {
   const [showFBMenu, setShowFBMenu] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [showTicket, setShowTicket] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
   const [seatData, setSeatData] = useState(null);
   const [fbData, setFBData] = useState(null);
   const [bookingData, setBookingData] = useState(null);
@@ -327,13 +329,26 @@ export default function BookingPage({ movie, onBack }) {
 
           {/* Cinema Selection */}
           <div className="section-card">
-            <h2 className="section-title">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M7 7H17V17H7V7Z" stroke="currentColor" strokeWidth="2"/>
-                <path d="M3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7Z" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-              Choose Cinema & Time
-            </h2>
+            <div className="section-title-row">
+              <h2 className="section-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M7 7H17V17H7V7Z" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7Z" stroke="currentColor" strokeWidth="2"/>
+                </svg>
+                Choose Cinema & Time
+              </h2>
+              {selectedDate && showtimes.length > 1 && (
+                <button 
+                  className="compare-cinemas-btn"
+                  onClick={() => setShowComparison(true)}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H9M15 5H17C18.1046 5 19 5.89543 19 7V19C19 20.1046 18.1046 21 17 21H15M9 5V21M15 5V21M9 12H15" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                  Compare Cinemas
+                </button>
+              )}
+            </div>
 
             {/* Recommendation Component */}
             {selectedDate && showtimes.length > 0 && (
@@ -471,6 +486,18 @@ export default function BookingPage({ movie, onBack }) {
         onNo={handleFBNo}
         ticketCount={seatData?.selectedSeats?.length || 1}
       />
+
+      {/* Cinema Comparison Modal */}
+      {showComparison && (
+        <CinemaComparison
+          movie={movie}
+          selectedDate={selectedDate}
+          selectedLocation={selectedLocation}
+          showtimes={showtimes}
+          onClose={() => setShowComparison(false)}
+          onSelectShowtime={handleTimeSelect}
+        />
+      )}
     </div>
   );
 }
