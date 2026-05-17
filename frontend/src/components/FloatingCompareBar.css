@@ -1,0 +1,231 @@
+.floating-compare-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, rgba(26, 26, 26, 0.98) 0%, rgba(15, 15, 15, 0.98) 100%);
+  backdrop-filter: blur(30px);
+  border-top: 2px solid rgba(216, 64, 64, 0.5);
+  padding: 20px 60px;
+  z-index: 1000;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.compare-bar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+  max-width: 1920px;
+  margin: 0 auto;
+}
+
+.compare-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex: 1;
+  min-width: 0;
+}
+
+.compare-bar-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.compare-bar-title svg {
+  stroke: #D84040;
+  flex-shrink: 0;
+}
+
+.compare-bar-chips {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.cinema-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(216, 64, 64, 0.15);
+  border: 1px solid rgba(216, 64, 64, 0.3);
+  padding: 8px 12px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.cinema-chip:hover {
+  background: rgba(216, 64, 64, 0.25);
+  border-color: rgba(216, 64, 64, 0.5);
+}
+
+.chip-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.chip-remove {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.chip-remove svg {
+  stroke: rgba(255, 255, 255, 0.6);
+}
+
+.chip-remove:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.chip-remove:hover svg {
+  stroke: #fff;
+}
+
+.compare-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.clear-all-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.clear-all-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.compare-now-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #D84040 0%, #c73636 100%);
+  border: none;
+  color: white;
+  padding: 14px 32px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(216, 64, 64, 0.4);
+  white-space: nowrap;
+}
+
+.compare-now-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(216, 64, 64, 0.6);
+  background: linear-gradient(135deg, #e84545 0%, #d63838 100%);
+}
+
+.compare-now-btn:active {
+  transform: translateY(0);
+}
+
+.compare-now-btn svg {
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .floating-compare-bar {
+    padding: 16px 40px;
+  }
+  
+  .compare-bar-content {
+    gap: 24px;
+  }
+}
+
+@media (max-width: 968px) {
+  .floating-compare-bar {
+    padding: 16px 20px;
+  }
+  
+  .compare-bar-content {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .compare-bar-left {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .compare-bar-chips {
+    width: 100%;
+  }
+  
+  .compare-bar-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .clear-all-btn,
+  .compare-now-btn {
+    flex: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .chip-name {
+    max-width: 120px;
+  }
+  
+  .compare-bar-right {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .clear-all-btn,
+  .compare-now-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

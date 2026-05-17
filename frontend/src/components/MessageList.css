@@ -1,0 +1,36 @@
+.message-list {
+  flex: 1;
+  overflow-y: auto;
+  background: white;
+  padding: 20px;
+}
+
+.messages-container {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom scrollbar */
+.message-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.message-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.message-list::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  border-radius: 3px;
+}
+
+.message-list::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .message-list {
+    padding: 16px;
+  }
+}

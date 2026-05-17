@@ -1,0 +1,212 @@
+.comparison-table-container {
+  width: 100%;
+  margin-top: 24px;
+}
+
+.comparison-table-scroll {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.comparison-table thead {
+  background: rgba(255, 255, 255, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.comparison-table th {
+  padding: 20px 16px;
+  text-align: left;
+  font-weight: 700;
+  color: #fff;
+  font-size: 15px;
+  border-bottom: 2px solid rgba(216, 64, 64, 0.3);
+  white-space: nowrap;
+}
+
+.comparison-table th.attribute-column {
+  min-width: 150px;
+  position: sticky;
+  left: 0;
+  background: rgba(255, 255, 255, 0.05);
+  z-index: 11;
+}
+
+.comparison-table th.best-pick-column {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.1));
+  border-bottom-color: #FFD700;
+}
+
+.best-pick-indicator {
+  display: block;
+  font-size: 12px;
+  color: #FFD700;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.comparison-table td {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  vertical-align: top;
+}
+
+.comparison-table td.attribute-label {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  position: sticky;
+  left: 0;
+  background: rgba(255, 255, 255, 0.02);
+  z-index: 9;
+}
+
+.comparison-table td.best-pick-column {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.08), rgba(255, 165, 0, 0.05));
+}
+
+.comparison-table tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.comparison-table tbody tr:hover td.best-pick-column {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.1));
+}
+
+.comparison-table tbody tr:hover td.attribute-label {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.score-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.score-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #4CAF50;
+}
+
+.price-display {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.discounted-price {
+  font-size: 16px;
+  font-weight: 700;
+  color: #4CAF50;
+}
+
+.original-price {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: line-through;
+}
+
+.current-price {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.rating-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.formats-list,
+.amenities-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.format-tag {
+  display: inline-block;
+  background: rgba(33, 150, 243, 0.2);
+  color: #64B5F6;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+.amenity-tag {
+  display: inline-block;
+  background: rgba(156, 39, 176, 0.2);
+  color: #BA68C8;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid rgba(156, 39, 176, 0.3);
+}
+
+.more-count {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+.offers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.offer-item {
+  font-size: 13px;
+  color: #4CAF50;
+  padding: 4px 0;
+}
+
+.no-data {
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .comparison-table th,
+  .comparison-table td {
+    padding: 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 968px) {
+  .comparison-table-scroll {
+    border-radius: 8px;
+  }
+  
+  .comparison-table th,
+  .comparison-table td {
+    padding: 10px;
+    font-size: 12px;
+  }
+  
+  .score-value {
+    font-size: 16px;
+  }
+  
+  .discounted-price,
+  .current-price {
+    font-size: 14px;
+  }
+}

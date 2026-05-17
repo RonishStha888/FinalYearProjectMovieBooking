@@ -1,0 +1,74 @@
+.cinema-comparison-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(216, 64, 64, 0.15), rgba(216, 64, 64, 0.1));
+  border: 2px solid rgba(216, 64, 64, 0.3);
+  color: #D84040;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.cinema-comparison-button:hover {
+  background: linear-gradient(135deg, rgba(216, 64, 64, 0.25), rgba(216, 64, 64, 0.15));
+  border-color: rgba(216, 64, 64, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(216, 64, 64, 0.3);
+}
+
+.cinema-comparison-button:active {
+  transform: translateY(0);
+}
+
+.cinema-comparison-button svg {
+  stroke: currentColor;
+  flex-shrink: 0;
+}
+
+.count-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  background: #D84040;
+  color: white;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 8px;
+  animation: pop 0.3s ease-out;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .cinema-comparison-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  
+  .cinema-comparison-button span:first-of-type {
+    display: none;
+  }
+  
+  .cinema-comparison-button::after {
+    content: 'Compare';
+  }
+}

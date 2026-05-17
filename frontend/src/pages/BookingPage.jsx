@@ -3,10 +3,12 @@ import "./BookingPage.css";
 import SeatSelection from "./SeatSelection";
 import PaymentPage from "./PaymentPage";
 import TicketPage from "./TicketPage";
-import CinemaRecommendations from "../components/CinemaRecommendations";
-import CinemaComparison from "../components/CinemaComparison";
 import FBPromptModal from "../components/FBPromptModal";
 import FoodBeveragePage from "./FoodBeveragePage";
+import CompareCheckbox from "../components/CompareCheckbox";
+import FloatingCompareBar from "../components/FloatingCompareBar";
+import CinemaComparisonButton from "../components/CinemaComparisonButton";
+import ComparisonModal from "../components/ComparisonModal";
 
 export default function BookingPage({ movie, onBack }) {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -22,11 +24,15 @@ export default function BookingPage({ movie, onBack }) {
   const [showFBMenu, setShowFBMenu] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [showTicket, setShowTicket] = useState(false);
-  const [showComparison, setShowComparison] = useState(false);
   const [seatData, setSeatData] = useState(null);
   const [fbData, setFBData] = useState(null);
   const [bookingData, setBookingData] = useState(null);
   const [holdExpiresAt, setHoldExpiresAt] = useState(null); // Track when hold expires
+  
+  // Comparison feature state
+  const [selectedCinemasForComparison, setSelectedCinemasForComparison] = useState([]);
+  const [showComparisonModal, setShowComparisonModal] = useState(false);
+  const [comparisonResults, setComparisonResults] = useState(null);
 
   // Generate dates for the next 14 days
   const generateDates = () => {
@@ -168,6 +174,33 @@ export default function BookingPage({ movie, onBack }) {
     
     // Navigate back to home
     onBack();
+  };
+  
+  // Comparison handlers
+  const handleCompareToggle = (cinemaId) => {
+    setSelectedCinemasForComparison(prev => {
+      if (prev.includes(cinemaId)) {
+        return prev.filter(id => id !== cinemaId);
+      } else {
+        return [...prev, cinemaId];
+      }
+    });
+  };
+  
+  const handleRemoveFromComparison = (cinemaId) => {
+    setSelectedCinemasForComparison(prev => prev.filter(id => id !== cinemaId));
+  };
+  
+  const handleClearComparison = () => {
+    setSelectedCinemasForComparison([]);
+    setShowComparisonModal(false);
+    setComparisonResults(null);
+  };
+  
+  const handleOpenComparisonModal = () => {
+    if (selectedCinemasForComparison.length >= 2) {
+      setShowComparisonModal(true);
+    }
   };
 
   // If ticket is being shown, show ticket page
@@ -329,7 +362,7 @@ export default function BookingPage({ movie, onBack }) {
 
           {/* Cinema Selection */}
           <div className="section-card">
-            <div className="section-title-row">
+            <div className="section-header-with-button">
               <h2 className="section-title">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <path d="M7 7H17V17H7V7Z" stroke="currentColor" strokeWidth="2"/>
@@ -337,30 +370,11 @@ export default function BookingPage({ movie, onBack }) {
                 </svg>
                 Choose Cinema & Time
               </h2>
-              {selectedDate && showtimes.length > 1 && (
-                <button 
-                  className="compare-cinemas-btn"
-                  onClick={() => setShowComparison(true)}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path d="M9 5H7C5.89543 5 5 5.89543 5 7V19C5 20.1046 5.89543 21 7 21H9M15 5H17C18.1046 5 19 5.89543 19 7V19C19 20.1046 18.1046 21 17 21H15M9 5V21M15 5V21M9 12H15" stroke="currentColor" strokeWidth="2"/>
-                  </svg>
-                  Compare Cinemas
-                </button>
-              )}
-            </div>
-
-            {/* Recommendation Component */}
-            {selectedDate && showtimes.length > 0 && (
-              <CinemaRecommendations
-                cinemas={showtimes}
-                selectedDate={selectedDate}
-                user={null}
-                onCinemaSelect={(cinema) => {
-                  console.log('Recommended cinema:', cinema);
-                }}
+              <CinemaComparisonButton
+                selectedCount={selectedCinemasForComparison.length}
+                onClick={handleOpenComparisonModal}
               />
-            )}
+            </div>
             
             <div className="cinema-list">
               {loading ? (
@@ -374,7 +388,14 @@ export default function BookingPage({ movie, onBack }) {
                   <div key={cinemaData.cinema._id} className="cinema-card">
                     <div className="cinema-header">
                       <div className="cinema-info">
-                        <h3 className="cinema-name">{cinemaData.cinema.name}</h3>
+                        <div className="cinema-name-row">
+                          <h3 className="cinema-name">{cinemaData.cinema.name}</h3>
+                          <CompareCheckbox
+                            cinemaId={cinemaData.cinema._id}
+                            isSelected={selectedCinemasForComparison.includes(cinemaData.cinema._id)}
+                            onToggle={handleCompareToggle}
+                          />
+                        </div>
                         <div className="cinema-meta">
                           <span className="location">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -486,18 +507,23 @@ export default function BookingPage({ movie, onBack }) {
         onNo={handleFBNo}
         ticketCount={seatData?.selectedSeats?.length || 1}
       />
-
-      {/* Cinema Comparison Modal */}
-      {showComparison && (
-        <CinemaComparison
-          movie={movie}
-          selectedDate={selectedDate}
-          selectedLocation={selectedLocation}
-          showtimes={showtimes}
-          onClose={() => setShowComparison(false)}
-          onSelectShowtime={handleTimeSelect}
-        />
-      )}
+      
+      {/* Floating Compare Bar */}
+      <FloatingCompareBar
+        selectedCinemas={showtimes
+          .filter(st => selectedCinemasForComparison.includes(st.cinema._id))
+          .map(st => st.cinema)}
+        onCompare={handleOpenComparisonModal}
+        onClear={handleClearComparison}
+        onRemove={handleRemoveFromComparison}
+      />
+      
+      {/* Comparison Modal */}
+      <ComparisonModal
+        cinemas={showtimes.filter(st => selectedCinemasForComparison.includes(st.cinema._id))}
+        isOpen={showComparisonModal}
+        onClose={() => setShowComparisonModal(false)}
+      />
     </div>
   );
 }

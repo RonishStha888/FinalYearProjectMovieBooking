@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
+import ChatbotWidget from './components/ChatbotWidget';
 import "./App.css";
 
 const GOOGLE_CLIENT_ID = "482064319034-pu4frhppprsrmeh481o6620lg8bm3lor.apps.googleusercontent.com";
@@ -221,6 +222,9 @@ export default function App() {
           {/* Main App Routes */}
           <Route path="/" element={<AppContent />} />
         </Routes>
+        
+        {/* Chatbot Widget - Available on all pages */}
+        <ChatbotWidget />
       </Router>
     </GoogleOAuthProvider>
   );
