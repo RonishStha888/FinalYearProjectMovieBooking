@@ -153,6 +153,37 @@ The Live Chat/FAQ Chatbot Widget is a floating customer support interface that p
 // Renders: Animated three-dot indicator
 ```
 
+### Button Specifications
+
+#### Header Buttons (Close & Expand)
+- **Size**: 32px × 32px minimum touch target
+- **Background**: rgba(255, 255, 255, 0.1) with hover state rgba(255, 255, 255, 0.2)
+- **Icon Color**: White (#FFFFFF)
+- **Icon Size**: 18px × 18px
+- **Border Radius**: 6px
+- **Spacing**: 8px gap between buttons
+- **Hover Effect**: Background lightens, scale(0.95) on active
+- **Close Icon**: X symbol (two crossing lines)
+- **Expand Icon**: Maximize/fullscreen symbol (diagonal arrows)
+
+#### Send Button
+- **Size**: 36px × 36px circular button
+- **Background**: Linear gradient (135deg, #D84040 0%, #ff5252 100%)
+- **Icon Color**: White (#FFFFFF)
+- **Icon**: Paper plane/send arrow
+- **Icon Size**: 18px × 18px
+- **Hover Effect**: scale(1.05) with shadow (0 4px 12px rgba(216, 64, 64, 0.3))
+- **Active Effect**: scale(0.95)
+- **Disabled State**: opacity 0.5, cursor not-allowed
+
+#### Input Icon Buttons (Attach & Emoji)
+- **Size**: 36px × 36px circular buttons
+- **Background**: Transparent, hover background #f0f0f0
+- **Icon Color**: #666 (default), #333 (hover)
+- **Icon Size**: 20px × 20px
+- **Hover Effect**: Background appears, color darkens
+- **Active Effect**: scale(0.95)
+
 ### Backend API Endpoints
 
 #### POST /api/chatbot
@@ -396,6 +427,10 @@ const defaultFAQs = [
 ### Property 20: Widget presence across pages
 *For any* user-facing page in the application, the chatbot widget should be rendered and functional
 **Validates: Requirements 8.2**
+
+### Property 21: Button visibility and interactivity
+*For any* state where the chat window is open, all control buttons (close, expand, send) should be visible and respond to user interactions with appropriate visual feedback
+**Validates: Requirements 9.1, 9.2, 9.3, 9.4, 9.5, 9.6**
 
 ## Error Handling
 

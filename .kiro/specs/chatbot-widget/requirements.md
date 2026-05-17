@@ -126,3 +126,17 @@ This document specifies the requirements for a Live Chat/FAQ Chatbot Widget that
 3. WHEN the chatbot widget is displayed THEN the system SHALL use z-index positioning to stay above other page content
 4. WHEN the chatbot widget is styled THEN the system SHALL use the existing color palette (purple gradient header, teal-green button, purple user bubbles)
 5. WHEN the chatbot widget is implemented THEN the system SHALL not interfere with existing page functionality or navigation
+
+### Requirement 9
+
+**User Story:** As a user, I want to clearly see and interact with all chatbot control buttons, so that I can easily close, expand, or send messages without confusion.
+
+#### Acceptance Criteria
+
+1. WHEN the chat header is displayed THEN the system SHALL show visible close and expand buttons with clear icons
+2. WHEN the close button is displayed THEN the system SHALL render an X icon with sufficient contrast against the header background
+3. WHEN the expand button is displayed THEN the system SHALL render a maximize/fullscreen icon with sufficient contrast
+4. WHEN the send button is displayed THEN the system SHALL render a paper plane icon with the primary brand color
+5. WHEN any button is hovered THEN the system SHALL provide visual feedback through color change or scale transformation
+6. WHEN the input area is displayed THEN the system SHALL show the send button prominently on the right side
+7. WHEN buttons are rendered THEN the system SHALL ensure minimum touch target size of 32px for mobile usability
