@@ -25,11 +25,8 @@ const ChatHeader = ({ onClose, onExpand }) => {
           title="Expand"
           type="button"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 3 21 3 21 9"></polyline>
-            <polyline points="9 21 3 21 3 15"></polyline>
-            <line x1="21" y1="3" x2="14" y2="10"></line>
-            <line x1="3" y1="21" x2="10" y2="14"></line>
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <path d="M21 3h-6v2h3.59l-4.3 4.29 1.42 1.42L20 6.41V10h2V3zM3 21h6v-2H5.41l4.3-4.29-1.42-1.42L4 17.59V14H2v7z"/>
           </svg>
         </button>
         
@@ -40,9 +37,8 @@ const ChatHeader = ({ onClose, onExpand }) => {
           title="Close"
           type="button"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
           </svg>
         </button>
       </div>

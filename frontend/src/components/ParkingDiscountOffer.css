@@ -1,0 +1,217 @@
+/* Parking Discount Offer Card */
+.parking-discount-offer {
+  width: 100%;
+  margin: 32px 0;
+  animation: parkingSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes parkingSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.parking-offer-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 32px;
+  text-align: center;
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.parking-offer-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #D84040, #4CAF50, #2196F3, #D84040);
+  background-size: 200% 100%;
+  animation: parkingGradient 3s linear infinite;
+}
+
+@keyframes parkingGradient {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.parking-offer-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  animation: parkingBounce 2s ease-in-out infinite;
+}
+
+@keyframes parkingBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.parking-offer-heading {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  color: #ffffff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.parking-offer-subtext {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 28px 0;
+  font-weight: 500;
+}
+
+.parking-offer-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(216, 64, 64, 0.15);
+  border: 1px solid rgba(216, 64, 64, 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  color: #ff6b6b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.parking-offer-error svg {
+  flex-shrink: 0;
+  stroke: #ff6b6b;
+}
+
+.parking-offer-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.parking-offer-btn {
+  flex: 1;
+  max-width: 240px;
+  padding: 16px 32px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  letter-spacing: 0.3px;
+}
+
+.parking-offer-btn-primary {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  box-shadow: 0 8px 24px rgba(76, 175, 80, 0.4);
+}
+
+.parking-offer-btn-primary:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(76, 175, 80, 0.5);
+  background: linear-gradient(135deg, #5cb860 0%, #4caf50 100%);
+}
+
+.parking-offer-btn-primary:active:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.parking-offer-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.parking-offer-btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+.parking-offer-btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.parking-offer-btn-secondary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.parking-offer-btn-secondary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.parking-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: parkingSpin 0.8s linear infinite;
+}
+
+@keyframes parkingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .parking-discount-offer {
+    margin: 24px 0;
+  }
+
+  .parking-offer-card {
+    padding: 24px 20px;
+  }
+
+  .parking-offer-icon {
+    font-size: 40px;
+  }
+
+  .parking-offer-heading {
+    font-size: 20px;
+  }
+
+  .parking-offer-subtext {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .parking-offer-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .parking-offer-btn {
+    max-width: 100%;
+    padding: 14px 24px;
+    font-size: 14px;
+  }
+}

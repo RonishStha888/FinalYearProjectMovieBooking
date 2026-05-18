@@ -11,6 +11,7 @@ import paymentRoutes from './routes/payment.js';
 import loyaltyRoutes from './routes/loyalty.js';
 import seatHoldRoutes from './routes/seatHold.js';
 import chatbotRoutes from './routes/chatbot.js';
+import parkingRoutes from './routes/parking.js';
 
 dotenv.config();
 
@@ -36,6 +37,7 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/loyalty', loyaltyRoutes);
 app.use('/api/seat-hold', seatHoldRoutes);
 app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/parking', parkingRoutes);
 
 // Test route
 app.get('/', (req, res) => {

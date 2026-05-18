@@ -1,14 +1,27 @@
 import { useState, useEffect } from "react";
 import "./TicketPage.css";
+import ParkingDiscountOffer from "../components/ParkingDiscountOffer";
+import ParkingCoupon from "../components/ParkingCoupon";
 
 export default function TicketPage({ bookingData, onBackToHome }) {
   const [showDownload, setShowDownload] = useState(false);
+  const [parkingCouponStatus, setParkingCouponStatus] = useState('offered'); // 'offered', 'claimed', 'dismissed'
+  const [claimedCoupon, setClaimedCoupon] = useState(null);
 
   useEffect(() => {
     // Show download option after a short delay
     const timer = setTimeout(() => setShowDownload(true), 2000);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleCouponClaim = (couponData) => {
+    setClaimedCoupon(couponData);
+    setParkingCouponStatus('claimed');
+  };
+
+  const handleCouponDismiss = () => {
+    setParkingCouponStatus('dismissed');
+  };
 
   const handleDownloadTicket = () => {
     // Create professional PDF-style ticket content
@@ -396,6 +409,24 @@ Thank you for choosing RTX Cinema!
               </div>
             </div>
           </div>
+
+          {/* Parking Discount Offer/Coupon */}
+          {parkingCouponStatus === 'offered' && (
+            <ParkingDiscountOffer
+              bookingId={bookingData.bookingId}
+              userId={bookingData.userId || bookingData.user?._id}
+              onClaim={handleCouponClaim}
+              onDismiss={handleCouponDismiss}
+            />
+          )}
+
+          {parkingCouponStatus === 'claimed' && claimedCoupon && (
+            <ParkingCoupon
+              code={claimedCoupon.code}
+              discountPercent={claimedCoupon.discountPercent}
+              expiresAt={claimedCoupon.expiresAt}
+            />
+          )}
 
           {/* Action Buttons */}
           {showDownload && (

@@ -1,0 +1,259 @@
+/* Parking Coupon Card */
+.parking-coupon {
+  width: 100%;
+  margin: 32px 0;
+  animation: couponSlideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes couponSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.parking-coupon-card {
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  color: #1a1a1a;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 
+    0 25px 80px rgba(0, 0, 0, 0.4),
+    0 12px 48px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  position: relative;
+}
+
+.parking-coupon-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #4CAF50, #66BB6A, #81C784, #4CAF50);
+  background-size: 200% 100%;
+  animation: couponGradient 3s linear infinite;
+}
+
+@keyframes couponGradient {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.parking-coupon-header {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  padding: 28px 32px;
+  text-align: center;
+  position: relative;
+}
+
+.parking-coupon-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.parking-coupon-badge svg {
+  fill: white;
+}
+
+.parking-coupon-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.parking-coupon-subtitle {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.95;
+  font-weight: 500;
+}
+
+.parking-coupon-body {
+  padding: 36px 32px;
+  background: #ffffff;
+}
+
+.parking-coupon-qr {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.qr-code-wrapper {
+  background: white;
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 2px solid #f0f0f0;
+}
+
+.parking-coupon-code-section {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.parking-coupon-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.parking-coupon-code {
+  font-size: 28px;
+  font-weight: 800;
+  color: #4CAF50;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  padding: 16px 24px;
+  background: rgba(76, 175, 80, 0.08);
+  border-radius: 12px;
+  border: 2px dashed rgba(76, 175, 80, 0.3);
+}
+
+.parking-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(76, 175, 80, 0.3);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.parking-copy-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(76, 175, 80, 0.4);
+  background: linear-gradient(135deg, #5cb860 0%, #4caf50 100%);
+}
+
+.parking-copy-btn:active {
+  transform: translateY(0);
+}
+
+.parking-copy-btn svg {
+  stroke: white;
+}
+
+.parking-coupon-validity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 152, 0, 0.1);
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #FF9800;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.parking-coupon-validity svg {
+  flex-shrink: 0;
+  stroke: #FF9800;
+}
+
+.parking-coupon-hint {
+  text-align: center;
+  font-size: 13px;
+  color: #666666;
+  font-weight: 500;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 10px;
+}
+
+/* Success Animation for Copy */
+@keyframes successPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.parking-copy-btn:has(svg:first-child) {
+  animation: successPulse 0.4s ease-in-out;
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .parking-coupon {
+    margin: 24px 0;
+  }
+
+  .parking-coupon-header {
+    padding: 24px 20px;
+  }
+
+  .parking-coupon-title {
+    font-size: 20px;
+  }
+
+  .parking-coupon-subtitle {
+    font-size: 13px;
+  }
+
+  .parking-coupon-body {
+    padding: 28px 20px;
+  }
+
+  .qr-code-wrapper {
+    padding: 12px;
+  }
+
+  .parking-coupon-code {
+    font-size: 22px;
+    padding: 12px 16px;
+    letter-spacing: 1px;
+  }
+
+  .parking-copy-btn {
+    padding: 10px 24px;
+    font-size: 13px;
+  }
+
+  .parking-coupon-validity {
+    font-size: 12px;
+    padding: 10px 12px;
+  }
+
+  .parking-coupon-hint {
+    font-size: 12px;
+  }
+}
