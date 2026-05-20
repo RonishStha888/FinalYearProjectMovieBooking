@@ -55,7 +55,7 @@ export default function HomePage({ user, onLogout }) {
     };
   }, [showProfileDropdown]);
 
-  // Auto-slide hero carousel every 5 seconds
+  // Auto-slide hero carousel every 3 seconds
   useEffect(() => {
     if (featuredMovies.length <= 1) return; // Don't auto-slide if only one movie
 
@@ -65,7 +65,7 @@ export default function HomePage({ user, onLogout }) {
         setFeaturedMovie(featuredMovies[newIndex]);
         return newIndex;
       });
-    }, 5000); // 5 seconds
+    }, 3000); // 3 seconds
 
     return () => clearInterval(interval);
   }, [featuredMovies]);
