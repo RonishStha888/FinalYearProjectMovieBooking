@@ -1,13 +1,13 @@
 .chat-window-overlay {
   position: fixed;
   bottom: 24px;
-  right: 24px;
+  left: 24px;
   z-index: 9999;
 }
 
 .chat-window {
-  width: 380px;
-  height: 550px;
+  width: 420px;
+  height: 600px;
   background: white;
   border-radius: 16px;
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -17,7 +17,7 @@
   border: 1px solid rgba(0, 0, 0, 0.08);
   
   animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-origin: bottom right;
+  transform-origin: bottom left;
 }
 
 .chat-window.open {
@@ -175,8 +175,8 @@
 @media (max-width: 768px) {
   .chat-window-overlay {
     bottom: 0;
-    right: 0;
     left: 0;
+    right: 0;
     padding: 0 16px 16px 16px;
   }
   
@@ -191,8 +191,8 @@
   .chat-window-overlay {
     padding: 0;
     bottom: 0;
-    right: 0;
     left: 0;
+    right: 0;
   }
   
   .chat-window {

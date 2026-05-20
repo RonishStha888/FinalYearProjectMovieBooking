@@ -30,6 +30,7 @@ const ChatHeader = ({ onClose, onExpand, onToggleQuickActions, showQuickActions 
             <circle cx="12" cy="5" r="2"/>
             <circle cx="12" cy="19" r="2"/>
           </svg>
+          <span className="button-label">Quick</span>
         </button>
         
         <button 
@@ -42,6 +43,7 @@ const ChatHeader = ({ onClose, onExpand, onToggleQuickActions, showQuickActions 
           <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
             <path d="M21 3h-6v2h3.59l-4.3 4.29 1.42 1.42L20 6.41V10h2V3zM3 21h6v-2H5.41l4.3-4.29-1.42-1.42L4 17.59V14H2v7z"/>
           </svg>
+          <span className="button-label">Expand</span>
         </button>
         
         <button 
@@ -54,6 +56,7 @@ const ChatHeader = ({ onClose, onExpand, onToggleQuickActions, showQuickActions 
           <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
             <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
           </svg>
+          <span className="button-label">Close</span>
         </button>
       </div>
     </div>
