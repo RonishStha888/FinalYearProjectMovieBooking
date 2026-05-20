@@ -1,13 +1,19 @@
 .message-list {
   flex: 1;
   overflow-y: auto;
-  background: white;
+  background: #f5f5f5;
   padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.message-list.with-quick-actions {
+  /* Adjust if needed when quick actions are visible */
 }
 
 .messages-container {
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 
 /* Custom scrollbar */
@@ -16,16 +22,16 @@
 }
 
 .message-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
 
 .message-list::-webkit-scrollbar-thumb {
-  background: #c0c0c0;
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 3px;
 }
 
 .message-list::-webkit-scrollbar-thumb:hover {
-  background: #a0a0a0;
+  background: rgba(0, 0, 0, 0.3);
 }
 
 /* Mobile responsive */

@@ -39,7 +39,12 @@ const ChatWindow = ({ isOpen, messages, onClose, onSendMessage, isTyping }) => {
   return (
     <div className="chat-window-overlay">
       <div className={`chat-window ${isOpen ? 'open' : ''}`}>
-        <ChatHeader onClose={onClose} onExpand={handleExpand} />
+        <ChatHeader 
+          onClose={onClose} 
+          onExpand={handleExpand}
+          onToggleQuickActions={toggleQuickActions}
+          showQuickActions={showQuickActions}
+        />
         
         {/* Quick Actions Panel */}
         <div className={`chat-quick-actions ${showQuickActions ? 'visible' : ''}`}>
@@ -68,22 +73,8 @@ const ChatWindow = ({ isOpen, messages, onClose, onSendMessage, isTyping }) => {
           </div>
         </div>
 
-        <MessageList messages={messages} isTyping={isTyping} />
+        <MessageList messages={messages} isTyping={isTyping} showQuickActions={showQuickActions} />
         <ChatInput onSendMessage={onSendMessage} />
-
-        {/* FAB Toggle Button for Quick Actions */}
-        <button
-          className={`chat-fab-toggle ${showQuickActions ? 'active' : ''}`}
-          onClick={toggleQuickActions}
-          aria-label="Toggle quick actions"
-          title="Quick Questions"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="2" fill="currentColor"/>
-            <circle cx="12" cy="5" r="2" fill="currentColor"/>
-            <circle cx="12" cy="19" r="2" fill="currentColor"/>
-          </svg>
-        </button>
       </div>
     </div>
   );

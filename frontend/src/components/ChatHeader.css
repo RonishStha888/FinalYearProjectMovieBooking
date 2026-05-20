@@ -106,6 +106,15 @@
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
 }
 
+.quick-actions-toggle.active {
+  background: rgba(255, 255, 255, 0.5);
+  transform: rotate(90deg);
+}
+
+.quick-actions-toggle.active:hover {
+  transform: rotate(90deg) scale(1.1);
+}
+
 /* Pulse animation for online dot */
 @keyframes pulse {
   0%, 100% {

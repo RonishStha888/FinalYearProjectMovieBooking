@@ -1,7 +1,7 @@
 import React from 'react';
 import './ChatHeader.css';
 
-const ChatHeader = ({ onClose, onExpand }) => {
+const ChatHeader = ({ onClose, onExpand, onToggleQuickActions, showQuickActions }) => {
   return (
     <div className="chat-header">
       <div className="header-left">
@@ -18,6 +18,20 @@ const ChatHeader = ({ onClose, onExpand }) => {
       </div>
       
       <div className="header-right">
+        <button 
+          className={`header-button quick-actions-toggle ${showQuickActions ? 'active' : ''}`}
+          onClick={onToggleQuickActions}
+          aria-label="Toggle quick actions"
+          title="Quick Questions"
+          type="button"
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none">
+            <circle cx="12" cy="12" r="2"/>
+            <circle cx="12" cy="5" r="2"/>
+            <circle cx="12" cy="19" r="2"/>
+          </svg>
+        </button>
+        
         <button 
           className="header-button expand-button" 
           onClick={onExpand}

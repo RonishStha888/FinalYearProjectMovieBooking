@@ -3,7 +3,7 @@ import MessageBubble from './MessageBubble';
 import TypingIndicator from './TypingIndicator';
 import './MessageList.css';
 
-const MessageList = ({ messages, isTyping }) => {
+const MessageList = ({ messages, isTyping, showQuickActions }) => {
   const messagesEndRef = useRef(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -14,7 +14,7 @@ const MessageList = ({ messages, isTyping }) => {
   }, [messages, isTyping]);
 
   return (
-    <div className="message-list">
+    <div className={`message-list ${showQuickActions ? 'with-quick-actions' : ''}`}>
       <div className="messages-container">
         {messages.map((message) => (
           <MessageBubble
