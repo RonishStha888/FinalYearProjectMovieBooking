@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import QRCode from "qrcode";
 import "./TicketPage.css";
 import ParkingDiscountOffer from "../components/ParkingDiscountOffer";
 import ParkingCoupon from "../components/ParkingCoupon";
@@ -7,12 +8,42 @@ export default function TicketPage({ bookingData, onBackToHome }) {
   const [showDownload, setShowDownload] = useState(false);
   const [parkingCouponStatus, setParkingCouponStatus] = useState('offered'); // 'offered', 'claimed', 'dismissed'
   const [claimedCoupon, setClaimedCoupon] = useState(null);
+  const qrCanvasRef = useRef(null);
 
   useEffect(() => {
     // Show download option after a short delay
     const timer = setTimeout(() => setShowDownload(true), 2000);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    // Generate QR Code
+    if (qrCanvasRef.current) {
+      const qrData = JSON.stringify({
+        bookingId: bookingData.bookingId,
+        transactionId: bookingData.transactionId,
+        movie: bookingData.movie.title,
+        cinema: bookingData.cinema.name,
+        date: bookingData.date,
+        time: bookingData.showtime.time,
+        seats: bookingData.seats,
+        total: bookingData.total,
+        verificationCode: bookingData.bookingId.slice(-6).toUpperCase()
+      });
+
+      QRCode.toCanvas(qrCanvasRef.current, qrData, {
+        width: 120,
+        margin: 1,
+        color: {
+          dark: '#1a1a1a',
+          light: '#ffffff'
+        },
+        errorCorrectionLevel: 'H'
+      }, (error) => {
+        if (error) console.error('QR Code generation error:', error);
+      });
+    }
+  }, [bookingData]);
 
   const handleCouponClaim = (couponData) => {
     setClaimedCoupon(couponData);
@@ -366,16 +397,13 @@ Thank you for choosing RTX Cinema!
 
               <div className="qr-section">
                 <div className="qr-code">
-                  <div className="qr-placeholder">
-                    <div className="qr-pattern"></div>
-                    <p>QR Code</p>
-                  </div>
+                  <canvas ref={qrCanvasRef} className="qr-canvas"></canvas>
                 </div>
                 <div className="qr-info">
-                  <p>Show this QR code at the cinema entrance</p>
+                  <p className="qr-title">Scan at Cinema Entrance</p>
                   <small>Booking Time: {new Date(bookingData.bookingTime).toLocaleString()}</small>
                   <div className="verification-code">
-                    <span>Verification: {bookingData.bookingId.slice(-6).toUpperCase()}</span>
+                    <span>Code: {bookingData.bookingId.slice(-6).toUpperCase()}</span>
                   </div>
                 </div>
               </div>

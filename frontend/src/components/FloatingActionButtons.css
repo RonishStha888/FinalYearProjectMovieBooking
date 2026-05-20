@@ -1,0 +1,354 @@
+/* ===== Floating Action Buttons (FAB) Styles ===== */
+
+.fab-container {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 999;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+.fab-container.hidden {
+  transform: translateY(120px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.fab-container.visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Base FAB Button */
+.fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.fab::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.fab:hover::before {
+  width: 100%;
+  height: 100%;
+}
+
+.fab:active {
+  transform: scale(0.95);
+}
+
+.fab svg {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
+
+/* Main FAB */
+.fab-main {
+  background: linear-gradient(135deg, #D84040 0%, #B83030 100%);
+  color: white;
+  position: relative;
+  z-index: 3;
+}
+
+.fab-main:hover {
+  box-shadow: 0 6px 20px rgba(216, 64, 64, 0.4), 0 3px 10px rgba(216, 64, 64, 0.3);
+  transform: scale(1.05);
+}
+
+.fab-main .fab-icon {
+  position: absolute;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fab-main .fab-icon-plus {
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+.fab-main .fab-icon-close {
+  opacity: 0;
+  transform: rotate(90deg);
+}
+
+.fab-main.expanded .fab-icon-plus {
+  opacity: 0;
+  transform: rotate(90deg);
+}
+
+.fab-main.expanded .fab-icon-close {
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+/* Scroll to Top FAB */
+.fab-scroll-top {
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+  color: white;
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  animation: fadeInUp 0.3s ease;
+}
+
+.fab-scroll-top:hover {
+  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4), 0 3px 10px rgba(33, 150, 243, 0.3);
+  transform: translateY(-2px);
+}
+
+/* FAB Menu */
+.fab-menu {
+  position: absolute;
+  bottom: 72px;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  pointer-events: none;
+}
+
+.fab-menu.expanded {
+  pointer-events: all;
+}
+
+/* Secondary FABs */
+.fab-secondary {
+  width: 48px;
+  height: 48px;
+  opacity: 0;
+  transform: translateY(20px) scale(0.8);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-right: 16px;
+  width: auto;
+  border-radius: 24px;
+  white-space: nowrap;
+}
+
+.fab-menu.expanded .fab-secondary {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.fab-menu.expanded .fab-secondary:nth-child(1) {
+  transition-delay: 0.05s;
+}
+
+.fab-menu.expanded .fab-secondary:nth-child(2) {
+  transition-delay: 0.1s;
+}
+
+.fab-menu.expanded .fab-secondary:nth-child(3) {
+  transition-delay: 0.15s;
+}
+
+/* FAB Labels */
+.fab-label {
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.fab-menu.expanded .fab-label {
+  opacity: 1;
+  max-width: 150px;
+  margin-left: 8px;
+}
+
+/* Quick Book FAB */
+.fab-book {
+  background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+  color: white;
+  padding-left: 14px;
+}
+
+.fab-book:hover {
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4), 0 3px 10px rgba(76, 175, 80, 0.3);
+  transform: translateX(-4px);
+}
+
+/* Help FAB */
+.fab-help {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+  color: white;
+  padding-left: 14px;
+}
+
+.fab-help:hover {
+  box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4), 0 3px 10px rgba(255, 152, 0, 0.3);
+  transform: translateX(-4px);
+}
+
+/* Feedback FAB */
+.fab-feedback {
+  background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+  color: white;
+  padding-left: 14px;
+}
+
+.fab-feedback:hover {
+  box-shadow: 0 6px 20px rgba(156, 39, 176, 0.4), 0 3px 10px rgba(156, 39, 176, 0.3);
+  transform: translateX(-4px);
+}
+
+/* Backdrop */
+.fab-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1;
+  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(2px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .fab-container {
+    bottom: 24px;
+    right: 24px;
+  }
+
+  .fab {
+    width: 48px;
+    height: 48px;
+  }
+
+  .fab-main {
+    width: 56px;
+    height: 56px;
+  }
+
+  .fab-secondary {
+    width: 44px;
+    height: 44px;
+  }
+
+  .fab-scroll-top {
+    bottom: 72px;
+  }
+
+  .fab-menu {
+    bottom: 68px;
+  }
+
+  .fab-label {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fab-container {
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .fab {
+    width: 44px;
+    height: 44px;
+  }
+
+  .fab-main {
+    width: 52px;
+    height: 52px;
+  }
+
+  .fab-secondary {
+    width: 40px;
+    height: 40px;
+  }
+
+  .fab-scroll-top {
+    bottom: 64px;
+  }
+
+  .fab-menu {
+    bottom: 60px;
+  }
+}
+
+/* Accessibility */
+.fab:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(216, 64, 64, 0.3);
+}
+
+.fab:focus-visible {
+  outline: 2px solid #D84040;
+  outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+  .fab-container {
+    display: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .fab {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .fab,
+  .fab-secondary,
+  .fab-backdrop,
+  .fab-container {
+    transition: none;
+    animation: none;
+  }
+}

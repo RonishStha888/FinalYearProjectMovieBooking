@@ -114,17 +114,18 @@
 
 /* Professional Ticket Design */
 .ticket {
-  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  background: linear-gradient(145deg, #ffffff, #fafafa);
   color: #1a1a1a;
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 
-    0 25px 80px rgba(0, 0, 0, 0.4),
-    0 12px 48px rgba(0, 0, 0, 0.3),
-    0 4px 16px rgba(0, 0, 0, 0.2);
+    0 30px 90px rgba(0, 0, 0, 0.25),
+    0 15px 50px rgba(0, 0, 0, 0.2),
+    0 5px 20px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   position: relative;
   animation: ticketSlideUp 1s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(216, 64, 64, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 @keyframes ticketSlideUp {
@@ -144,10 +145,10 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #D84040, #4CAF50, #2196F3, #D84040);
+  height: 3px;
+  background: linear-gradient(90deg, #D84040, #4CAF50, #2196F3, #FFC107, #D84040);
   background-size: 200% 100%;
-  animation: ticketGlow 3s linear infinite;
+  animation: ticketGlow 4s linear infinite;
 }
 
 @keyframes ticketGlow {
@@ -158,12 +159,13 @@
 .ticket-header-section {
   background: linear-gradient(135deg, #D84040 0%, #c73636 50%, #b32d2d 100%);
   color: white;
-  padding: 28px 36px;
+  padding: 32px 36px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(216, 64, 64, 0.3);
 }
 
 .ticket-header-section::before {
@@ -173,8 +175,8 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  animation: headerShine 4s infinite;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  animation: headerShine 5s infinite;
 }
 
 @keyframes headerShine {
@@ -184,11 +186,14 @@
 }
 
 .cinema-logo h2 {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 900;
   margin: 0 0 6px 0;
-  letter-spacing: 3px;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  letter-spacing: 4px;
+  text-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 4px 16px rgba(0, 0, 0, 0.2);
+  position: relative;
 }
 
 .cinema-logo p {
@@ -196,25 +201,33 @@
   margin: 0;
   opacity: 0.95;
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
 }
 
 .booking-id {
   text-align: right;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 12px 20px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .booking-id span {
   display: block;
-  font-size: 12px;
+  font-size: 11px;
   opacity: 0.9;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .booking-id strong {
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  font-family: 'Courier New', monospace;
 }
 
 /* Ticket Divider */
@@ -269,52 +282,93 @@
 
 .movie-section {
   display: flex;
-  gap: 20px;
+  gap: 24px;
   margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 2px dashed #e0e0e0;
+  padding-bottom: 28px;
+  border-bottom: 2px solid #f0f0f0;
+  position: relative;
+}
+
+.movie-section::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, #D84040, transparent);
 }
 
 .movie-poster-small {
-  width: 80px;
-  height: 120px;
+  width: 90px;
+  height: 135px;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 2px solid #f5f5f5;
+  flex-shrink: 0;
 }
 
 .movie-poster-small img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.movie-poster-small:hover img {
+  transform: scale(1.05);
+}
+
+.movie-info {
+  flex: 1;
 }
 
 .movie-info h3 {
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0 0 12px 0;
-  color: #333333;
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 14px 0;
+  color: #1a1a1a;
+  line-height: 1.2;
 }
 
 .movie-meta {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .genre {
-  background: rgba(216, 64, 64, 0.1);
+  background: linear-gradient(135deg, rgba(216, 64, 64, 0.12), rgba(216, 64, 64, 0.08));
   color: #D84040;
-  padding: 4px 12px;
+  padding: 6px 14px;
   border-radius: 20px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+  border: 1px solid rgba(216, 64, 64, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .rating {
+  font-size: 15px;
+  font-weight: 700;
+  color: #FFA000;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 193, 7, 0.1);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.rating::before {
+  content: '⭐';
   font-size: 14px;
-  font-weight: 600;
-  color: #FFD700;
 }
 
 /* Booking Details */
@@ -344,17 +398,18 @@
 }
 
 .label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #666666;
+  font-size: 11px;
+  font-weight: 700;
+  color: #888888;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
 }
 
 .value {
   font-size: 16px;
-  font-weight: 600;
-  color: #333333;
+  font-weight: 700;
+  color: #1a1a1a;
 }
 
 .seats-list {
@@ -364,19 +419,34 @@
 }
 
 .seat-badge {
-  background: rgba(216, 64, 64, 0.1);
-  color: #D84040;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  border: 1px solid rgba(216, 64, 64, 0.2);
+  background: linear-gradient(135deg, #D84040, #c73636);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 
+    0 4px 12px rgba(216, 64, 64, 0.3),
+    0 2px 6px rgba(216, 64, 64, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.seat-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 16px rgba(216, 64, 64, 0.4),
+    0 3px 8px rgba(216, 64, 64, 0.3);
 }
 
 .total-amount {
-  font-size: 24px;
-  font-weight: 800;
-  color: #4CAF50;
+  font-size: 28px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #4CAF50, #66BB6A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* F&B Details Section */
@@ -490,52 +560,79 @@
   color: #D84040;
 }
 
-/* QR Section */
+/* QR Section - Professional Design */
 .qr-section {
   display: flex;
   gap: 24px;
   align-items: center;
-  padding: 24px;
-  background: rgba(216, 64, 64, 0.05);
-  border-radius: 12px;
-  border: 2px dashed rgba(216, 64, 64, 0.2);
-}
-
-.qr-code {
-  flex-shrink: 0;
-}
-
-.qr-placeholder {
-  width: 80px;
-  height: 80px;
-  background: #333333;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  padding: 28px;
+  background: linear-gradient(135deg, rgba(216, 64, 64, 0.03), rgba(216, 64, 64, 0.08));
+  border-radius: 16px;
+  border: 2px solid rgba(216, 64, 64, 0.15);
+  box-shadow: 
+    0 4px 16px rgba(216, 64, 64, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
   position: relative;
   overflow: hidden;
 }
 
-.qr-pattern {
-  width: 60px;
-  height: 60px;
-  background: repeating-conic-gradient(
-    from 0deg,
-    #ffffff 0deg 90deg,
-    #333333 90deg 180deg
-  );
-  background-size: 10px 10px;
+.qr-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(216, 64, 64, 0.3), transparent);
 }
 
-.qr-placeholder p {
+.qr-code {
+  flex-shrink: 0;
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 3px solid #f5f5f5;
+  position: relative;
+}
+
+.qr-code::after {
+  content: '';
   position: absolute;
-  bottom: 4px;
-  font-size: 8px;
-  color: #ffffff;
-  margin: 0;
-  font-weight: 600;
+  inset: -3px;
+  border-radius: 12px;
+  padding: 3px;
+  background: linear-gradient(135deg, #D84040, #4CAF50, #2196F3);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.3;
+  animation: qrBorderGlow 3s linear infinite;
+}
+
+@keyframes qrBorderGlow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+.qr-canvas {
+  display: block;
+  border-radius: 6px;
+}
+
+.qr-info {
+  flex: 1;
+}
+
+.qr-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #D84040;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .qr-info p {
@@ -549,18 +646,21 @@
   font-size: 12px;
   color: #666666;
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  font-weight: 500;
 }
 
 .verification-code {
-  background: rgba(216, 64, 64, 0.1);
-  color: #D84040;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 11px;
+  background: linear-gradient(135deg, #D84040, #c73636);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 700;
   text-align: center;
-  border: 1px solid rgba(216, 64, 64, 0.2);
+  letter-spacing: 2px;
+  box-shadow: 0 4px 12px rgba(216, 64, 64, 0.3);
+  display: inline-block;
 }
 
 /* Professional Barcode Section */

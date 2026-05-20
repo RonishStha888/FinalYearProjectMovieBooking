@@ -7,6 +7,9 @@ import FavoritesPage from "./FavoritesPage";
 import SettingsPage from "./SettingsPage";
 import HelpSupportPage from "./HelpSupportPage";
 import LoyaltyPage from "./LoyaltyPage";
+import FloatingActionButtons from "../components/FloatingActionButtons";
+import FeedbackModal from "../components/FeedbackModal";
+import QuickBookModal from "../components/QuickBookModal";
 
 export default function HomePage({ user, onLogout }) {
   const [selectedCategory, setSelectedCategory] = useState("now-showing");
@@ -23,6 +26,8 @@ export default function HomePage({ user, onLogout }) {
   const [currentPage, setCurrentPage] = useState('home'); // home, profile, bookings, favorites, settings, help
   const [loyaltyRefreshKey, setLoyaltyRefreshKey] = useState(0);
   const [lastEarnedPoints, setLastEarnedPoints] = useState(0);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [showQuickBookModal, setShowQuickBookModal] = useState(false);
 
   // Fetch movies when category changes
   useEffect(() => {
@@ -178,6 +183,27 @@ export default function HomePage({ user, onLogout }) {
   const handleProfileNavigation = (page) => {
     setShowProfileDropdown(false);
     setCurrentPage(page);
+  };
+
+  // FAB Handlers
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleQuickBook = () => {
+    setShowQuickBookModal(true);
+  };
+
+  const handleHelp = () => {
+    setCurrentPage('help');
+  };
+
+  const handleFeedback = () => {
+    setShowFeedbackModal(true);
+  };
+
+  const handleQuickBookMovieSelect = (movie) => {
+    handleMovieClick(movie);
   };
 
   if (showBooking && selectedMovie) {
@@ -679,6 +705,28 @@ export default function HomePage({ user, onLogout }) {
           </div>
         </footer>
       )}
+
+      {/* Floating Action Buttons */}
+      <FloatingActionButtons
+        onScrollToTop={handleScrollToTop}
+        onQuickBook={handleQuickBook}
+        onHelp={handleHelp}
+        onFeedback={handleFeedback}
+        currentPage={currentPage}
+      />
+
+      {/* Feedback Modal */}
+      <FeedbackModal
+        isOpen={showFeedbackModal}
+        onClose={() => setShowFeedbackModal(false)}
+      />
+
+      {/* Quick Book Modal */}
+      <QuickBookModal
+        isOpen={showQuickBookModal}
+        onClose={() => setShowQuickBookModal(false)}
+        onSelectMovie={handleQuickBookMovieSelect}
+      />
     </div>
   );
 }
