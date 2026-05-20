@@ -1,7 +1,7 @@
 import React from 'react';
 import './FloatingChatButton.css';
 
-const FloatingChatButton = ({ onClick, isOpen }) => {
+const FloatingChatButton = ({ onClick, isOpen, hasNewMessages = false }) => {
   if (isOpen) return null; // Hide button when chat is open
 
   return (
@@ -9,6 +9,7 @@ const FloatingChatButton = ({ onClick, isOpen }) => {
       className="floating-chat-button"
       onClick={onClick}
       aria-label="Open live chat"
+      title="Chat with us"
     >
       <svg 
         className="chat-icon" 
@@ -19,7 +20,10 @@ const FloatingChatButton = ({ onClick, isOpen }) => {
       >
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
       </svg>
-      <span className="button-text">LIVE CHAT</span>
+      {hasNewMessages && (
+        <span className="chat-notification-badge">!</span>
+      )}
+      <span className="chat-tooltip">Chat with us</span>
     </button>
   );
 };

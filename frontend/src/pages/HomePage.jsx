@@ -18,6 +18,8 @@ export default function HomePage({ user, onLogout }) {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [featuredMovie, setFeaturedMovie] = useState(null);
+  const [featuredMovies, setFeaturedMovies] = useState([]);
+  const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -146,11 +148,13 @@ export default function HomePage({ user, onLogout }) {
       
       if (data.success) {
         setMovies(data.movies);
-        // Set featured movie as the first movie with highest rating
-        const featured = data.movies.reduce((prev, current) => 
-          (parseFloat(prev.rating) > parseFloat(current.rating)) ? prev : current
-        );
-        setFeaturedMovie(featured);
+        // Get top 5 movies for featured carousel
+        const topMovies = [...data.movies]
+          .sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating))
+          .slice(0, 5);
+        setFeaturedMovies(topMovies);
+        setFeaturedMovie(topMovies[0]);
+        setCurrentFeaturedIndex(0);
       } else {
         console.error('Failed to fetch movies:', data.message);
         setMovies([]);
@@ -200,6 +204,19 @@ export default function HomePage({ user, onLogout }) {
 
   const handleFeedback = () => {
     setShowFeedbackModal(true);
+  };
+
+  // Hero carousel navigation
+  const handlePrevFeatured = () => {
+    const newIndex = currentFeaturedIndex === 0 ? featuredMovies.length - 1 : currentFeaturedIndex - 1;
+    setCurrentFeaturedIndex(newIndex);
+    setFeaturedMovie(featuredMovies[newIndex]);
+  };
+
+  const handleNextFeatured = () => {
+    const newIndex = currentFeaturedIndex === featuredMovies.length - 1 ? 0 : currentFeaturedIndex + 1;
+    setCurrentFeaturedIndex(newIndex);
+    setFeaturedMovie(featuredMovies[newIndex]);
   };
 
   const handleQuickBookMovieSelect = (movie) => {
@@ -455,6 +472,48 @@ export default function HomePage({ user, onLogout }) {
             <img src={featuredMovie.image} alt={featuredMovie.title} />
             <div className="hero-overlay"></div>
           </div>
+          
+          {/* Navigation Arrows */}
+          {featuredMovies.length > 1 && (
+            <>
+              <button 
+                className="hero-nav-btn hero-nav-prev" 
+                onClick={handlePrevFeatured}
+                aria-label="Previous movie"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+              <button 
+                className="hero-nav-btn hero-nav-next" 
+                onClick={handleNextFeatured}
+                aria-label="Next movie"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </>
+          )}
+          
+          {/* Carousel Indicators */}
+          {featuredMovies.length > 1 && (
+            <div className="hero-indicators">
+              {featuredMovies.map((_, index) => (
+                <button
+                  key={index}
+                  className={`hero-indicator ${index === currentFeaturedIndex ? 'active' : ''}`}
+                  onClick={() => {
+                    setCurrentFeaturedIndex(index);
+                    setFeaturedMovie(featuredMovies[index]);
+                  }}
+                  aria-label={`Go to movie ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
+          
           <div className="hero-content">
             <div className="hero-info">
               <div className="movie-badges">
