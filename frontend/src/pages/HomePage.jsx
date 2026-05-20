@@ -55,6 +55,21 @@ export default function HomePage({ user, onLogout }) {
     };
   }, [showProfileDropdown]);
 
+  // Auto-slide hero carousel every 5 seconds
+  useEffect(() => {
+    if (featuredMovies.length <= 1) return; // Don't auto-slide if only one movie
+
+    const interval = setInterval(() => {
+      setCurrentFeaturedIndex((prevIndex) => {
+        const newIndex = prevIndex === featuredMovies.length - 1 ? 0 : prevIndex + 1;
+        setFeaturedMovie(featuredMovies[newIndex]);
+        return newIndex;
+      });
+    }, 5000); // 5 seconds
+
+    return () => clearInterval(interval);
+  }, [featuredMovies]);
+
   const fetchAllMovies = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/movies');
