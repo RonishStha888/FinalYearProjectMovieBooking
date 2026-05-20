@@ -13,10 +13,11 @@
 .message-input {
   flex: 1;
   padding: 13px 18px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid #b8b8b8;
   border-radius: 24px;
   font-family: 'DM Sans', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 14px;
+  color: #080000;
   outline: none;
   transition: all 0.2s ease;
   background: #f8f9fa;
@@ -25,12 +26,12 @@
 
 .message-input:focus {
   border-color: #D84040;
-  background: white;
+  background: hwb(0 25% 15% / 0.5);
   box-shadow: 0 0 0 3px rgba(216, 64, 64, 0.1);
 }
 
 .message-input::placeholder {
-  color: #999;
+  color: #000000;
 }
 
 .input-icon-button {
@@ -90,7 +91,7 @@
 
 .send-button:hover:not(:disabled) {
   transform: scale(1.05);
-  box-shadow: 0 5px 18px rgba(216, 64, 64, 0.5);
+  box-shadow: 0 5px 18px hwb(0 25% 15% / 0.5);
 }
 
 .send-button:active:not(:disabled) {
