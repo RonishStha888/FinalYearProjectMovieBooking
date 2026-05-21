@@ -377,11 +377,11 @@ export default function PaymentPage({
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
               <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            Back to Seats
+            Back to Selection
           </button>
           <div className="payment-title">
-            <h2>Complete Payment</h2>
-            <p>Secure payment for your movie tickets</p>
+            <h2>Secure Checkout</h2>
+            <p>Complete your booking with confidence</p>
           </div>
         </div>
         <div className="header-right">
@@ -391,14 +391,14 @@ export default function PaymentPage({
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
                 <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
               </svg>
-              <span>Time Remaining: {formatTime(timeRemaining)}</span>
+              <span>Seats Reserved: {formatTime(timeRemaining)}</span>
             </div>
           )}
           <div className="security-badge">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="2"/>
             </svg>
-            Secure Payment
+            Secure Checkout
           </div>
         </div>
       </header>
@@ -511,7 +511,7 @@ export default function PaymentPage({
         {/* Right Section - Payment Form */}
         <div className="payment-form-section">
           <div className="payment-card">
-            <h3>Payment Details</h3>
+            <h3>Payment Method</h3>
             
             {/* Payment Method Selection */}
             <div className="payment-methods">
@@ -627,16 +627,16 @@ export default function PaymentPage({
                     {paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'}
                   </div>
                   <div className="wallet-details">
-                    <h4>{paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'} Payment</h4>
-                    <p>A secure payment window will open to complete your transaction.</p>
+                    <h4>{paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'} Digital Wallet</h4>
+                    <p>You will be redirected to a secure payment gateway to complete your transaction.</p>
                     <div className="wallet-features">
                       {paymentMethod === 'khalti' && (
-                        <div className="feature">✓ Mobile: <strong>9800000000</strong> | MPIN: <strong>1111</strong> | OTP: <strong>987654</strong></div>
+                        <div className="feature">Test Credentials: Mobile <strong>9800000000</strong> | MPIN <strong>1111</strong> | OTP <strong>987654</strong></div>
                       )}
                       {paymentMethod === 'esewa' && (
-                        <div className="feature">✓ ID: <strong>9800000001</strong> | Password: <strong>Nepal@123</strong> | OTP: <strong>123456</strong></div>
+                        <div className="feature">Test Credentials: ID <strong>9800000001</strong> | Password <strong>Nepal@123</strong> | OTP <strong>123456</strong></div>
                       )}
-                      <div className="feature">✓ Instant payment confirmation</div>
+                      <div className="feature">Instant confirmation & e-ticket delivery</div>
                     </div>
                   </div>
                 </div>
@@ -648,13 +648,13 @@ export default function PaymentPage({
               <div className="loyalty-redeem-header">
                 <div className="loyalty-redeem-icon">🎁</div>
                 <div>
-                  <h4>Use Loyalty Points</h4>
-                  <p>Your total loyalty points are <strong>{loyaltyPoints}</strong></p>
-                  <p style={{fontSize: '12px', color: '#888', marginTop: '4px'}}>Current total: Rs. {ticketTotal + fbTotal}</p>
+                  <h4>Redeem Loyalty Rewards</h4>
+                  <p>Available balance: <strong>{loyaltyPoints} points</strong></p>
+                  <p style={{fontSize: '12px', color: '#888', marginTop: '4px'}}>Order total: Rs. {ticketTotal + fbTotal}</p>
                 </div>
               </div>
               <div className="loyalty-input-group">
-                <label>Points to redeem (1 point = Rs. 5)</label>
+                <label>Points to redeem (1 point = Rs. 5 discount)</label>
                 <div className="loyalty-input-wrapper">
                   <input
                     type="number"
@@ -673,7 +673,7 @@ export default function PaymentPage({
                     Apply
                   </button>
                 </div>
-                <p className="loyalty-hint">Minimum 20 points, Maximum 100 points</p>
+                <p className="loyalty-hint">Redeem between 20-100 points per transaction</p>
               </div>
               <div className="loyalty-redeem-options">
                 <p style={{fontSize: '13px', color: '#aaa', marginBottom: '8px'}}>Quick select:</p>
@@ -710,7 +710,7 @@ export default function PaymentPage({
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="2"/>
                   </svg>
-                  {paymentMethod === 'khalti' ? `Pay Rs. ${total} via Khalti` : paymentMethod === 'esewa' ? `Pay Rs. ${total} via eSewa` : `Pay Rs. ${total}`}
+                  {paymentMethod === 'khalti' ? `Proceed to Pay Rs. ${total}` : paymentMethod === 'esewa' ? `Proceed to Pay Rs. ${total}` : `Complete Payment - Rs. ${total}`}
                 </>
               )}
             </button>
@@ -720,7 +720,7 @@ export default function PaymentPage({
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeWidth="2"/>
                 </svg>
-                Your payment information is secure and encrypted
+                Your payment is protected with industry-standard encryption
               </p>
             </div>
           </div>
