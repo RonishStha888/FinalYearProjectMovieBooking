@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import "./PaymentPage.css";
 import KhaltiSandboxPage from "./KhaltiSandboxPage";
 import EsewaSandboxPage from "./EsewaSandboxPage";
+import khaltiLogo from "../assets/khalti.png";
+import esewaLogo from "../assets/esewa.png";
 
 export default function PaymentPage({ 
   movie, 
@@ -624,7 +626,11 @@ export default function PaymentPage({
               <div className="wallet-form">
                 <div className="wallet-info">
                   <div className="wallet-icon-large">
-                    {paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'}
+                    <img 
+                      src={paymentMethod === 'esewa' ? esewaLogo : khaltiLogo} 
+                      alt={paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'} 
+                      style={{ width: '120px', height: 'auto', objectFit: 'contain' }}
+                    />
                   </div>
                   <div className="wallet-details">
                     <h4>{paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'} Digital Wallet</h4>
