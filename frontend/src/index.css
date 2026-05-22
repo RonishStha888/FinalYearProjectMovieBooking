@@ -55,6 +55,69 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 }
 
+/* Light theme text color overrides - make white text dark */
+:root[data-theme="light"] h1,
+:root[data-theme="light"] h2,
+:root[data-theme="light"] h3,
+:root[data-theme="light"] h4,
+:root[data-theme="light"] h5,
+:root[data-theme="light"] h6,
+:root[data-theme="light"] p,
+:root[data-theme="light"] span,
+:root[data-theme="light"] div,
+:root[data-theme="light"] label,
+:root[data-theme="light"] a {
+  color: var(--text-primary) !important;
+}
+
+/* Light theme - specific element overrides */
+:root[data-theme="light"] .movie-title,
+:root[data-theme="light"] .cinema-name,
+:root[data-theme="light"] .section-title,
+:root[data-theme="light"] .date-day,
+:root[data-theme="light"] .time-slot {
+  color: #1a1a1a !important;
+}
+
+:root[data-theme="light"] .date-name,
+:root[data-theme="light"] .movie-meta,
+:root[data-theme="light"] .cinema-meta {
+  color: #666666 !important;
+}
+
+/* Light theme - buttons and interactive elements */
+:root[data-theme="light"] .date-card:not(.selected),
+:root[data-theme="light"] .time-slot:not(.selected) {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #1a1a1a !important;
+}
+
+:root[data-theme="light"] .date-card:hover:not(.selected),
+:root[data-theme="light"] .time-slot:hover:not(.selected) {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Light theme - footer */
+:root[data-theme="light"] .footer {
+  background: #f5f5f5 !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Light theme - sidebar/navigation */
+:root[data-theme="light"] .sidebar,
+:root[data-theme="light"] .nav-menu {
+  background: #ffffff !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+:root[data-theme="light"] .nav-item {
+  color: #333333 !important;
+}
+
+:root[data-theme="light"] .nav-item:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+}
+
 /* Global input field text visibility fix */
 input, textarea, select {
   color: #333 !important;
