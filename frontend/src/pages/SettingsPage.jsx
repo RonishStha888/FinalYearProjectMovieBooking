@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./SettingsPage.css";
 
 export default function SettingsPage({ user, onBack }) {
@@ -29,6 +29,20 @@ export default function SettingsPage({ user, onBack }) {
 
   const [activeTab, setActiveTab] = useState('notifications');
   const [saving, setSaving] = useState(false);
+
+  // Apply theme on mount and when theme changes
+  useEffect(() => {
+    const theme = settings.preferences.theme;
+    if (theme === 'auto') {
+      // Check system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+    } else {
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+    // Save to localStorage
+    localStorage.setItem('theme', theme);
+  }, [settings.preferences.theme]);
 
   const handleSettingChange = (category, setting, value) => {
     setSettings(prev => ({
