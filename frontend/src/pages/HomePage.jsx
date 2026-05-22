@@ -8,6 +8,7 @@ import SettingsPage from "./SettingsPage";
 import HelpSupportPage from "./HelpSupportPage";
 import LoyaltyPage from "./LoyaltyPage";
 import FloatingActionButtons from "../components/FloatingActionButtons";
+import logo from "../assets/logo.png";
 import FeedbackModal from "../components/FeedbackModal";
 import QuickBookModal from "../components/QuickBookModal";
 
@@ -277,7 +278,9 @@ export default function HomePage({ user, onLogout }) {
         <div className="header-content">
           <div className="brand-section">
             <div className="logo-container">
-              <div className="logo-icon">🎬</div>
+              <div className="logo-icon">
+                <img src={logo} alt="RTX Cinema Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              </div>
               <div className="brand-text">
                 <h1>RTX Cinema</h1>
                 <span className="tagline">Premium Movie Experience</span>
@@ -712,7 +715,9 @@ export default function HomePage({ user, onLogout }) {
               <div className="footer-section">
                 <div className="footer-brand">
                   <div className="footer-logo">
-                    <div className="logo-icon"></div>
+                    <div className="logo-icon">
+                      <img src={logo} alt="RTX Cinema Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    </div>
                     <span>RTX Cinema</span>
                   </div>
                   <p>Nepal's premier cinema chain delivering world-class movie experiences with cutting-edge technology and premium comfort.</p>
