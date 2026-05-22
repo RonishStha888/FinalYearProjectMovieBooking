@@ -154,7 +154,8 @@ export default function HomePage({ user, onLogout }) {
       } else if (selectedCategory === 'top-rated') {
         apiUrl = `http://localhost:5000/api/movies/top-rated`;
       } else if (selectedCategory === 'coming-soon') {
-        apiUrl = `http://localhost:5000/api/movies/now-showing`;
+        // Fetch all movies and filter those without showtimes
+        apiUrl = `http://localhost:5000/api/movies`;
       } else {
         apiUrl = `http://localhost:5000/api/movies?category=${selectedCategory}&limit=20`;
       }
@@ -163,9 +164,26 @@ export default function HomePage({ user, onLogout }) {
       const data = await response.json();
       
       if (data.success) {
-        setMovies(data.movies);
+        let filteredMovies = data.movies;
+        
+        // For coming-soon, filter movies that don't have showtimes
+        if (selectedCategory === 'coming-soon') {
+          // Fetch showtimes to check which movies have them
+          const showtimesResponse = await fetch('http://localhost:5000/api/showtimes');
+          const showtimesData = await showtimesResponse.json();
+          
+          if (showtimesData.success) {
+            const moviesWithShowtimes = new Set(
+              showtimesData.showtimes.map(st => st.movie._id || st.movie)
+            );
+            // Filter movies that DON'T have showtimes
+            filteredMovies = data.movies.filter(movie => !moviesWithShowtimes.has(movie._id));
+          }
+        }
+        
+        setMovies(filteredMovies);
         // Get top 5 movies for featured carousel
-        const topMovies = [...data.movies]
+        const topMovies = [...filteredMovies]
           .sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating))
           .slice(0, 5);
         setFeaturedMovies(topMovies);
@@ -281,10 +299,7 @@ export default function HomePage({ user, onLogout }) {
               <div className="logo-icon">
                 <img src={logo} alt="RTX Cinema Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
               </div>
-              <div className="brand-text">
-                <h1>RTX Cinema</h1>
-                <span className="tagline">Premium Movie Experience</span>
-              </div>
+            
             </div>
           </div>
 
