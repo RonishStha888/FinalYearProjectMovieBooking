@@ -3,6 +3,7 @@ import QRCode from "qrcode";
 import "./TicketPage.css";
 import ParkingDiscountOffer from "../components/ParkingDiscountOffer";
 import ParkingCoupon from "../components/ParkingCoupon";
+import logo from "../assets/logo.png";
 
 export default function TicketPage({ bookingData, onBackToHome }) {
   const [showDownload, setShowDownload] = useState(false);
@@ -262,8 +263,7 @@ Thank you for choosing RTX Cinema!
           <div className="ticket">
             <div className="ticket-header-section">
               <div className="cinema-logo">
-                <h2>RTX CINEMA</h2>
-                <p>Premium Movie Experience</p>
+                <img src={logo} alt="RTX Cinema Logo" style={{ width: '100px', height: 'auto', objectFit: 'contain' }} />
               </div>
               <div className="booking-id">
                 <span>Booking ID</span>

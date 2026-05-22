@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./Ticket.css";
+import logo from "../assets/logo.png";
 
 export default function Ticket({ bookingData, onClose, onNewBooking }) {
   const [showQR, setShowQR] = useState(false);
@@ -76,8 +77,7 @@ export default function Ticket({ bookingData, onClose, onNewBooking }) {
         <div className="ticket" id="ticket-print">
           <div className="ticket-header">
             <div className="cinema-logo">
-              <h1>🎬 RTX Cinema</h1>
-              <p>Premium Movie Experience</p>
+              <img src={logo} alt="RTX Cinema Logo" style={{ width: '80px', height: 'auto', objectFit: 'contain' }} />
             </div>
             <div className="booking-id">
               <span>Booking ID</span>
