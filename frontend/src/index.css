@@ -21,6 +21,40 @@
   --accent-color: #D84040;
 }
 
+/* Apply theme to body and main containers */
+body {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.homepage-container,
+.booking-page,
+.payment-page,
+.ticket-page,
+.profile-page,
+.settings-page {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Light theme specific overrides */
+:root[data-theme="light"] .professional-header {
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+:root[data-theme="light"] .section-card,
+:root[data-theme="light"] .cinema-card,
+:root[data-theme="light"] .date-card {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+:root[data-theme="light"] .movie-card {
+  background: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
 /* Global input field text visibility fix */
 input, textarea, select {
   color: #333 !important;
@@ -38,7 +72,16 @@ select {
   color: #ffffff !important;
 }
 
-/* Light theme input fields (admin panel) */
+/* Light theme input fields */
+:root[data-theme="light"] input,
+:root[data-theme="light"] textarea,
+:root[data-theme="light"] select {
+  color: #333 !important;
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Admin panel input fields */
 .admin-login-card input,
 .payment-form input {
   color: #333 !important;
