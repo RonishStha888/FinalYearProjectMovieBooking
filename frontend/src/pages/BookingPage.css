@@ -332,7 +332,7 @@ html, body {
   padding: 60px 20px;
   color: #ccc;
   font-size: 16px;
-  background: rgb(20, 0, 0);
+  background: rgb(0, 0, 0);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -434,6 +434,7 @@ html, body {
   font-size: 16px;
   font-weight: 600;
   margin: 0 0 8px 0;
+  color: #d84040;
 }
 
 .class-details {
