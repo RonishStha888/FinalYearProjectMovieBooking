@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine';
@@ -32,7 +32,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// Routing Machine Component
+// Routing Machine Component - Shows shortest route only
 function RoutingMachine({ start, end }) {
   const map = useMap();
 
@@ -45,11 +45,22 @@ function RoutingMachine({ start, end }) {
         L.latLng(end[0], end[1])
       ],
       routeWhileDragging: true,
-      showAlternatives: true,
+      showAlternatives: false, // Only show the shortest route
+      addWaypoints: false, // Prevent adding waypoints by clicking
+      fitSelectedRoutes: true, // Auto-fit map to show the route
       lineOptions: {
-        styles: [{ color: '#1a73e8', weight: 5 }]
+        styles: [{ color: '#1a73e8', weight: 5, opacity: 0.8 }],
+        extendToWaypoints: true,
+        missingRouteTolerance: 0
       },
-      createMarker: function(i, waypoint, n) {
+      altLineOptions: {
+        styles: [{ color: '#999', weight: 4, opacity: 0.4 }]
+      },
+      router: L.Routing.osrmv1({
+        serviceUrl: 'https://router.project-osrm.org/route/v1',
+        profile: 'driving', // Use driving profile for shortest route
+      }),
+      createMarker: function(i, waypoint) {
         const marker = L.marker(waypoint.latLng, {
           draggable: true,
           icon: L.icon({
