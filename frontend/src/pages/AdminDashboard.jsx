@@ -117,12 +117,28 @@ const AdminDashboard = () => {
     cinemaId: ''
   });
 
+  // Cinema form state
+  const [cinemaForm, setCinemaForm] = useState({
+    name: '',
+    location: '',
+    address: '',
+    city: 'Kathmandu',
+    distance: '',
+    rating: '4.0',
+    amenities: [],
+    phone: '',
+    email: '',
+    image: '',
+    isActive: true
+  });
+
   const [editingMovie, setEditingMovie] = useState(null);
   const [editingShowtime, setEditingShowtime] = useState(null);
   const [editingPromotion, setEditingPromotion] = useState(null);
   const [editingBanner, setEditingBanner] = useState(null);
   const [editingFBItem, setEditingFBItem] = useState(null);
   const [editingFBOffer, setEditingFBOffer] = useState(null);
+  const [editingCinema, setEditingCinema] = useState(null);
 
   useEffect(() => {
     // Check admin authentication
@@ -358,6 +374,85 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error('Error deleting showtime:', error);
+      alert('Network error. Please try again.');
+    }
+  };
+
+  // Cinema Management Functions
+  const handleCinemaSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const url = editingCinema 
+        ? `http://localhost:5000/api/admin/cinemas/${editingCinema._id}`
+        : 'http://localhost:5000/api/admin/cinemas';
+      
+      const method = editingCinema ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          ...cinemaForm,
+          rating: parseFloat(cinemaForm.rating)
+        })
+      });
+
+      if (response.ok) {
+        alert(editingCinema ? 'Cinema updated successfully!' : 'Cinema added successfully!');
+        setCinemaForm({
+          name: '', location: '', address: '', city: 'Kathmandu', distance: '',
+          rating: '4.0', amenities: [], phone: '', email: '', image: '', isActive: true
+        });
+        setEditingCinema(null);
+        loadDashboardData();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Error saving cinema');
+      }
+    } catch (error) {
+      console.error('Error saving cinema:', error);
+      alert('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const editCinema = (cinema) => {
+    setCinemaForm({
+      name: cinema.name,
+      location: cinema.location,
+      address: cinema.address,
+      city: cinema.city,
+      distance: cinema.distance,
+      rating: cinema.rating.toString(),
+      amenities: cinema.amenities || [],
+      phone: cinema.phone || '',
+      email: cinema.email || '',
+      image: cinema.image || '',
+      isActive: cinema.isActive
+    });
+    setEditingCinema(cinema);
+  };
+
+  const deleteCinema = async (cinemaId) => {
+    if (!confirm('Are you sure you want to delete this cinema?')) return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/admin/cinemas/${cinemaId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+
+      if (response.ok) {
+        alert('Cinema deleted successfully!');
+        loadDashboardData();
+      } else {
+        alert('Error deleting cinema');
+      }
+    } catch (error) {
+      console.error('Error deleting cinema:', error);
       alert('Network error. Please try again.');
     }
   };
@@ -1098,8 +1193,149 @@ const AdminDashboard = () => {
 
           {activeTab === 'cinemas' && (
             <div className="cinemas-content">
-              <h2>Cinema Management</h2>
+              <h2>{editingCinema ? 'Edit Cinema' : 'Add New Cinema'}</h2>
               
+              <form onSubmit={handleCinemaSubmit} className="cinema-form">
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Cinema Name</label>
+                    <input
+                      type="text"
+                      value={cinemaForm.name}
+                      onChange={(e) => setCinemaForm({...cinemaForm, name: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Location</label>
+                    <input
+                      type="text"
+                      value={cinemaForm.location}
+                      onChange={(e) => setCinemaForm({...cinemaForm, location: e.target.value})}
+                      placeholder="e.g., Labim Mall, Pulchowk"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Full Address</label>
+                  <input
+                    type="text"
+                    value={cinemaForm.address}
+                    onChange={(e) => setCinemaForm({...cinemaForm, address: e.target.value})}
+                    required
+                  />
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>City</label>
+                    <select
+                      value={cinemaForm.city}
+                      onChange={(e) => setCinemaForm({...cinemaForm, city: e.target.value})}
+                    >
+                      <option value="Kathmandu">Kathmandu</option>
+                      <option value="Pokhara">Pokhara</option>
+                      <option value="Lalitpur">Lalitpur</option>
+                      <option value="Bhaktapur">Bhaktapur</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Distance</label>
+                    <input
+                      type="text"
+                      value={cinemaForm.distance}
+                      onChange={(e) => setCinemaForm({...cinemaForm, distance: e.target.value})}
+                      placeholder="e.g., 3.2 km"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Rating (0-5)</label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="5"
+                      value={cinemaForm.rating}
+                      onChange={(e) => setCinemaForm({...cinemaForm, rating: e.target.value})}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Phone</label>
+                    <input
+                      type="tel"
+                      value={cinemaForm.phone}
+                      onChange={(e) => setCinemaForm({...cinemaForm, phone: e.target.value})}
+                      placeholder="+977-1-XXXXXXX"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      value={cinemaForm.email}
+                      onChange={(e) => setCinemaForm({...cinemaForm, email: e.target.value})}
+                      placeholder="info@cinema.com"
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Image URL</label>
+                  <input
+                    type="url"
+                    value={cinemaForm.image}
+                    onChange={(e) => setCinemaForm({...cinemaForm, image: e.target.value})}
+                    placeholder="https://..."
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Amenities (select multiple)</label>
+                  <div className="amenities-checkboxes">
+                    {['Parking', 'Food Court', 'AC', 'Dolby Atmos', 'Premium Sound', 'Mall', '3D', 'IMAX'].map(amenity => (
+                      <label key={amenity} className="checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={cinemaForm.amenities.includes(amenity)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setCinemaForm({...cinemaForm, amenities: [...cinemaForm.amenities, amenity]});
+                            } else {
+                              setCinemaForm({...cinemaForm, amenities: cinemaForm.amenities.filter(a => a !== amenity)});
+                            }
+                          }}
+                        />
+                        {amenity}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="form-actions">
+                  <button type="submit" disabled={loading}>
+                    {loading ? 'Saving...' : (editingCinema ? 'Update Cinema' : 'Add Cinema')}
+                  </button>
+                  {editingCinema && (
+                    <button type="button" onClick={() => {
+                      setEditingCinema(null);
+                      setCinemaForm({
+                        name: '', location: '', address: '', city: 'Kathmandu', distance: '',
+                        rating: '4.0', amenities: [], phone: '', email: '', image: '', isActive: true
+                      });
+                    }}>
+                      Cancel Edit
+                    </button>
+                  )}
+                </div>
+              </form>
+
               <div className="cinemas-list">
                 <h3>All Cinemas</h3>
                 <div className="cinemas-table">
@@ -1115,6 +1351,14 @@ const AdminDashboard = () => {
                         )}
                         {cinema.phone && <p>Phone: {cinema.phone}</p>}
                         {cinema.email && <p>Email: {cinema.email}</p>}
+                      </div>
+                      <div className="cinema-actions">
+                        <button onClick={() => editCinema(cinema)} className="edit-btn">
+                          Edit
+                        </button>
+                        <button onClick={() => deleteCinema(cinema._id)} className="delete-btn">
+                          Delete
+                        </button>
                       </div>
                     </div>
                   ))}
