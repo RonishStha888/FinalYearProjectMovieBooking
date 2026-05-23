@@ -57,7 +57,11 @@ export default function EsewaSandboxPage({ amount, orderName, onSuccess, onCance
             <span className="esewa-brand">sewa</span>
             <span className="esewa-sandbox-tag">SANDBOX</span>
           </div>
-          <button className="esewa-close" onClick={onCancel}>✕</button>
+          <button className="esewa-close" onClick={onCancel}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
         </div>
 
         {/* Merchant Info */}

@@ -63,7 +63,11 @@ export default function KhaltiSandboxPage({ amount, orderName, onSuccess, onCanc
             <span className="khalti-brand">khalti</span>
             <span className="khalti-sandbox-badge">SANDBOX</span>
           </div>
-          <button className="khalti-close" onClick={onCancel}>✕</button>
+          <button className="khalti-close" onClick={onCancel}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
         </div>
 
         {/* Amount Display */}
