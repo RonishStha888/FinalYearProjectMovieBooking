@@ -154,7 +154,7 @@ export default function HomePage({ user, onLogout }) {
       } else if (selectedCategory === 'top-rated') {
         apiUrl = `http://localhost:5000/api/movies/top-rated`;
       } else if (selectedCategory === 'coming-soon') {
-        // Fetch all movies and filter those without showtimes
+        // Fetch all movies and filter those marked as coming soon
         apiUrl = `http://localhost:5000/api/movies`;
       } else {
         apiUrl = `http://localhost:5000/api/movies?category=${selectedCategory}&limit=20`;
@@ -166,19 +166,9 @@ export default function HomePage({ user, onLogout }) {
       if (data.success) {
         let filteredMovies = data.movies;
         
-        // For coming-soon, filter movies that don't have showtimes
+        // For coming-soon, filter movies marked as comingSoon
         if (selectedCategory === 'coming-soon') {
-          // Fetch showtimes to check which movies have them
-          const showtimesResponse = await fetch('http://localhost:5000/api/showtimes');
-          const showtimesData = await showtimesResponse.json();
-          
-          if (showtimesData.success) {
-            const moviesWithShowtimes = new Set(
-              showtimesData.showtimes.map(st => st.movie._id || st.movie)
-            );
-            // Filter movies that DON'T have showtimes
-            filteredMovies = data.movies.filter(movie => !moviesWithShowtimes.has(movie._id));
-          }
+          filteredMovies = data.movies.filter(movie => movie.comingSoon === true);
         }
         
         setMovies(filteredMovies);

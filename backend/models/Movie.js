@@ -52,6 +52,10 @@ const movieSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  comingSoon: {
+    type: Boolean,
+    default: false
+  },
   isActive: {
     type: Boolean,
     default: true

@@ -33,7 +33,8 @@ const AdminDashboard = () => {
     cast: '',
     language: 'English',
     releaseDate: '',
-    category: 'action'
+    category: 'action',
+    comingSoon: false
   });
 
   // Showtime form state
@@ -243,7 +244,7 @@ const AdminDashboard = () => {
         alert(editingMovie ? 'Movie updated successfully!' : 'Movie added successfully!');
         setMovieForm({
           title: '', image: '', genre: '', duration: '', rating: '', year: '',
-          synopsis: '', director: '', cast: '', language: 'English', releaseDate: '', category: 'action'
+          synopsis: '', director: '', cast: '', language: 'English', releaseDate: '', category: 'action', comingSoon: false
         });
         setEditingMovie(null);
         loadDashboardData();
@@ -312,7 +313,8 @@ const AdminDashboard = () => {
       cast: movie.cast.join(', '),
       language: movie.language,
       releaseDate: movie.releaseDate ? movie.releaseDate.split('T')[0] : '',
-      category: movie.category
+      category: movie.category,
+      comingSoon: movie.comingSoon || false
     });
     setEditingMovie(movie);
     setActiveTab('movies');
@@ -886,6 +888,18 @@ const AdminDashboard = () => {
                   />
                 </div>
 
+                <div className="form-group">
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={movieForm.comingSoon}
+                      onChange={(e) => setMovieForm({...movieForm, comingSoon: e.target.checked})}
+                      style={{ width: 'auto', cursor: 'pointer' }}
+                    />
+                    <span>Mark as Coming Soon (Movie will appear in Coming Soon section without showtimes)</span>
+                  </label>
+                </div>
+
                 <div className="form-actions">
                   <button type="submit" disabled={loading}>
                     {loading ? 'Saving...' : (editingMovie ? 'Update Movie' : 'Add Movie')}
@@ -895,7 +909,7 @@ const AdminDashboard = () => {
                       setEditingMovie(null);
                       setMovieForm({
                         title: '', image: '', genre: '', duration: '', rating: '', year: '',
-                        synopsis: '', director: '', cast: '', language: 'English', releaseDate: '', category: 'action'
+                        synopsis: '', director: '', cast: '', language: 'English', releaseDate: '', category: 'action', comingSoon: false
                       });
                     }}>
                       Cancel Edit
