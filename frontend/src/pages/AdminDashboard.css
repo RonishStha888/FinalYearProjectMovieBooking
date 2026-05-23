@@ -1059,7 +1059,7 @@
 
 /* Cinema Management */
 .cinemas-content {
-  background: #000000;
+  background: #ffffff76;
   padding: 2rem;
   border-radius: 8px;
   color: #ffffff;
@@ -1084,7 +1084,7 @@
 }
 
 .cinema-row {
-  background: #1a1a1a;
+  background: #0a003a;
   border: 1px solid #333;
   border-radius: 8px;
   padding: 1.5rem;
