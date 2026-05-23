@@ -169,6 +169,9 @@ export default function HomePage({ user, onLogout }) {
         // For coming-soon, filter movies marked as comingSoon
         if (selectedCategory === 'coming-soon') {
           filteredMovies = data.movies.filter(movie => movie.comingSoon === true);
+        } else if (selectedCategory === 'now-showing') {
+          // For now-showing, exclude movies marked as comingSoon
+          filteredMovies = data.movies.filter(movie => movie.comingSoon !== true);
         }
         
         setMovies(filteredMovies);
