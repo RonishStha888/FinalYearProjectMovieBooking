@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
   padding: 2rem;
-  color: #ffffff;
+  color: #000000;
 }
 
 .cinemas-header {
@@ -1004,3 +1004,50 @@
     border-radius: 0;
   }
 }
+
+
+/* Hide or customize the routing control panel on the map */
+.leaflet-routing-container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  max-width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+/* Customize the routing control header */
+.leaflet-routing-container h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #202124;
+  margin: 0 0 10px 0;
+}
+
+/* Customize the routing alternatives */
+.leaflet-routing-alternatives-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Style the collapse button */
+.leaflet-routing-collapse-btn {
+  background: #1a73e8;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.leaflet-routing-collapse-btn:hover {
+  background: #1557b0;
+}
+
+/* If you want to hide the routing panel completely, uncomment this: */
+/*
+.leaflet-routing-container {
+  display: none !important;
+}
+*/
