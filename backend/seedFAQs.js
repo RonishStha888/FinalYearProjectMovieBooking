@@ -1,91 +1,151 @@
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 import FAQ from './models/FAQ.js';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-const defaultFAQs = [
+dotenv.config({ path: join(__dirname, '.env') });
+
+const faqs = [
+  // Booking & Tickets
   {
-    question: 'How do I book a movie ticket?',
-    answer: 'You can book tickets by selecting a movie, choosing your showtime, picking your seats, and completing payment on our website.',
-    keywords: 'book,ticket,how,purchase,buy,reserve'
+    question: "How do I book tickets?",
+    answer: "You can book tickets easily on our website! Just:\n1. Browse movies on the homepage\n2. Select your preferred movie\n3. Choose cinema, date, and showtime\n4. Select your seats\n5. Add food & beverages (optional)\n6. Complete payment\n\nYou'll receive your e-ticket via email!",
+    keywords: "book,booking,tickets,reserve,reservation,how,purchase,buy"
   },
   {
-    question: 'What payment methods do you accept?',
-    answer: 'We accept credit/debit cards, eSewa, Khalti, and cash at the counter.',
-    keywords: 'payment,pay,card,esewa,khalti,cash,method,accept'
+    question: "Can I cancel my booking?",
+    answer: "Yes, you can cancel your booking up to 2 hours before the showtime. To cancel:\n1. Go to 'My Bookings' in your profile\n2. Select the booking you want to cancel\n3. Click 'Cancel Booking'\n\nRefunds will be processed within 5-7 business days.",
+    keywords: "cancel,cancellation,refund,return,money,back"
   },
   {
-    question: 'Can I cancel or refund my ticket?',
-    answer: 'Yes, cancellations are allowed up to 2 hours before the showtime. Refunds are processed within 3-5 business days.',
-    keywords: 'cancel,refund,return,money back,cancellation'
+    question: "What payment methods do you accept?",
+    answer: "We accept multiple payment methods:\n• Khalti\n• eSewa\n• Credit/Debit Cards\n• Mobile Banking\n\nAll payments are secure and encrypted!",
+    keywords: "payment,pay,khalti,esewa,card,credit,debit,method,how,money"
   },
   {
-    question: 'How do I select seats?',
-    answer: 'After choosing your showtime, an interactive seat map will appear. Click on available seats to select them.',
-    keywords: 'seat,select,choose,map,pick'
+    question: "How do I get my tickets?",
+    answer: "After successful payment, you'll receive:\n1. E-ticket via email\n2. Booking confirmation on your profile\n3. QR code for entry\n\nJust show the QR code at the cinema entrance!",
+    keywords: "ticket,eticket,receive,get,email,qr,code,confirmation"
+  },
+  
+  // Showtimes & Movies
+  {
+    question: "What are your show timings?",
+    answer: "Our showtimes vary by cinema and movie. Typically:\n• Morning shows: 10:00 AM - 12:00 PM\n• Afternoon shows: 1:00 PM - 4:00 PM\n• Evening shows: 5:00 PM - 8:00 PM\n• Night shows: 9:00 PM onwards\n\nCheck our website for specific showtimes for each movie!",
+    keywords: "showtime,timing,time,schedule,when,hours,show"
   },
   {
-    question: 'Are there any discounts or offers?',
-    answer: 'We offer student discounts, weekend combo deals, and loyalty rewards for regular customers.',
-    keywords: 'discount,offer,deal,promo,student,cheap,sale'
+    question: "Do you have 3D movies?",
+    answer: "Yes! We offer 3D movies at select cinemas. Look for the '3D' tag when browsing movies. 3D glasses are provided at the cinema.\n\nCinemas with 3D:\n• QFX Civil Mall\n• QFX Jai Nepal\n• Fcube Cinemas",
+    keywords: "3d,three,dimension,glasses,imax,special"
+  },
+  
+  // Cinemas & Locations
+  {
+    question: "Where are your cinemas located?",
+    answer: "We have cinemas across Kathmandu Valley:\n\n🎬 Kathmandu:\n• QFX Labim Mall - Pulchowk\n• QFX Civil Mall - Sundhara\n• QFX Jai Nepal - Jamal\n• Gopi Krishna Movies - Jamal\n\n🎬 Bhaktapur:\n• Fcube Cinemas - Sallaghari\n• Big Movies - Kamal Binayak\n\nVisit our 'Cinemas' page for directions!",
+    keywords: "location,where,cinema,address,branch,place,find"
   },
   {
-    question: 'What are the cinema timings?',
-    answer: 'Our cinema is open daily from 10:00 AM to 11:00 PM. Showtimes vary by movie.',
-    keywords: 'timing,time,open,hours,schedule,when'
+    question: "Do you have parking facilities?",
+    answer: "Yes! Most of our cinemas offer parking:\n\n✅ With Parking:\n• QFX Labim Mall\n• QFX Civil Mall\n• Fcube Cinemas\n• Big Movies\n\n❌ Limited Parking:\n• QFX Jai Nepal\n• Gopi Krishna Movies\n\nWe recommend using public transport or ride-sharing for city center locations.",
+    keywords: "parking,park,car,vehicle,space,lot"
+  },
+  
+  // Food & Beverages
+  {
+    question: "Can I order food at the cinema?",
+    answer: "Absolutely! We offer a variety of food & beverages:\n• Popcorn (Small, Medium, Large)\n• Soft Drinks\n• Nachos\n• Hot Dogs\n• Combo Deals\n\nYou can pre-order while booking tickets or buy at the cinema counter!",
+    keywords: "food,snacks,popcorn,drinks,beverages,eat,combo,nachos"
   },
   {
-    question: 'How do I get my tickets after booking?',
-    answer: 'You will receive an e-ticket via email and SMS. You can also download it from your account under "My Bookings".',
-    keywords: 'get ticket,e-ticket,download,email,sms,my bookings,receive'
+    question: "Do you have combo offers?",
+    answer: "Yes! We have great combo deals:\n\n🍿 Classic Combo - NPR 450\n• 1 Large Popcorn\n• 2 Soft Drinks\n\n🌭 Mega Combo - NPR 650\n• 1 Large Popcorn\n• 2 Soft Drinks\n• 1 Hot Dog\n• 1 Nachos\n\nCheck our F&B menu while booking!",
+    keywords: "combo,offer,deal,package,discount,special,promotion"
+  },
+  
+  // Loyalty & Rewards
+  {
+    question: "Do you have a loyalty program?",
+    answer: "Yes! Join RTX Rewards and earn points:\n\n💎 Earn Points:\n• 10 points per NPR 100 spent\n• Bonus points on special days\n• Birthday rewards\n\n🎁 Redeem Points:\n• Free tickets\n• Food vouchers\n• Exclusive discounts\n\nSign up on our website to start earning!",
+    keywords: "loyalty,rewards,points,earn,redeem,membership,program"
+  },
+  
+  // Technical Support
+  {
+    question: "I'm having trouble with the website",
+    answer: "Sorry to hear that! Try these steps:\n\n1. Clear your browser cache\n2. Try a different browser\n3. Check your internet connection\n4. Disable ad blockers\n\nStill having issues? Contact us:\n📞 Call: 9828999454\n💬 WhatsApp: 9828999454\n📧 Email: support@rtxcinema.com",
+    keywords: "problem,issue,error,bug,not,working,website,technical,help,support"
   },
   {
-    question: 'Can I book tickets for a group?',
-    answer: 'Yes, you can book up to 10 tickets in a single transaction. For larger groups, please contact us directly.',
-    keywords: 'group,multiple,bulk,many people,friends,family'
+    question: "How do I create an account?",
+    answer: "Creating an account is easy!\n\n1. Click 'Sign Up' on the homepage\n2. Enter your details:\n   • Name\n   • Email\n   • Phone number\n   • Password\n3. Verify your email\n4. Start booking!\n\nBenefits:\n✅ Faster checkout\n✅ Booking history\n✅ Loyalty points\n✅ Exclusive offers",
+    keywords: "account,signup,register,create,join,new,user"
+  },
+  
+  // Pricing & Discounts
+  {
+    question: "What are your ticket prices?",
+    answer: "Ticket prices vary by cinema, movie type, and showtime:\n\n💰 Standard Movies:\n• Weekdays: NPR 300-400\n• Weekends: NPR 400-500\n\n💰 3D Movies:\n• Weekdays: NPR 450-550\n• Weekends: NPR 550-650\n\n🎉 Special Discounts:\n• Student discounts (with ID)\n• Senior citizen discounts\n• Group bookings (10+ people)\n\nPrices shown during booking!",
+    keywords: "price,cost,ticket,how,much,rate,charge,fee"
   },
   {
-    question: 'Is there parking available?',
-    answer: 'Yes, we have free parking available for all moviegoers.',
-    keywords: 'parking,park,car,vehicle'
+    question: "Do you offer student discounts?",
+    answer: "Yes! Students get 10% off on weekday shows!\n\n📚 How to avail:\n1. Book tickets online\n2. Show your valid student ID at the counter\n3. Get your discount!\n\n⚠️ Terms:\n• Valid student ID required\n• Weekdays only (Mon-Fri)\n• Not applicable on public holidays\n• Cannot be combined with other offers",
+    keywords: "student,discount,offer,id,card,college,university,school"
+  },
+  
+  // Contact & Support
+  {
+    question: "How can I contact you?",
+    answer: "We're here to help! Contact us:\n\n📞 Phone: 9828999454\n💬 WhatsApp: 9828999454\n📧 Email: support@rtxcinema.com\n\n🕐 Support Hours:\nDaily: 10:00 AM - 9:00 PM\n\nFor urgent issues, call or WhatsApp us!",
+    keywords: "contact,call,phone,email,support,help,reach,customer,service"
   },
   {
-    question: 'Do you have food and beverages?',
-    answer: 'Yes, we have a full concession stand with popcorn, drinks, snacks, and combo meals.',
-    keywords: 'food,drink,popcorn,snack,beverage,concession,eat,combo'
+    question: "What are your operating hours?",
+    answer: "Our cinemas are open daily!\n\n🎬 Cinema Hours:\n• First show: 10:00 AM\n• Last show: 10:00 PM\n\n🎫 Booking:\n• Online: 24/7\n• Counter: 9:30 AM - 10:30 PM\n\n📞 Customer Support:\n• Daily: 10:00 AM - 9:00 PM",
+    keywords: "hours,timing,open,close,operating,time,when"
+  },
+  
+  // Age Restrictions
+  {
+    question: "Are there age restrictions for movies?",
+    answer: "Yes, we follow the Film Censor Board ratings:\n\n🎬 U (Universal): All ages\n🎬 U/A: Parental guidance for under 12\n🎬 A (Adult): 18+ only (ID required)\n\nAge verification may be required at entry. Please carry a valid ID for A-rated movies.",
+    keywords: "age,restriction,rating,adult,children,kids,censor,allowed"
   }
 ];
 
 async function seedFAQs() {
   try {
-    // Connect to MongoDB
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log('✅ Connected to MongoDB');
+    console.log('Connected to MongoDB\n');
 
-    // Check if FAQs already exist
-    const existingCount = await FAQ.countDocuments();
-    
-    if (existingCount > 0) {
-      console.log(`ℹ️  ${existingCount} FAQs already exist. Skipping seed.`);
-      console.log('💡 To re-seed, delete existing FAQs first.');
-    } else {
-      // Insert default FAQs
-      await FAQ.insertMany(defaultFAQs);
-      console.log(`✅ Successfully seeded ${defaultFAQs.length} FAQs`);
-    }
+    // Clear existing FAQs
+    await FAQ.deleteMany({});
+    console.log('Cleared existing FAQs\n');
 
-    // Display seeded FAQs
-    const allFAQs = await FAQ.find();
-    console.log('\n📋 Current FAQs in database:');
-    allFAQs.forEach((faq, index) => {
-      console.log(`\n${index + 1}. ${faq.question}`);
-      console.log(`   Keywords: ${faq.keywords}`);
-    });
+    // Insert new FAQs
+    await FAQ.insertMany(faqs);
+    console.log(`✓ Successfully seeded ${faqs.length} FAQs!\n`);
 
-    process.exit(0);
+    console.log('FAQ Categories:');
+    console.log('• Booking & Tickets: 4 FAQs');
+    console.log('• Showtimes & Movies: 2 FAQs');
+    console.log('• Cinemas & Locations: 2 FAQs');
+    console.log('• Food & Beverages: 2 FAQs');
+    console.log('• Loyalty & Rewards: 1 FAQ');
+    console.log('• Technical Support: 2 FAQs');
+    console.log('• Pricing & Discounts: 2 FAQs');
+    console.log('• Contact & Support: 2 FAQs');
+    console.log('• Age Restrictions: 1 FAQ');
+
+    mongoose.connection.close();
   } catch (error) {
-    console.error('❌ Error seeding FAQs:', error);
+    console.error('Error seeding FAQs:', error);
     process.exit(1);
   }
 }
