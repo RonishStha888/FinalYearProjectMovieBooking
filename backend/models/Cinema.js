@@ -6,6 +6,10 @@ const cinemaSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  image: {
+    type: String,
+    default: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800'
+  },
   location: {
     type: String,
     required: true
