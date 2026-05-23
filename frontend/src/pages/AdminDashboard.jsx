@@ -1096,6 +1096,33 @@ const AdminDashboard = () => {
             </div>
           )}
 
+          {activeTab === 'cinemas' && (
+            <div className="cinemas-content">
+              <h2>Cinema Management</h2>
+              
+              <div className="cinemas-list">
+                <h3>All Cinemas</h3>
+                <div className="cinemas-table">
+                  {cinemas.map(cinema => (
+                    <div key={cinema._id} className="cinema-row">
+                      <div className="cinema-details">
+                        <h4>{cinema.name}</h4>
+                        <p>{cinema.location} • {cinema.city}</p>
+                        <p>{cinema.address}</p>
+                        <p>Distance: {cinema.distance} • Rating: {cinema.rating}/5</p>
+                        {cinema.amenities && cinema.amenities.length > 0 && (
+                          <p>Amenities: {cinema.amenities.join(', ')}</p>
+                        )}
+                        {cinema.phone && <p>Phone: {cinema.phone}</p>}
+                        {cinema.email && <p>Email: {cinema.email}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'fb' && (
             <div className="fb-content">
               <h2>Food & Beverage Management</h2>

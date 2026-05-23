@@ -1056,3 +1056,63 @@
     flex: 1;
   }
 }
+
+/* Cinema Management */
+.cinemas-content {
+  background: #000000;
+  padding: 2rem;
+  border-radius: 8px;
+  color: #ffffff;
+}
+
+.cinemas-content h2 {
+  color: #ffffff;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+}
+
+.cinemas-content h3 {
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+}
+
+.cinemas-table {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cinema-row {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.cinema-row:hover {
+  background: #222;
+  border-color: #D84040;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(216, 64, 64, 0.2);
+}
+
+.cinema-details h4 {
+  color: #ffffff;
+  font-size: 1.3rem;
+  margin: 0 0 0.8rem 0;
+  font-weight: 600;
+}
+
+.cinema-details p {
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.cinema-details p:first-of-type {
+  color: #D84040;
+  font-weight: 500;
+}
