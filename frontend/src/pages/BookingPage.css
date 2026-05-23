@@ -260,7 +260,7 @@ html, body {
 }
 
 .date-card {
-  background: rgba(21, 0, 0, 0.613);
+  background: rgba(1, 0, 0, 0.655);
   border: 2px solid transparent;
   border-radius: 16px;
   padding: 24px 16px;
@@ -275,8 +275,8 @@ html, body {
 }
 
 .date-card:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(216, 64, 64, 0.5);
+  background: rgb(0, 0, 0);
+  border-color: rgb(0, 0, 0);
   transform: translateY(-2px);
 }
 
@@ -434,7 +434,7 @@ html, body {
   font-size: 16px;
   font-weight: 600;
   margin: 0 0 8px 0;
-  color: #d84040;
+  color: #ea0f0f;
 }
 
 .class-details {

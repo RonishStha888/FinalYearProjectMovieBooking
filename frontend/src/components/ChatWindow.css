@@ -1,12 +1,12 @@
 .chat-window-overlay {
   position: fixed;
-  bottom: 24px;
-  left: 24px;
+  bottom: 30px;
+  left: 40px;
   z-index: 9999;
 }
 
 .chat-window {
-  width: 420px;
+  width: 600px;
   height: 600px;
   background: white;
   border-radius: 16px;

@@ -364,9 +364,8 @@ export default function BookingPage({ movie, onBack }) {
           <div className="section-card">
             <div className="section-header-with-button">
               <h2 className="section-title">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <svg width="20" height="20" viewBox="0 0 24 24" >
                   <path d="M7 7H17V17H7V7Z" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M3 7V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V7C21 5.89543 20.1046 5 19 5H5C3.89543 5 3 5.89543 3 7Z" stroke="currentColor" strokeWidth="2"/>
                 </svg>
                 Choose Cinema & Time
               </h2>
