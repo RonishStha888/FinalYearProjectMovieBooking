@@ -7,6 +7,7 @@ import FavoritesPage from "./FavoritesPage";
 import SettingsPage from "./SettingsPage";
 import HelpSupportPage from "./HelpSupportPage";
 import LoyaltyPage from "./LoyaltyPage";
+import CinemasPage from "./CinemasPage";
 import FloatingActionButtons from "../components/FloatingActionButtons";
 import logo from "../assets/logo.png";
 import FeedbackModal from "../components/FeedbackModal";
@@ -279,6 +280,10 @@ export default function HomePage({ user, onLogout }) {
     return <LoyaltyPage key={loyaltyRefreshKey} user={user} onBack={handleBackToHome} newPoints={lastEarnedPoints} />;
   }
 
+  if (currentPage === 'cinemas') {
+    return <CinemasPage onBack={handleBackToHome} />;
+  }
+
   // Determine which movies to display
   const displayMovies = isSearching ? searchResults : movies;
 
@@ -324,7 +329,12 @@ export default function HomePage({ user, onLogout }) {
             >
               Top Rated
             </button>
-            <button className="nav-link">Cinemas</button>
+            <button 
+              className={`nav-link ${currentPage === 'cinemas' ? 'active' : ''}`}
+              onClick={() => { setCurrentPage('cinemas'); clearSearch(); }}
+            >
+              Cinemas
+            </button>
             <button className="nav-link">Offers</button>
             <button
               className={`nav-link ${currentPage === 'loyalty' ? 'active' : ''}`}
