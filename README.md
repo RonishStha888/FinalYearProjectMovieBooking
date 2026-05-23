@@ -1,10 +1,10 @@
-# 🎬 RTX Cinema - Professional Movie Booking System
+#RTX Cinema - Professional Movie Booking System
 
 A comprehensive cinema booking system built with React.js and Node.js, featuring realistic seat selection, real movie data integration, and professional cinema-grade UI design.
 
-## 🎯 Features
+## Features
 
-### 🎭 Professional Seat Selection System
+### Professional Seat Selection System
 - **Realistic Cinema Layouts**: Based on actual QFX Cinema, FCube Cinema, and Big Movies configurations
 - **Interactive Seat Map**: Click to select/deselect seats with visual feedback
 - **Premium Seating**: Gold borders for premium rows with +Rs. 100 surcharge
@@ -12,25 +12,25 @@ A comprehensive cinema booking system built with React.js and Node.js, featuring
 - **Dynamic Pricing**: Weekend pricing, premium surcharges, convenience fees
 - **Professional UI**: Cinema-grade design with glassmorphism effects
 
-### 🎬 Real Movie Integration
+### Real Movie Integration
 - **10 Current Movies**: Spider-Man, Top Gun, Avatar, Black Panther, Batman, etc.
 - **Real TMDB Posters**: High-quality movie posters from The Movie Database
 - **Movie Categories**: Top Rated, Action, Coming Soon
 - **Complete Movie Data**: Cast, director, synopsis, ratings, duration
 
-### 🏢 Realistic Cinema Data
+### Realistic Cinema Data
 - **QFX Cinema Jai Nepal**: Regular Hall (156 seats) + Gold Class (48 recliners)
 - **FCube Cinema Labim Mall**: Standard Hall (120 seats) + Premium (60 recliners)
 - **Big Movies Civil Mall**: Main Hall (140 seats)
 - **2,800 Showtimes**: 14 days of showtimes across all movies and halls
 - **Dynamic Pricing**: Weekend surcharges, hall-specific pricing
 
-### 🔐 User Authentication
+### User Authentication
 - **Email Verification**: Gmail SMTP integration with verification codes
 - **Secure Login**: Bcrypt password hashing
 - **Multiple Auth Methods**: Email and username login
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js (v14 or higher)
@@ -91,13 +91,13 @@ A comprehensive cinema booking system built with React.js and Node.js, featuring
    - Frontend: http://localhost:3000
    - Backend: http://localhost:5000
 
-## 🔑 Test Login Credentials
+## Test Login Credentials
 
 - **Username**: `testuser` | **Password**: `password123`
 - **Username**: `admin` | **Password**: `password123`
 - **Username**: `john_doe` | **Password**: `password123`
 
-## 🎬 Complete Booking Flow
+## Complete Booking Flow
 
 ```
 Login → Browse Movies → Select Date/Time/Cinema → Choose Seats → Confirm Booking
@@ -114,7 +114,7 @@ Login → Browse Movies → Select Date/Time/Cinema → Choose Seats → Confirm
 7. **Select Seats**: Experience professional seat selection with realistic layouts
 8. **Confirm Booking**: Complete booking with total pricing
 
-## 🏗️ Technical Architecture
+## Technical Architecture
 
 ### Frontend (React.js)
 - **React 18** with Vite
@@ -138,7 +138,7 @@ Login → Browse Movies → Select Date/Time/Cinema → Choose Seats → Confirm
 - **Showtimes**: 2,800+ showtimes across 14 days
 - **Bookings**: Complete booking records
 
-## 🎭 Cinema Hall Configurations
+##  Cinema Hall Configurations
 
 ### QFX Cinema Jai Nepal (Chabahil)
 - **Regular Hall**: 12 rows (A-L), 156 seats, Premium rows F-H
@@ -151,7 +151,7 @@ Login → Browse Movies → Select Date/Time/Cinema → Choose Seats → Confirm
 ### Big Movies (Civil Mall)
 - **Main Hall**: 14 rows (A-N), 140 seats, Premium rows G-J
 
-## 💰 Pricing Structure
+##  Pricing Structure
 
 - **Base Prices**: Rs. 380-700 depending on hall type
 - **Weekend Surcharge**: Automatic weekend pricing
@@ -159,7 +159,7 @@ Login → Browse Movies → Select Date/Time/Cinema → Choose Seats → Confirm
 - **Recliner Surcharge**: Luxury seating premium
 - **Convenience Fee**: Rs. 25 (industry standard)
 
-## 🎨 UI/UX Features
+## UI/UX Features
 
 - **Cinema Red Theme**: Professional #D84040 color scheme
 - **Glassmorphism Effects**: Modern backdrop blur and transparency
@@ -168,14 +168,14 @@ Login → Browse Movies → Select Date/Time/Cinema → Choose Seats → Confirm
 - **Responsive Design**: Perfect on all devices
 - **Professional Typography**: Inter font family
 
-## 📱 Responsive Design
+##  Responsive Design
 
 - **Desktop (1920x1080)**: Full cinema experience
 - **Laptop (1200px)**: Optimized seat sizing
 - **Tablet (968px)**: Stacked layout with touch-friendly seats
 - **Mobile (640px)**: Compact seat map with scrolling
 
-## 🔧 API Endpoints
+##  API Endpoints
 
 ### Authentication
 - `POST /api/auth/register` - User registration
@@ -192,7 +192,7 @@ Login → Browse Movies → Select Date/Time/Cinema → Choose Seats → Confirm
 - `GET /api/cinemas` - Get all cinemas
 - `GET /api/cinemas/:id` - Get cinema details
 
-## 🎬 Movie Data
+##  Movie Data
 
 Current movies with real TMDB posters:
 - Spider-Man: No Way Home (8.2/10)
@@ -206,7 +206,7 @@ Current movies with real TMDB posters:
 - Fast X (5.8/10)
 - Guardians of the Galaxy Vol. 3 (8.0/10)
 
-## 🏆 Professional Features
+##  Professional Features
 
 - **Industry-Standard Layouts**: Matches real cinema configurations
 - **Realistic Pricing**: Based on actual Nepali cinema pricing
@@ -215,7 +215,7 @@ Current movies with real TMDB posters:
 - **Accessibility**: Disabled seat handling
 - **Performance Optimized**: Efficient rendering and state management
 
-## 📊 System Statistics
+##  System Statistics
 
 - **3 Cinemas** with realistic data
 - **5 Different Halls** with varying capacities
@@ -224,7 +224,7 @@ Current movies with real TMDB posters:
 - **4 Daily Shows** per hall (10:30, 13:45, 17:00, 20:15)
 - **Professional UI** optimized for cinema booking
 
-## 🤝 Contributing
+##  Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
@@ -232,17 +232,17 @@ Current movies with real TMDB posters:
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👨‍💻 Author
+##  Author
 
 **Ronish Shrestha**
 - GitHub: [@RonishStha888](https://github.com/RonishStha888)
 - Project: Final Year Project - Movie Booking System
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - **TMDB (The Movie Database)** for movie posters and data
 - **QFX Cinema, FCube Cinema, Big Movies** for realistic cinema layouts
@@ -251,6 +251,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 🎭 Experience Professional Cinema Booking!
+##  Experience Professional Cinema Booking!
 
 **Open http://localhost:3000, login with `testuser`/`password123`, and experience the complete cinema booking system with realistic seat selection!** 🎬✨
