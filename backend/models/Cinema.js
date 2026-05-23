@@ -37,6 +37,10 @@ const cinemaSchema = new mongoose.Schema({
     type: String,
     enum: ['Parking', 'Food Court', 'AC', 'Dolby Atmos', 'Premium Sound', 'Mall', '3D', 'IMAX']
   }],
+  halls: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Hall'
+  }],
   phone: {
     type: String
   },

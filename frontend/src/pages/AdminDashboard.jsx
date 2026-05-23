@@ -132,6 +132,22 @@ const AdminDashboard = () => {
     isActive: true
   });
 
+  // Hall form state
+  const [hallForm, setHallForm] = useState({
+    cinemaId: '',
+    hallNumber: '',
+    name: '',
+    type: 'REGULAR 2D',
+    totalSeats: '',
+    rows: '',
+    seatsPerRow: '',
+    basePrice: '',
+    weekendPrice: '',
+    features: [],
+    isActive: true
+  });
+
+  const [halls, setHalls] = useState([]);
   const [editingMovie, setEditingMovie] = useState(null);
   const [editingShowtime, setEditingShowtime] = useState(null);
   const [editingPromotion, setEditingPromotion] = useState(null);
@@ -139,6 +155,7 @@ const AdminDashboard = () => {
   const [editingFBItem, setEditingFBItem] = useState(null);
   const [editingFBOffer, setEditingFBOffer] = useState(null);
   const [editingCinema, setEditingCinema] = useState(null);
+  const [editingHall, setEditingHall] = useState(null);
 
   useEffect(() => {
     // Check admin authentication
@@ -457,6 +474,109 @@ const AdminDashboard = () => {
     }
   };
 
+  // Hall Management Functions
+  const loadHalls = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/admin/halls', {
+        headers: getAuthHeaders()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setHalls(data);
+      }
+    } catch (error) {
+      console.error('Error loading halls:', error);
+    }
+  };
+
+  const handleHallSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const url = editingHall 
+        ? `http://localhost:5000/api/admin/halls/${editingHall._id}`
+        : 'http://localhost:5000/api/admin/halls';
+      
+      const method = editingHall ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: getAuthHeaders(),
+        body: JSON.stringify({
+          ...hallForm,
+          totalSeats: parseInt(hallForm.totalSeats),
+          seatLayout: {
+            rows: parseInt(hallForm.rows),
+            seatsPerRow: parseInt(hallForm.seatsPerRow)
+          },
+          pricing: {
+            basePrice: parseFloat(hallForm.basePrice),
+            weekendPrice: parseFloat(hallForm.weekendPrice)
+          }
+        })
+      });
+
+      if (response.ok) {
+        alert(editingHall ? 'Hall updated successfully!' : 'Hall added successfully!');
+        setHallForm({
+          cinemaId: '', hallNumber: '', name: '', type: 'REGULAR 2D', totalSeats: '',
+          rows: '', seatsPerRow: '', basePrice: '', weekendPrice: '', features: [], isActive: true
+        });
+        setEditingHall(null);
+        loadHalls();
+        loadDashboardData();
+      } else {
+        const error = await response.json();
+        alert(error.message || 'Error saving hall');
+      }
+    } catch (error) {
+      console.error('Error saving hall:', error);
+      alert('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const editHall = (hall) => {
+    setHallForm({
+      cinemaId: hall.cinemaId._id || hall.cinemaId,
+      hallNumber: hall.hallNumber,
+      name: hall.name,
+      type: hall.type,
+      totalSeats: hall.totalSeats.toString(),
+      rows: hall.seatLayout.rows.toString(),
+      seatsPerRow: hall.seatLayout.seatsPerRow.toString(),
+      basePrice: hall.pricing.basePrice.toString(),
+      weekendPrice: hall.pricing.weekendPrice.toString(),
+      features: hall.features || [],
+      isActive: hall.isActive
+    });
+    setEditingHall(hall);
+  };
+
+  const deleteHall = async (hallId) => {
+    if (!confirm('Are you sure you want to delete this hall?')) return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/admin/halls/${hallId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+
+      if (response.ok) {
+        alert('Hall deleted successfully!');
+        loadHalls();
+        loadDashboardData();
+      } else {
+        alert('Error deleting hall');
+      }
+    } catch (error) {
+      console.error('Error deleting hall:', error);
+      alert('Network error. Please try again.');
+    }
+  };
+
   // F&B Management Functions
   const loadFBItems = async () => {
     try {
@@ -678,6 +798,8 @@ const AdminDashboard = () => {
     if (activeTab === 'fb') {
       loadFBItems();
       loadFBOffers();
+    } else if (activeTab === 'halls') {
+      loadHalls();
     }
   }, [activeTab]);
 
@@ -764,6 +886,11 @@ const AdminDashboard = () => {
             <li className={activeTab === 'cinemas' ? 'active' : ''}>
               <button onClick={() => setActiveTab('cinemas')}>
                 Cinemas
+              </button>
+            </li>
+            <li className={activeTab === 'halls' ? 'active' : ''}>
+              <button onClick={() => setActiveTab('halls')}>
+                Halls
               </button>
             </li>
             <li className={activeTab === 'banners' ? 'active' : ''}>
@@ -1357,6 +1484,186 @@ const AdminDashboard = () => {
                           Edit
                         </button>
                         <button onClick={() => deleteCinema(cinema._id)} className="delete-btn">
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'halls' && (
+            <div className="halls-content">
+              <h2>{editingHall ? 'Edit Hall' : 'Add New Hall'}</h2>
+              
+              <form onSubmit={handleHallSubmit} className="hall-form">
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Cinema *</label>
+                    <select
+                      value={hallForm.cinemaId}
+                      onChange={(e) => setHallForm({...hallForm, cinemaId: e.target.value})}
+                      required
+                    >
+                      <option value="">Select Cinema</option>
+                      {cinemas.map(cinema => (
+                        <option key={cinema._id} value={cinema._id}>{cinema.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Hall Number *</label>
+                    <input
+                      type="text"
+                      value={hallForm.hallNumber}
+                      onChange={(e) => setHallForm({...hallForm, hallNumber: e.target.value})}
+                      placeholder="e.g., 1, 2, A, B"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Hall Name *</label>
+                    <input
+                      type="text"
+                      value={hallForm.name}
+                      onChange={(e) => setHallForm({...hallForm, name: e.target.value})}
+                      placeholder="e.g., Hall 1, Premium Hall A"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Hall Type *</label>
+                    <select
+                      value={hallForm.type}
+                      onChange={(e) => setHallForm({...hallForm, type: e.target.value})}
+                      required
+                    >
+                      <option value="REGULAR 2D">Regular 2D</option>
+                      <option value="STANDARD 2D">Standard 2D</option>
+                      <option value="PREMIUM 2D">Premium 2D</option>
+                      <option value="GOLD CLASS 2D">Gold Class 2D</option>
+                      <option value="3D">3D</option>
+                      <option value="IMAX">IMAX</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Total Seats *</label>
+                    <input
+                      type="number"
+                      value={hallForm.totalSeats}
+                      onChange={(e) => setHallForm({...hallForm, totalSeats: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Rows *</label>
+                    <input
+                      type="number"
+                      value={hallForm.rows}
+                      onChange={(e) => setHallForm({...hallForm, rows: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Seats Per Row *</label>
+                    <input
+                      type="number"
+                      value={hallForm.seatsPerRow}
+                      onChange={(e) => setHallForm({...hallForm, seatsPerRow: e.target.value})}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Base Price (NPR) *</label>
+                    <input
+                      type="number"
+                      value={hallForm.basePrice}
+                      onChange={(e) => setHallForm({...hallForm, basePrice: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Weekend Price (NPR) *</label>
+                    <input
+                      type="number"
+                      value={hallForm.weekendPrice}
+                      onChange={(e) => setHallForm({...hallForm, weekendPrice: e.target.value})}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Features (select multiple)</label>
+                  <div className="amenities-checkboxes">
+                    {['Dolby Atmos', 'Premium Sound', 'Recliner Seats', 'AC', 'Food Service'].map(feature => (
+                      <label key={feature} className="checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={hallForm.features.includes(feature)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setHallForm({...hallForm, features: [...hallForm.features, feature]});
+                            } else {
+                              setHallForm({...hallForm, features: hallForm.features.filter(f => f !== feature)});
+                            }
+                          }}
+                        />
+                        {feature}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="form-actions">
+                  <button type="submit" disabled={loading}>
+                    {loading ? 'Saving...' : (editingHall ? 'Update Hall' : 'Add Hall')}
+                  </button>
+                  {editingHall && (
+                    <button type="button" onClick={() => {
+                      setEditingHall(null);
+                      setHallForm({
+                        cinemaId: '', hallNumber: '', name: '', type: 'REGULAR 2D', totalSeats: '',
+                        rows: '', seatsPerRow: '', basePrice: '', weekendPrice: '', features: [], isActive: true
+                      });
+                    }}>
+                      Cancel Edit
+                    </button>
+                  )}
+                </div>
+              </form>
+
+              <div className="halls-list">
+                <h3>All Halls</h3>
+                <div className="halls-table">
+                  {halls.map(hall => (
+                    <div key={hall._id} className="hall-row">
+                      <div className="hall-details">
+                        <h4>{hall.name} ({hall.type})</h4>
+                        <p>Cinema: {hall.cinemaId?.name || 'Unknown'}</p>
+                        <p>Hall Number: {hall.hallNumber}</p>
+                        <p>Total Seats: {hall.totalSeats} ({hall.seatLayout.rows} rows × {hall.seatLayout.seatsPerRow} seats)</p>
+                        <p>Pricing: NPR {hall.pricing.basePrice} (Weekday) / NPR {hall.pricing.weekendPrice} (Weekend)</p>
+                        {hall.features && hall.features.length > 0 && (
+                          <p>Features: {hall.features.join(', ')}</p>
+                        )}
+                      </div>
+                      <div className="hall-actions">
+                        <button onClick={() => editHall(hall)} className="edit-btn">
+                          Edit
+                        </button>
+                        <button onClick={() => deleteHall(hall._id)} className="delete-btn">
                           Delete
                         </button>
                       </div>
