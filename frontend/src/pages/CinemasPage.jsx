@@ -1,10 +1,33 @@
 import { useState, useEffect } from 'react';
 import './CinemasPage.css';
 
+// Import cinema images
+import qfxLabim from '../assets/qfx-labim.jpg';
+import qfxCivil from '../assets/qfx-civil.jpg';
+import qfxJainepal from '../assets/qfx-jainepal.png';
+import fcube from '../assets/fcube.png';
+import bigmovies from '../assets/bigmovies.jpg';
+import gopikrishna from '../assets/gopikrishna.jpg';
+
+// Map image paths to imported images
+const imageMap = {
+  '/src/assets/qfx-labim.jpg': qfxLabim,
+  '/src/assets/qfx-civil.jpg': qfxCivil,
+  '/src/assets/qfx-jainepal.png': qfxJainepal,
+  '/src/assets/fcube.png': fcube,
+  '/src/assets/bigmovies.jpg': bigmovies,
+  '/src/assets/gopikrishna.jpg': gopikrishna
+};
+
 export default function CinemasPage({ onBack }) {
   const [cinemas, setCinemas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCity, setSelectedCity] = useState('Kathmandu');
+
+  // Helper function to get the correct image
+  const getCinemaImage = (imagePath) => {
+    return imageMap[imagePath] || imagePath || 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800';
+  };
 
   useEffect(() => {
     fetchCinemas();
@@ -73,7 +96,7 @@ export default function CinemasPage({ onBack }) {
             <div key={cinema._id} className="cinema-card">
               <div className="cinema-image-container">
                 <img 
-                  src={cinema.image || 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800'} 
+                  src={getCinemaImage(cinema.image)} 
                   alt={cinema.name}
                   className="cinema-image"
                 />

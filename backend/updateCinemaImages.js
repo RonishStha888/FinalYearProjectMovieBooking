@@ -10,12 +10,12 @@ const __dirname = dirname(__filename);
 dotenv.config({ path: join(__dirname, '.env') });
 
 // Map cinema names to their local image paths
-// Update these paths after you upload cinema images to frontend/src/assets/
+// Images are stored in frontend/src/assets/
 const cinemaImages = {
   'QFX Labim Mall': '/src/assets/qfx-labim.jpg',
   'QFX Civil Mall': '/src/assets/qfx-civil.jpg',
-  'QFX Jai Nepal': '/src/assets/qfx-jainepal.jpg',
-  'Fcube Cinemas': '/src/assets/fcube.jpg',
+  'QFX Jai Nepal': '/src/assets/qfx-jainepal.png',
+  'Fcube Cinemas': '/src/assets/fcube.png',
   'Big Movies': '/src/assets/bigmovies.jpg',
   'Gopi Krishna Movies': '/src/assets/gopikrishna.jpg'
 };
