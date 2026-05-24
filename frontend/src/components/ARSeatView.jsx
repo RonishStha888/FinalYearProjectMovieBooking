@@ -401,27 +401,6 @@ export default function ARSeatView({
             </div>
           </div>
 
-          {/* Seats in front (what you see from your seat) */}
-          <div 
-            className="seats-in-front"
-            style={{
-              transform: `translateX(calc(-50% + ${parallaxX * 1.2}px)) translateY(${parallaxY * 0.6}px)`
-            }}
-          >
-            {[1, 2, 3, 4, 5].map((row) => (
-              <div key={row} className="front-seat-row" style={{
-                transform: `translateZ(${-50 - (row * 80)}px) translateY(${row * 8}px)`
-              }}>
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((seat) => (
-                  <div key={seat} className="front-seat">
-                    <div className="front-seat-back"></div>
-                    <div className="front-seat-headrest"></div>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-
           {/* Your seat selection overlay */}
           <div className="seat-selection-overlay">
             <div className="selected-seats-info">

@@ -420,7 +420,7 @@
   transform: translateX(-50%);
   width: 1200px;
   height: 600px;
-  z-index: 10;
+  z-index: 5;
   will-change: transform;
   transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -641,6 +641,7 @@
   box-shadow: 
     0 0 30px rgba(0, 0, 0, 0.8),
     inset 0 0 20px rgba(255, 255, 255, 0.1);
+  z-index: -1;
 }
 
 .screen-speakers {
@@ -696,6 +697,7 @@
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
+  z-index: 1;
 }
 
 .ceiling-pov {
@@ -879,12 +881,13 @@
 /* Seats in Front - Enhanced Performance */
 .seats-in-front {
   position: absolute;
-  top: 200px;
+  bottom: 200px;
   left: 50%;
   transform: translateX(-50%);
   transform-style: preserve-3d;
   will-change: transform;
   transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
 }
 
 .front-seat-row {
@@ -892,11 +895,13 @@
   display: flex;
   gap: 60px;
   transform-style: preserve-3d;
+  z-index: 150;
 }
 
 .front-seat {
   position: relative;
   transform-style: preserve-3d;
+  z-index: 150;
 }
 
 .front-seat-back {
@@ -905,6 +910,8 @@
   background: linear-gradient(135deg, #3a3a3a, #2a2a2a);
   border-radius: 8px 8px 0 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 150;
 }
 
 .front-seat-headrest {
@@ -915,6 +922,7 @@
   height: 20px;
   background: linear-gradient(135deg, #4a4a4a, #3a3a3a);
   border-radius: 8px;
+  z-index: 150;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
@@ -988,7 +996,7 @@
   position: absolute;
   top: -120px;
   left: 50%;
-  transform: translateX(-50%) rotateX(85deg);
+  transform: translateX(-50%) 
   width: 700px;
   height: 100px;
   z-index: 10;
@@ -1753,13 +1761,13 @@
 /* Enhanced Floor */
 .cinema-floor {
   position: absolute;
-  bottom: -400px;
+  bottom: 120px;
   left: -600px;
   width: 2000px;
   height: 1500px;
-  transform: rotateX(90deg);
+  transform: rotateX(70deg);
   opacity: 0.8;
-  z-index: -1;
+  z-index: 1;
 }
 
 .floor-pattern {
@@ -1791,6 +1799,8 @@
   position: relative;
   width: 100%;
   height: 100%;
+  top: 140px;
+  z-index: 10;
   transform-style: preserve-3d;
 }
 

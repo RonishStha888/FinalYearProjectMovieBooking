@@ -53,6 +53,24 @@ router.post('/khalti/sandbox-complete', async (req, res) => {
         customerInfo: { name: bookingData.userName || '', email: bookingData.userEmail || '', phone: '' }
       });
       console.log('✅ Booking saved to DB:', bookingReference);
+      
+      // Mark seats as permanently booked
+      if (bookingData.userId && bookingData.sessionId) {
+        try {
+          const SeatHold = (await import('../models/SeatHold.js')).default;
+          await SeatHold.updateMany(
+            { 
+              userId: bookingData.userId,
+              sessionId: bookingData.sessionId,
+              status: 'active'
+            },
+            { status: 'completed' }
+          );
+          console.log('✅ Seats marked as permanently booked');
+        } catch (seatErr) {
+          console.warn('⚠️ Failed to mark seats as booked:', seatErr.message);
+        }
+      }
     } catch (dbErr) {
       console.warn('⚠️ DB save failed (continuing anyway):', dbErr.message);
     }
@@ -142,6 +160,24 @@ router.post('/khalti/verify', async (req, res) => {
     });
 
     console.log('✅ Booking created:', bookingReference);
+
+    // Mark seats as permanently booked
+    if (bookingData.userId && bookingData.sessionId) {
+      try {
+        const SeatHold = (await import('../models/SeatHold.js')).default;
+        await SeatHold.updateMany(
+          { 
+            userId: bookingData.userId,
+            sessionId: bookingData.sessionId,
+            status: 'active'
+          },
+          { status: 'completed' }
+        );
+        console.log('✅ Seats marked as permanently booked');
+      } catch (seatErr) {
+        console.error('⚠️ Failed to mark seats as booked:', seatErr);
+      }
+    }
 
     // Award loyalty points
     if (bookingData.userId) {

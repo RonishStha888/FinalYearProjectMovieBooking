@@ -248,7 +248,12 @@ Thank you for choosing RTX Cinema!
       {/* Header */}
       <header className="ticket-header">
         <div className="header-content">
-          <div className="success-icon"></div>
+          <div className="success-icon">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="30" cy="30" r="28" fill="#4CAF50" stroke="#fff" strokeWidth="2"/>
+              <path d="M17 30L26 39L43 22" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
           <div className="success-message">
             <h1>Booking Confirmed!</h1>
             <p>Your tickets have been successfully booked</p>

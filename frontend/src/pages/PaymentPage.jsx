@@ -635,15 +635,6 @@ export default function PaymentPage({
                   <div className="wallet-details">
                     <h4>{paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'} Digital Wallet</h4>
                     <p>You will be redirected to a secure payment gateway to complete your transaction.</p>
-                    <div className="wallet-features">
-                      {paymentMethod === 'khalti' && (
-                        <div className="feature">Test Credentials: Mobile <strong>9800000000</strong> | MPIN <strong>1111</strong> | OTP <strong>987654</strong></div>
-                      )}
-                      {paymentMethod === 'esewa' && (
-                        <div className="feature">Test Credentials: ID <strong>9800000001</strong> | Password <strong>Nepal@123</strong> | OTP <strong>123456</strong></div>
-                      )}
-                      <div className="feature">Instant confirmation & e-ticket delivery</div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -652,7 +643,7 @@ export default function PaymentPage({
             {/* Loyalty Points Redemption */}
             <div className="loyalty-redeem-section">
               <div className="loyalty-redeem-header">
-                <div className="loyalty-redeem-icon">🎁</div>
+                <div className="loyalty-redeem-icon"></div>
                 <div>
                   <h4>Redeem Loyalty Rewards</h4>
                   <p>Available balance: <strong>{loyaltyPoints} points</strong></p>

@@ -43,18 +43,17 @@ router.get('/now-showing', async (req, res) => {
     const movies = await Movie.find({ 
       isActive: true,
       $or: [
-        { category: 'action' },
-        { category: 'coming-soon' },
-        { rating: { $gte: 7.5 } }
+        { comingSoon: false },
+        { comingSoon: { $exists: false } }
       ]
     })
-    .limit(6)
+    .limit(10)
     .sort({ rating: -1, releaseDate: -1 });
     
     res.json({
       success: true,
       movies,
-      message: 'Currently showing movies with real posters'
+      message: 'Currently showing movies'
     });
   } catch (error) {
     console.error('Error fetching now showing movies:', error);

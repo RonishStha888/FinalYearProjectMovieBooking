@@ -145,7 +145,7 @@
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  max-width: 420px;
+  max-width: 1520px;
   margin: 0 auto;
   width: 100%;
 }
@@ -678,8 +678,9 @@
 }
 
 .amenity-tag {
-  background: #e8f0fe;
-  color: #1a73e8;
+  background: linear-gradient(135deg, rgba(216, 64, 64, 0.15) 0%, rgba(216, 64, 64, 0.05) 100%);
+  color: #D84040;
+  border: 1px solid rgba(216, 64, 64, 0.3);
   padding: 6px 12px;
   border-radius: 16px;
   font-size: 13px;

@@ -434,7 +434,7 @@ html, body {
   font-size: 16px;
   font-weight: 600;
   margin: 0 0 8px 0;
-  color: #ea0f0f;
+  color: #D84040;
 }
 
 .class-details {
@@ -469,9 +469,9 @@ html, body {
 }
 
 .time-slot {
-  background: rgba(0, 0, 0, 0.752);
+  background: rgba(39, 39, 39, 0.752);
   border: 2px solid transparent;
-  color: white;
+  color: rgb(255, 255, 255);
   padding: 16px 20px;
   border-radius: 12px;
   cursor: pointer;

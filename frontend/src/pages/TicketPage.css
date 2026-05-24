@@ -342,15 +342,16 @@
 }
 
 .genre {
-  background: linear-gradient(135deg, rgba(216, 64, 64, 0.12), rgba(216, 64, 64, 0.08));
-  color: #D84040;
+  background: linear-gradient(135deg, #D84040, #c73636);
+  color: #ffffff;
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 700;
-  border: 1px solid rgba(216, 64, 64, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(216, 64, 64, 0.3);
 }
 
 .rating {

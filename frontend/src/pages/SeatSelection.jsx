@@ -94,8 +94,11 @@ export default function SeatSelection({
 
     setLoading(false);
 
-    // Poll for held seats every 5 seconds
-    const pollInterval = setInterval(fetchHeldSeats, 5000);
+    // Poll for held seats and booked seats every 5 seconds
+    const pollInterval = setInterval(() => {
+      fetchHeldSeats();
+      fetchBookedSeats();
+    }, 5000);
 
     // Cleanup on unmount
     return () => {

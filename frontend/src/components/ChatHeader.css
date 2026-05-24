@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 18px 24px;
-  background: linear-gradient(135deg, #D84040 0%, #ff5252 100%);
+  background: linear-gradient(135deg, #b50808 0%, #ff5252 100%);
   border-radius: 16px 16px 0 0;
   color: white;
   min-height: 72px;
@@ -119,11 +119,10 @@
 
 .quick-actions-toggle.active {
   background: rgba(255, 255, 255, 0.5);
-  transform: rotate(90deg);
 }
 
 .quick-actions-toggle.active:hover {
-  transform: rotate(90deg) scale(1.1);
+  transform: scale(1.1);
 }
 
 /* Pulse animation for online dot */

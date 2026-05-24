@@ -1,5 +1,8 @@
 .compare-checkbox-container {
-  display: inline-block;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
 }
 
 .compare-checkbox-label {

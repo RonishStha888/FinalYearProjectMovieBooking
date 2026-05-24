@@ -251,6 +251,15 @@ export default function HomePage({ user, onLogout }) {
     handleMovieClick(movie);
   };
 
+  const handleWatchTrailer = (movieTitle) => {
+    // Create YouTube search query for the movie trailer
+    const searchQuery = encodeURIComponent(`${movieTitle} official trailer`);
+    const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${searchQuery}`;
+    
+    // Open YouTube search in a new tab
+    window.open(youtubeSearchUrl, '_blank');
+  };
+
   if (showBooking && selectedMovie) {
     return <BookingPage movie={selectedMovie} onBack={handleBackToHome} />;
   }
@@ -282,6 +291,106 @@ export default function HomePage({ user, onLogout }) {
 
   if (currentPage === 'cinemas') {
     return <CinemasPage onBack={handleBackToHome} />;
+  }
+
+  if (currentPage === 'offers') {
+    return (
+      <div className="homepage-container">
+        <header className="professional-header" style={{ position: 'relative' }}>
+          <div className="header-content">
+            <div className="brand-section">
+              <div className="logo-container">
+                <div className="logo-icon">
+                  <img src={logo} alt="RTX Cinema Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                </div>
+              </div>
+              <div className="brand-text">
+              
+              </div>
+            </div>
+          </div>
+          <button 
+            className="back-button" 
+            onClick={handleBackToHome}
+            style={{
+              position: 'absolute',
+              bottom: '20px',
+              left: '20px',
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              color: '#ffffff',
+              padding: '12px 24px',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.3s ease',
+              backdropFilter: 'blur(10px)'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.12)';
+              e.currentTarget.style.transform = 'translateX(-4px)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+              e.currentTarget.style.transform = 'translateX(0)';
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Back to Home
+          </button>
+        </header>
+        <div className="offers-page-content" style={{
+          minHeight: '80vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '40px 20px',
+          textAlign: 'center'
+        }}>
+          <div style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: '16px',
+            padding: '48px 32px',
+            maxWidth: '500px',
+            backdropFilter: 'blur(10px)'
+          }}>
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" style={{ margin: '0 auto 24px' }}>
+              <path d="M9 2L7 7H2L6 10L4 15L9 12L14 15L12 10L16 7H11L9 2Z" stroke="#D84040" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="rgba(216, 64, 64, 0.1)"/>
+            </svg>
+            <h2 style={{ fontSize: '28px', fontWeight: '700', color: '#fff', marginBottom: '16px' }}>
+              No Offers Available
+            </h2>
+            <p style={{ fontSize: '16px', color: 'rgba(255, 255, 255, 0.7)', marginBottom: '24px' }}>
+              There are currently no offers available. Check back soon for exciting deals and promotions!
+            </p>
+            <button 
+              onClick={handleBackToHome}
+              style={{
+                background: 'linear-gradient(135deg, #D84040, #c73636)',
+                border: 'none',
+                color: 'white',
+                padding: '12px 32px',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              Browse Movies
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Determine which movies to display
@@ -335,7 +444,12 @@ export default function HomePage({ user, onLogout }) {
             >
               Cinemas
             </button>
-            <button className="nav-link">Offers</button>
+            <button 
+              className={`nav-link ${currentPage === 'offers' ? 'active' : ''}`}
+              onClick={() => { setCurrentPage('offers'); clearSearch(); }}
+            >
+              Offers
+            </button>
             <button
               className={`nav-link ${currentPage === 'loyalty' ? 'active' : ''}`}
               onClick={() => { setCurrentPage('loyalty'); clearSearch(); }}
@@ -580,7 +694,13 @@ export default function HomePage({ user, onLogout }) {
                   </svg>
                   Book Tickets
                 </button>
-                <button className="watch-trailer-btn">
+                <button 
+                  className="watch-trailer-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleWatchTrailer(featuredMovie.title);
+                  }}
+                >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <polygon points="5,3 19,12 5,21" fill="currentColor"/>
                   </svg>
@@ -736,8 +856,7 @@ export default function HomePage({ user, onLogout }) {
                     <div className="logo-icon">
                       <img src={logo} alt="RTX Cinema Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                     </div>
-                    <span>RTX Cinema</span>
-                  </div>
+                                      </div>
                   <p>Nepal's premier cinema chain delivering world-class movie experiences with cutting-edge technology and premium comfort.</p>
                   <div className="social-links">
                     <a href="#" className="social-link">FB</a>
