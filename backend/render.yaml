@@ -1,0 +1,27 @@
+# Render Blueprint for RTX Cinema Backend
+# This file can be used for automated deployment
+
+services:
+  - type: web
+    name: rtx-cinema-backend
+    env: node
+    region: singapore # Change to your preferred region
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false # Set this manually in Render dashboard
+      - key: EMAIL_USER
+        value: cinemasrtx@gmail.com
+      - key: EMAIL_PASS
+        sync: false # Set this manually in Render dashboard
+      - key: KHALTI_SECRET_KEY
+        value: test_secret_key_dc74e0fd57cb46cd93832aee0a390234
+      - key: KHALTI_PUBLIC_KEY
+        value: test_public_key_dc74e0fd57cb46cd93832aee0a507256
+    healthCheckPath: /api/movies

@@ -101,6 +101,7 @@ export default function PaymentPage({
 
       if (data.success) {
         sessionStorage.removeItem('pendingBooking');
+        sessionStorage.removeItem('sessionId'); // Clear session after successful payment
         onPaymentSuccess({
           ...pendingBooking,
           bookingId: data.booking._id,
@@ -188,15 +189,13 @@ export default function PaymentPage({
 
     // Mark seats as permanently booked
     try {
-      const showtimeId = selectedShowtime?._id || `showtime_${selectedCinema?._id}_${selectedDate}_${selectedShowtime?.time}`;
+      const sessionId = sessionStorage.getItem('sessionId') || `session_${Date.now()}`;
       await fetch('http://localhost:5000/api/seat-hold/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: userId || 'guest',
-          sessionId: `session_${Date.now()}`,
-          showtimeId,
-          seats: seatData.seats
+          sessionId: sessionId
         })
       });
       console.log('✅ Seats permanently booked');
@@ -237,6 +236,9 @@ export default function PaymentPage({
     // Store earned points for loyalty page banner
     const earnedPts = Math.floor(ticketTotal / 100);
     if (earnedPts > 0) sessionStorage.setItem('lastEarnedPoints', String(earnedPts));
+    
+    // Clear session after successful payment
+    sessionStorage.removeItem('sessionId');
 
     onPaymentSuccess({
       bookingId: `sandbox-${Date.now()}`,
@@ -275,15 +277,13 @@ export default function PaymentPage({
 
         // Mark seats as permanently booked
         try {
-          const showtimeId = selectedShowtime?._id || `showtime_${selectedCinema?._id}_${selectedDate}_${selectedShowtime?.time}`;
+          const sessionId = sessionStorage.getItem('sessionId') || `session_${Date.now()}`;
           await fetch('http://localhost:5000/api/seat-hold/complete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               userId: userId || 'guest',
-              sessionId: `session_${Date.now()}`,
-              showtimeId,
-              seats: seatData.seats
+              sessionId: sessionId
             })
           });
           console.log('✅ Seats permanently booked');
@@ -324,6 +324,9 @@ export default function PaymentPage({
         // Store earned points for loyalty page banner
         const earnedPts = Math.floor(ticketTotal / 100);
         if (earnedPts > 0) sessionStorage.setItem('lastEarnedPoints', String(earnedPts));
+        
+        // Clear session after successful payment
+        sessionStorage.removeItem('sessionId');
 
         const bookingData = {
           bookingId: `RTX${Date.now()}`,

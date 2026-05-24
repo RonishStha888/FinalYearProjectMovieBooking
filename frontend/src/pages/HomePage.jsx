@@ -251,15 +251,6 @@ export default function HomePage({ user, onLogout }) {
     handleMovieClick(movie);
   };
 
-  const handleWatchTrailer = (movieTitle) => {
-    // Create YouTube search query for the movie trailer
-    const searchQuery = encodeURIComponent(`${movieTitle} official trailer`);
-    const youtubeSearchUrl = `https://www.youtube.com/results?search_query=${searchQuery}`;
-    
-    // Open YouTube search in a new tab
-    window.open(youtubeSearchUrl, '_blank');
-  };
-
   if (showBooking && selectedMovie) {
     return <BookingPage movie={selectedMovie} onBack={handleBackToHome} />;
   }
@@ -694,13 +685,7 @@ export default function HomePage({ user, onLogout }) {
                   </svg>
                   Book Tickets
                 </button>
-                <button 
-                  className="watch-trailer-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleWatchTrailer(featuredMovie.title);
-                  }}
-                >
+                <button className="watch-trailer-btn">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <polygon points="5,3 19,12 5,21" fill="currentColor"/>
                   </svg>
@@ -720,20 +705,20 @@ export default function HomePage({ user, onLogout }) {
             <div className="locations-grid">
               <div className="location-card">
                 <div className="location-icon"></div>
-                <h3>QFX Jai Nepal</h3>
-                <p>Chabahil, Kathmandu</p>
+                <h3>QFX Civil Mall Nepal</h3>
+                <p>Sundhara, Kathmandu</p>
                 <span className="halls">3 Premium Halls</span>
               </div>
               <div className="location-card">
                 <div className="location-icon"></div>
-                <h3>FCube Labim Mall</h3>
+                <h3>QFX Labim Mall</h3>
                 <p>Lalitpur, Pulchowk</p>
                 <span className="halls">2 IMAX Halls</span>
               </div>
               <div className="location-card">
                 <div className="location-icon"></div>
-                <h3>Big Movies Civil Mall</h3>
-                <p>Sundhara, Kathmandu</p>
+                <h3>Big Movies</h3>
+                <p>Kalimati, Kathmandu</p>
                 <span className="halls">4 Regular Halls</span>
               </div>
             </div>

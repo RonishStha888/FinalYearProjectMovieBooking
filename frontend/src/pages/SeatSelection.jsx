@@ -20,7 +20,15 @@ export default function SeatSelection({
   const [holdId, setHoldId] = useState(null);
   const [timeRemaining, setTimeRemaining] = useState(600); // 10 minutes in seconds
   const [timerActive, setTimerActive] = useState(false);
-  const [sessionId] = useState(() => `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+  const [sessionId] = useState(() => {
+    // Check if sessionId already exists in sessionStorage
+    let existingSessionId = sessionStorage.getItem('sessionId');
+    if (!existingSessionId) {
+      existingSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      sessionStorage.setItem('sessionId', existingSessionId);
+    }
+    return existingSessionId;
+  });
 
   // Realistic seat layouts based on actual cinema configurations
   const getRealisticSeatLayout = (hallType, cinemaName) => {
