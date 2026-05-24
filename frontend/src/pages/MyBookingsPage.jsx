@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./MyBookingsPage.css";
+import { API_URL } from '../config';
 
 export default function MyBookingsPage({ user, onBack }) {
   const [bookings, setBookings] = useState([]);

@@ -13,6 +13,7 @@ import qfxJainepal from '../assets/qfx-jainepal.png';
 import fcube from '../assets/fcube.png';
 import bigmovies from '../assets/bigmovies.jpg';
 import gopikrishna from '../assets/gopikrishna.jpg';
+import { API_URL } from '../config';
 
 // Map image paths to imported images
 const imageMap = {
@@ -191,7 +192,7 @@ export default function CinemasPage({ onBack }) {
   const fetchCinemas = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/cinemas?city=${selectedCity}`);
+      const response = await fetch(`${API_URL}/api/cinemas?city=${selectedCity}`);
       const data = await response.json();
       
       if (data.success) {

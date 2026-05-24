@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "./SeatSelection.css";
 import ARSeatView from "../components/ARSeatView";
+import { API_URL } from '../config';
 
 export default function SeatSelection({ 
   movie, 
@@ -139,7 +140,7 @@ export default function SeatSelection({
       // Use a mock showtime ID if not available
       const showtimeId = selectedShowtime?._id || `showtime_${selectedCinema?._id}_${selectedDate}_${selectedShowtime?.time}`;
       
-      const response = await fetch(`http://localhost:5000/api/seat-hold/showtime/${showtimeId}`);
+      const response = await fetch(`${API_URL}/api/seat-hold/showtime/${showtimeId}`);
       const data = await response.json();
       
       if (data.success) {
@@ -155,7 +156,7 @@ export default function SeatSelection({
       // Use a mock showtime ID if not available
       const showtimeId = selectedShowtime?._id || `showtime_${selectedCinema?._id}_${selectedDate}_${selectedShowtime?.time}`;
       
-      const response = await fetch(`http://localhost:5000/api/seat-hold/booked/${showtimeId}`);
+      const response = await fetch(`${API_URL}/api/seat-hold/booked/${showtimeId}`);
       const data = await response.json();
       
       if (data.success) {
@@ -175,7 +176,7 @@ export default function SeatSelection({
       // Use a mock showtime ID if not available
       const showtimeId = selectedShowtime?._id || `showtime_${selectedCinema?._id}_${selectedDate}_${selectedShowtime?.time}`;
       
-      const response = await fetch('http://localhost:5000/api/seat-hold/hold', {
+      const response = await fetch('${API_URL}/api/seat-hold/hold', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -213,7 +214,7 @@ export default function SeatSelection({
     try {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       
-      await fetch('http://localhost:5000/api/seat-hold/release', {
+      await fetch('${API_URL}/api/seat-hold/release', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

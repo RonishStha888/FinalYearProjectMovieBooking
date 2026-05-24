@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './QuickBookModal.css';
+import { API_URL } from '../config';
 
 const QuickBookModal = ({ isOpen, onClose, onSelectMovie }) => {
   const [movies, setMovies] = useState([]);
@@ -16,14 +17,14 @@ const QuickBookModal = ({ isOpen, onClose, onSelectMovie }) => {
   const fetchMovies = async () => {
     setLoading(true);
     try {
-      let apiUrl = `http://localhost:5000/api/movies`;
+      let apiUrl = `${API_URL}/api/movies`;
       
       if (selectedCategory === 'now-showing') {
-        apiUrl = `http://localhost:5000/api/movies/now-showing`;
+        apiUrl = `${API_URL}/api/movies/now-showing`;
       } else if (selectedCategory === 'top-rated') {
-        apiUrl = `http://localhost:5000/api/movies/top-rated`;
+        apiUrl = `${API_URL}/api/movies/top-rated`;
       } else {
-        apiUrl = `http://localhost:5000/api/movies?category=${selectedCategory}&limit=12`;
+        apiUrl = `${API_URL}/api/movies?category=${selectedCategory}&limit=12`;
       }
       
       const response = await fetch(apiUrl);

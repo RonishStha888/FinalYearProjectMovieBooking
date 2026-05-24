@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./ProfilePage.css";
+import { API_URL } from '../config';
 
 export default function ProfilePage({ user, onBack }) {
   const [profileData, setProfileData] = useState({
@@ -55,7 +56,7 @@ export default function ProfilePage({ user, onBack }) {
     try {
       setLoyaltyLoading(true);
       console.log('Fetching loyalty data for user:', user._id);
-      const response = await fetch(`http://localhost:5000/api/loyalty/user/${user._id}`);
+      const response = await fetch(`${API_URL}/api/loyalty/user/${user._id}`);
       const data = await response.json();
       
       console.log('Loyalty data response:', data);

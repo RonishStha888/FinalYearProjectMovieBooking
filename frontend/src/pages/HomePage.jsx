@@ -12,6 +12,7 @@ import FloatingActionButtons from "../components/FloatingActionButtons";
 import logo from "../assets/logo.png";
 import FeedbackModal from "../components/FeedbackModal";
 import QuickBookModal from "../components/QuickBookModal";
+import { API_URL } from "../config";
 
 export default function HomePage({ user, onLogout }) {
   const [selectedCategory, setSelectedCategory] = useState("now-showing");
@@ -74,7 +75,7 @@ export default function HomePage({ user, onLogout }) {
 
   const fetchAllMovies = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/movies');
+      const response = await fetch(`${API_URL}/api/movies`);
       const data = await response.json();
       
       if (data.success && data.movies) {
@@ -148,17 +149,17 @@ export default function HomePage({ user, onLogout }) {
   const fetchMovies = async () => {
     setLoading(true);
     try {
-      let apiUrl = `http://localhost:5000/api/movies`;
+      let apiUrl = `${API_URL}/api/movies`;
       
       if (selectedCategory === 'now-showing') {
-        apiUrl = `http://localhost:5000/api/movies/now-showing`;
+        apiUrl = `${API_URL}/api/movies/now-showing`;
       } else if (selectedCategory === 'top-rated') {
-        apiUrl = `http://localhost:5000/api/movies/top-rated`;
+        apiUrl = `${API_URL}/api/movies/top-rated`;
       } else if (selectedCategory === 'coming-soon') {
         // Fetch all movies and filter those marked as coming soon
-        apiUrl = `http://localhost:5000/api/movies`;
+        apiUrl = `${API_URL}/api/movies`;
       } else {
-        apiUrl = `http://localhost:5000/api/movies?category=${selectedCategory}&limit=20`;
+        apiUrl = `${API_URL}/api/movies?category=${selectedCategory}&limit=20`;
       }
       
       const response = await fetch(apiUrl);

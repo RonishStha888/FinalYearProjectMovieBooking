@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './ParkingDiscountOffer.css';
+import { API_URL } from '../config';
 
 export default function ParkingDiscountOffer({ bookingId, userId, onClaim, onDismiss }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -10,7 +11,7 @@ export default function ParkingDiscountOffer({ bookingId, userId, onClaim, onDis
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:5000/api/parking/claim-coupon', {
+      const response = await fetch('${API_URL}/api/parking/claim-coupon', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

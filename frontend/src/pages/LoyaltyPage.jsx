@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./LoyaltyPage.css";
+import { API_URL } from '../config';
 
 export default function LoyaltyPage({ user, onBack, newPoints = 0 }) {
   const [loyaltyData, setLoyaltyData] = useState(null);
@@ -16,7 +17,7 @@ export default function LoyaltyPage({ user, onBack, newPoints = 0 }) {
     try {
       const userId = user?._id || user?.id;
       if (!userId) throw new Error("No user ID");
-      const res = await fetch(`http://localhost:5000/api/loyalty/user/${userId}`);
+      const res = await fetch(`${API_URL}/api/loyalty/user/${userId}`);
       const data = await res.json();
       if (data.success) setLoyaltyData(data);
       else throw new Error(data.message);

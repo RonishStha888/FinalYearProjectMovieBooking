@@ -4,6 +4,7 @@ import KhaltiSandboxPage from "./KhaltiSandboxPage";
 import EsewaSandboxPage from "./EsewaSandboxPage";
 import khaltiLogo from "../assets/khalti.png";
 import esewaLogo from "../assets/esewa.png";
+import { API_URL } from '../config';
 
 export default function PaymentPage({ 
   movie, 
@@ -44,7 +45,7 @@ export default function PaymentPage({
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const userId = user?._id || user?.id;
     if (!userId) return;
-    fetch(`http://localhost:5000/api/loyalty/user/${userId}`)
+    fetch(`${API_URL}/api/loyalty/user/${userId}`)
       .then(r => r.json())
       .then(data => {
         if (data.success) setLoyaltyPoints(data.loyaltyPoints?.available || 0);
@@ -91,7 +92,7 @@ export default function PaymentPage({
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const pendingBooking = JSON.parse(sessionStorage.getItem('pendingBooking') || '{}');
 
-      const response = await fetch('http://localhost:5000/api/payment/khalti/verify', {
+      const response = await fetch('${API_URL}/api/payment/khalti/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pidx, bookingData: pendingBooking })
@@ -190,7 +191,7 @@ export default function PaymentPage({
     // Mark seats as permanently booked
     try {
       const sessionId = sessionStorage.getItem('sessionId') || `session_${Date.now()}`;
-      await fetch('http://localhost:5000/api/seat-hold/complete', {
+      await fetch('${API_URL}/api/seat-hold/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -206,7 +207,7 @@ export default function PaymentPage({
     // Redeem points if selected
     if (userId && pointsToRedeem > 0) {
       try {
-        await fetch('http://localhost:5000/api/loyalty/redeem', {
+        await fetch('${API_URL}/api/loyalty/redeem', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId, points: pointsToRedeem, bookingReference })
@@ -217,7 +218,7 @@ export default function PaymentPage({
     // Award points for ticket purchase
     if (userId && ticketTotal > 0) {
       try {
-        await fetch('http://localhost:5000/api/loyalty/award', {
+        await fetch('${API_URL}/api/loyalty/award', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -278,7 +279,7 @@ export default function PaymentPage({
         // Mark seats as permanently booked
         try {
           const sessionId = sessionStorage.getItem('sessionId') || `session_${Date.now()}`;
-          await fetch('http://localhost:5000/api/seat-hold/complete', {
+          await fetch('${API_URL}/api/seat-hold/complete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -294,7 +295,7 @@ export default function PaymentPage({
         // Redeem points if selected
         if (userId && pointsToRedeem > 0) {
           try {
-            await fetch('http://localhost:5000/api/loyalty/redeem', {
+            await fetch('${API_URL}/api/loyalty/redeem', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ userId, points: pointsToRedeem, bookingReference })
@@ -305,7 +306,7 @@ export default function PaymentPage({
         // Award points
         if (userId && ticketTotal > 0) {
           try {
-            await fetch('http://localhost:5000/api/loyalty/award', {
+            await fetch('${API_URL}/api/loyalty/award', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

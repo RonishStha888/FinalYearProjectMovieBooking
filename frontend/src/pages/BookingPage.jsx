@@ -9,6 +9,7 @@ import CompareCheckbox from "../components/CompareCheckbox";
 import FloatingCompareBar from "../components/FloatingCompareBar";
 import CinemaComparisonButton from "../components/CinemaComparisonButton";
 import ComparisonModal from "../components/ComparisonModal";
+import { API_URL } from '../config';
 
 export default function BookingPage({ movie, onBack }) {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -75,7 +76,7 @@ export default function BookingPage({ movie, onBack }) {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:5000/api/movies/${movie.id}/showtimes?date=${selectedDate.fullDate}&city=${selectedLocation}`
+        `${API_URL}/api/movies/${movie.id}/showtimes?date=${selectedDate.fullDate}&city=${selectedLocation}`
       );
       const data = await response.json();
       

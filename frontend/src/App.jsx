@@ -7,6 +7,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import ChatbotWidget from './components/ChatbotWidget';
+import { API_URL } from './config';
 import "./App.css";
 
 const GOOGLE_CLIENT_ID = "482064319034-pu4frhppprsrmeh481o6620lg8bm3lor.apps.googleusercontent.com";
@@ -59,7 +60,7 @@ function LoginPage({ onGoToSignup, onGoToForgotPassword, onLoginSuccess }) {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -99,7 +100,7 @@ function LoginPage({ onGoToSignup, onGoToForgotPassword, onLoginSuccess }) {
         googleId: userInfo.sub
       };
 
-      const response = await fetch('http://localhost:5000/api/auth/google-login', {
+      const response = await fetch(`${API_URL}/api/auth/google-login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

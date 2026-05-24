@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './FoodBeveragePage.css';
+import { API_URL } from '../config';
 
 export default function FoodBeveragePage({ 
   cinema, 
@@ -61,7 +62,7 @@ export default function FoodBeveragePage({
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/fb/categories');
+      const response = await fetch('${API_URL}/api/fb/categories');
       const data = await response.json();
       if (data.success) {
         setCategories(data.categories);
@@ -75,7 +76,7 @@ export default function FoodBeveragePage({
     try {
       const cinemaId = cinema?._id || '';
       const response = await fetch(
-        `http://localhost:5000/api/fb/items?cinemaId=${cinemaId}&active=true`
+        `${API_URL}/api/fb/items?cinemaId=${cinemaId}&active=true`
       );
       const data = await response.json();
       if (data.success) {
@@ -91,7 +92,7 @@ export default function FoodBeveragePage({
   const fetchOffers = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/fb/offers?date=${bookingDate}&ticketCount=${ticketCount}`
+        `${API_URL}/api/fb/offers?date=${bookingDate}&ticketCount=${ticketCount}`
       );
       const data = await response.json();
       if (data.success) {
@@ -105,7 +106,7 @@ export default function FoodBeveragePage({
   const fetchRecommendations = async () => {
     try {
       const cinemaId = cinema?._id || '';
-      const response = await fetch('http://localhost:5000/api/fb/recommendations', {
+      const response = await fetch('${API_URL}/api/fb/recommendations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ticketCount, cinemaId })
@@ -127,7 +128,7 @@ export default function FoodBeveragePage({
         size: item.selectedSize
       }));
 
-      const response = await fetch('http://localhost:5000/api/fb/calculate-total', {
+      const response = await fetch('${API_URL}/api/fb/calculate-total', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

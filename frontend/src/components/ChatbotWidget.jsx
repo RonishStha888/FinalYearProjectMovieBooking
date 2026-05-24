@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import FloatingChatButton from './FloatingChatButton';
 import ChatWindow from './ChatWindow';
 import { sanitizeInput } from '../utils/sanitize';
+import { API_URL } from '../config';
 
 const ChatbotWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,7 +52,7 @@ const ChatbotWidget = () => {
       await new Promise(resolve => setTimeout(resolve, 800));
       
       // Call chatbot API
-      const response = await fetch('http://localhost:5000/api/chatbot', {
+      const response = await fetch('${API_URL}/api/chatbot', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

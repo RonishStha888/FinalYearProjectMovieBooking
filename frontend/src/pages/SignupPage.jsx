@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { GoogleLogin } from '@react-oauth/google';
 import "../App.css";
+import { API_URL } from '../config';
 
 export default function SignupPage({ onBackToLogin }) {
   const [email, setEmail] = useState("");
@@ -49,7 +50,7 @@ export default function SignupPage({ onBackToLogin }) {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/send-verification', {
+      const response = await fetch('${API_URL}/api/auth/send-verification', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,7 +92,7 @@ export default function SignupPage({ onBackToLogin }) {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/verify-signup', {
+      const response = await fetch('${API_URL}/api/auth/verify-signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -140,7 +141,7 @@ export default function SignupPage({ onBackToLogin }) {
       };
 
       // First check if user already exists (try login)
-      const loginResponse = await fetch('http://localhost:5000/api/auth/google-login', {
+      const loginResponse = await fetch('${API_URL}/api/auth/google-login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -160,7 +161,7 @@ export default function SignupPage({ onBackToLogin }) {
 
       // If user doesn't exist, send verification for Google signup
       if (loginData.needsSignup) {
-        const verifyResponse = await fetch('http://localhost:5000/api/auth/send-verification', {
+        const verifyResponse = await fetch('${API_URL}/api/auth/send-verification', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

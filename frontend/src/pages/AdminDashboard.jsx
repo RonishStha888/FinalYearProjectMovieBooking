@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AdminDashboard.css';
+import { API_URL } from '../config';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -194,7 +195,7 @@ const AdminDashboard = () => {
     setLoading(true);
     try {
       // Load stats
-      const statsResponse = await fetch('http://localhost:5000/api/admin/dashboard/stats', {
+      const statsResponse = await fetch('${API_URL}/api/admin/dashboard/stats', {
         headers: getAuthHeaders()
       });
       if (statsResponse.ok) {
@@ -203,7 +204,7 @@ const AdminDashboard = () => {
       }
 
       // Load movies
-      const moviesResponse = await fetch('http://localhost:5000/api/admin/movies', {
+      const moviesResponse = await fetch('${API_URL}/api/admin/movies', {
         headers: getAuthHeaders()
       });
       if (moviesResponse.ok) {
@@ -212,7 +213,7 @@ const AdminDashboard = () => {
       }
 
       // Load cinemas
-      const cinemasResponse = await fetch('http://localhost:5000/api/admin/cinemas', {
+      const cinemasResponse = await fetch('${API_URL}/api/admin/cinemas', {
         headers: getAuthHeaders()
       });
       if (cinemasResponse.ok) {
@@ -233,7 +234,7 @@ const AdminDashboard = () => {
   const loadShowtimes = async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
-      const showtimesResponse = await fetch(`http://localhost:5000/api/admin/showtimes?date=${today}`, {
+      const showtimesResponse = await fetch(`${API_URL}/api/admin/showtimes?date=${today}`, {
         headers: getAuthHeaders()
       });
       if (showtimesResponse.ok) {
@@ -257,8 +258,8 @@ const AdminDashboard = () => {
 
     try {
       const url = editingMovie 
-        ? `http://localhost:5000/api/admin/movies/${editingMovie._id}`
-        : 'http://localhost:5000/api/admin/movies';
+        ? `${API_URL}/api/admin/movies/${editingMovie._id}`
+        : '${API_URL}/api/admin/movies';
       
       const method = editingMovie ? 'PUT' : 'POST';
 
@@ -299,8 +300,8 @@ const AdminDashboard = () => {
 
     try {
       const url = editingShowtime 
-        ? `http://localhost:5000/api/admin/showtimes/${editingShowtime._id}`
-        : 'http://localhost:5000/api/admin/showtimes';
+        ? `${API_URL}/api/admin/showtimes/${editingShowtime._id}`
+        : '${API_URL}/api/admin/showtimes';
       
       const method = editingShowtime ? 'PUT' : 'POST';
 
@@ -357,7 +358,7 @@ const AdminDashboard = () => {
     if (!confirm('Are you sure you want to delete this movie?')) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/movies/${movieId}`, {
+      const response = await fetch(`${API_URL}/api/admin/movies/${movieId}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
@@ -378,7 +379,7 @@ const AdminDashboard = () => {
     if (!confirm('Are you sure you want to delete this showtime?')) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/showtimes/${showtimeId}`, {
+      const response = await fetch(`${API_URL}/api/admin/showtimes/${showtimeId}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
@@ -402,8 +403,8 @@ const AdminDashboard = () => {
 
     try {
       const url = editingCinema 
-        ? `http://localhost:5000/api/admin/cinemas/${editingCinema._id}`
-        : 'http://localhost:5000/api/admin/cinemas';
+        ? `${API_URL}/api/admin/cinemas/${editingCinema._id}`
+        : '${API_URL}/api/admin/cinemas';
       
       const method = editingCinema ? 'PUT' : 'POST';
 
@@ -457,7 +458,7 @@ const AdminDashboard = () => {
     if (!confirm('Are you sure you want to delete this cinema?')) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/cinemas/${cinemaId}`, {
+      const response = await fetch(`${API_URL}/api/admin/cinemas/${cinemaId}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
@@ -477,7 +478,7 @@ const AdminDashboard = () => {
   // Hall Management Functions
   const loadHalls = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/admin/halls', {
+      const response = await fetch('${API_URL}/api/admin/halls', {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -495,8 +496,8 @@ const AdminDashboard = () => {
 
     try {
       const url = editingHall 
-        ? `http://localhost:5000/api/admin/halls/${editingHall._id}`
-        : 'http://localhost:5000/api/admin/halls';
+        ? `${API_URL}/api/admin/halls/${editingHall._id}`
+        : '${API_URL}/api/admin/halls';
       
       const method = editingHall ? 'PUT' : 'POST';
 
@@ -559,7 +560,7 @@ const AdminDashboard = () => {
     if (!confirm('Are you sure you want to delete this hall?')) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/halls/${hallId}`, {
+      const response = await fetch(`${API_URL}/api/admin/halls/${hallId}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
@@ -580,7 +581,7 @@ const AdminDashboard = () => {
   // F&B Management Functions
   const loadFBItems = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/admin/fb/items', {
+      const response = await fetch('${API_URL}/api/admin/fb/items', {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -594,7 +595,7 @@ const AdminDashboard = () => {
 
   const loadFBOffers = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/admin/fb/offers', {
+      const response = await fetch('${API_URL}/api/admin/fb/offers', {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -612,8 +613,8 @@ const AdminDashboard = () => {
 
     try {
       const url = editingFBItem 
-        ? `http://localhost:5000/api/admin/fb/items/${editingFBItem._id}`
-        : 'http://localhost:5000/api/admin/fb/items';
+        ? `${API_URL}/api/admin/fb/items/${editingFBItem._id}`
+        : '${API_URL}/api/admin/fb/items';
       
       const method = editingFBItem ? 'PUT' : 'POST';
 
@@ -663,8 +664,8 @@ const AdminDashboard = () => {
 
     try {
       const url = editingFBOffer 
-        ? `http://localhost:5000/api/admin/fb/offers/${editingFBOffer._id}`
-        : 'http://localhost:5000/api/admin/fb/offers';
+        ? `${API_URL}/api/admin/fb/offers/${editingFBOffer._id}`
+        : '${API_URL}/api/admin/fb/offers';
       
       const method = editingFBOffer ? 'PUT' : 'POST';
 
@@ -733,7 +734,7 @@ const AdminDashboard = () => {
     if (!confirm('Are you sure you want to delete this F&B item?')) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/fb/items/${itemId}`, {
+      const response = await fetch(`${API_URL}/api/admin/fb/items/${itemId}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
@@ -776,7 +777,7 @@ const AdminDashboard = () => {
     if (!confirm('Are you sure you want to delete this F&B offer?')) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/fb/offers/${offerId}`, {
+      const response = await fetch(`${API_URL}/api/admin/fb/offers/${offerId}`, {
         method: 'DELETE',
         headers: getAuthHeaders()
       });
