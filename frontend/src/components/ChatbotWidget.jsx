@@ -52,7 +52,7 @@ const ChatbotWidget = () => {
       await new Promise(resolve => setTimeout(resolve, 800));
       
       // Call chatbot API
-      const response = await fetch('${API_URL}/api/chatbot', {
+      const response = await fetch(`${API_URL}/api/chatbot`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -93,7 +93,7 @@ const ChatbotWidget = () => {
       // Network error response
       const errorMessage = {
         id: `bot-error-${Date.now()}`,
-        text: 'Sorry, I\'m having trouble connecting. Please make sure the backend server is running on http://localhost:5000',
+        text: 'Sorry, I\'m having trouble connecting. Please try again later or contact support.',
         sender: 'bot',
         timestamp: new Date()
       };

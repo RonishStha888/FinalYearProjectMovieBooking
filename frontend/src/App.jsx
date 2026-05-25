@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import SignupPage from './pages/SignupPage';
 import HomePage from './pages/HomePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import EmailVerificationPage from './pages/EmailVerificationPage';
+import PasswordResetPage from './pages/PasswordResetPage';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import ChatbotWidget from './components/ChatbotWidget';
@@ -17,6 +19,21 @@ function AppContent() {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+
+  // Check localStorage on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        setCurrentUser(user);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
+        localStorage.removeItem('user');
+      }
+    }
+  }, []);
 
   const handleLoginSuccess = (user) => {
     localStorage.setItem('user', JSON.stringify(user));
@@ -219,6 +236,12 @@ export default function App() {
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          
+          {/* Email Verification Route */}
+          <Route path="/verify-email/:token" element={<EmailVerificationPage />} />
+          
+          {/* Password Reset Route */}
+          <Route path="/reset-password/:token" element={<PasswordResetPage />} />
           
           {/* Main App Routes */}
           <Route path="/" element={<AppContent />} />

@@ -195,7 +195,7 @@ const AdminDashboard = () => {
     setLoading(true);
     try {
       // Load stats
-      const statsResponse = await fetch('${API_URL}/api/admin/dashboard/stats', {
+      const statsResponse = await fetch(`${API_URL}/api/admin/dashboard/stats`, {
         headers: getAuthHeaders()
       });
       if (statsResponse.ok) {
@@ -204,7 +204,7 @@ const AdminDashboard = () => {
       }
 
       // Load movies
-      const moviesResponse = await fetch('${API_URL}/api/admin/movies', {
+      const moviesResponse = await fetch(`${API_URL}/api/admin/movies`, {
         headers: getAuthHeaders()
       });
       if (moviesResponse.ok) {
@@ -213,7 +213,7 @@ const AdminDashboard = () => {
       }
 
       // Load cinemas
-      const cinemasResponse = await fetch('${API_URL}/api/admin/cinemas', {
+      const cinemasResponse = await fetch(`${API_URL}/api/admin/cinemas`, {
         headers: getAuthHeaders()
       });
       if (cinemasResponse.ok) {
@@ -259,7 +259,7 @@ const AdminDashboard = () => {
     try {
       const url = editingMovie 
         ? `${API_URL}/api/admin/movies/${editingMovie._id}`
-        : '${API_URL}/api/admin/movies';
+        : `${API_URL}/api/admin/movies`;
       
       const method = editingMovie ? 'PUT' : 'POST';
 
@@ -301,7 +301,7 @@ const AdminDashboard = () => {
     try {
       const url = editingShowtime 
         ? `${API_URL}/api/admin/showtimes/${editingShowtime._id}`
-        : '${API_URL}/api/admin/showtimes';
+        : `${API_URL}/api/admin/showtimes`;
       
       const method = editingShowtime ? 'PUT' : 'POST';
 
@@ -404,7 +404,7 @@ const AdminDashboard = () => {
     try {
       const url = editingCinema 
         ? `${API_URL}/api/admin/cinemas/${editingCinema._id}`
-        : '${API_URL}/api/admin/cinemas';
+        : `${API_URL}/api/admin/cinemas`;
       
       const method = editingCinema ? 'PUT' : 'POST';
 
@@ -478,7 +478,7 @@ const AdminDashboard = () => {
   // Hall Management Functions
   const loadHalls = async () => {
     try {
-      const response = await fetch('${API_URL}/api/admin/halls', {
+      const response = await fetch(`${API_URL}/api/admin/halls`, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -497,7 +497,7 @@ const AdminDashboard = () => {
     try {
       const url = editingHall 
         ? `${API_URL}/api/admin/halls/${editingHall._id}`
-        : '${API_URL}/api/admin/halls';
+        : `${API_URL}/api/admin/halls`;
       
       const method = editingHall ? 'PUT' : 'POST';
 
@@ -581,7 +581,7 @@ const AdminDashboard = () => {
   // F&B Management Functions
   const loadFBItems = async () => {
     try {
-      const response = await fetch('${API_URL}/api/admin/fb/items', {
+      const response = await fetch(`${API_URL}/api/admin/fb/items`, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -595,7 +595,7 @@ const AdminDashboard = () => {
 
   const loadFBOffers = async () => {
     try {
-      const response = await fetch('${API_URL}/api/admin/fb/offers', {
+      const response = await fetch(`${API_URL}/api/admin/fb/offers`, {
         headers: getAuthHeaders()
       });
       if (response.ok) {
@@ -614,7 +614,7 @@ const AdminDashboard = () => {
     try {
       const url = editingFBItem 
         ? `${API_URL}/api/admin/fb/items/${editingFBItem._id}`
-        : '${API_URL}/api/admin/fb/items';
+        : `${API_URL}/api/admin/fb/items`;
       
       const method = editingFBItem ? 'PUT' : 'POST';
 
@@ -665,7 +665,7 @@ const AdminDashboard = () => {
     try {
       const url = editingFBOffer 
         ? `${API_URL}/api/admin/fb/offers/${editingFBOffer._id}`
-        : '${API_URL}/api/admin/fb/offers';
+        : `${API_URL}/api/admin/fb/offers`;
       
       const method = editingFBOffer ? 'PUT' : 'POST';
 

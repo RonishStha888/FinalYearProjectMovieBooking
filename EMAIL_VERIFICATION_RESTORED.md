@@ -1,199 +1,228 @@
-# ✅ EMAIL VERIFICATION SYSTEM RESTORED - COMPLETE
+# Email Verification System - Successfully Restored ✅
 
-## 🎯 Task Summary
-Successfully restored and enhanced the email verification system using Nodemailer framework instead of SendGrid. The system now requires email verification for both regular signup and Google signup before creating user accounts.
+## Summary
 
-## 🔧 Implementation Details
-
-### 📧 Email Service (Nodemailer)
-- **Service**: Gmail SMTP integration
-- **Framework**: Nodemailer (replaced SendGrid)
-- **Templates**: Professional RTX Cinema branded emails
-- **Configuration**: Gmail app password authentication
-
-### 🔐 Verification System
-- **Code Format**: 6-digit numeric codes
-- **Expiration**: 15 minutes automatic expiration
-- **Storage**: MongoDB EmailVerification collection
-- **Types**: Regular signup and Google signup verification
-
-### 📱 Frontend Integration
-- **Two-Step Process**: Signup form → Verification code entry
-- **Step Indicator**: Visual progress indicator
-- **Google Integration**: Verification required for Google signup
-- **User Experience**: Clear instructions and error handling
-
-## 🏗️ System Architecture
-
-### Backend Components
-```
-backend/
-├── models/EmailVerification.js     # Verification code storage
-├── services/nodemailerService.js   # Email sending service
-├── routes/auth.js                  # Authentication endpoints
-└── .env                           # Email configuration
-```
-
-### Frontend Components
-```
-frontend/src/pages/SignupPage.jsx   # Two-step signup UI
-```
-
-## 🔄 Verification Flow
-
-### Regular Signup Flow
-1. User fills signup form (email, username, password, name)
-2. System sends verification code to email
-3. User enters 6-digit code
-4. Account created after successful verification
-5. Welcome email sent
-
-### Google Signup Flow
-1. User clicks "Sign up with Google"
-2. Google authentication completed
-3. System checks if account exists
-4. If new user, verification code sent to Google email
-5. User enters 6-digit code
-6. Account created with Google data
-7. Welcome email sent
-
-## 📊 API Endpoints
-
-### POST /api/auth/send-verification
-**Purpose**: Send verification code for signup
-**Body**:
-```json
-{
-  "login": "username",
-  "email": "user@example.com", 
-  "password": "password123",
-  "name": "Full Name",
-  "verificationType": "signup" // or "google-signup"
-}
-```
-
-### POST /api/auth/verify-signup
-**Purpose**: Verify code and create account
-**Body**:
-```json
-{
-  "email": "user@example.com",
-  "code": "123456"
-}
-```
-
-## 🎨 Email Templates
-
-### Verification Email Features
-- RTX Cinema branding with red theme (#D84040)
-- Professional layout with company logo
-- Clear 6-digit code display
-- Security notices and expiration warnings
-- Responsive design
-
-### Welcome Email Features
-- Personalized greeting
-- Feature highlights (browse movies, book shows, etc.)
-- Call-to-action button
-- Company contact information
-
-## 🧪 Testing Results
-
-### ✅ All Tests Passing
-- Email verification codes sent successfully
-- Professional templates delivered
-- Database records created with expiration
-- Invalid codes properly rejected
-- Both regular and Google signup working
-- Welcome emails sent after verification
-
-### 🔍 Test Coverage
-- Regular signup verification flow
-- Google signup verification flow
-- Invalid code rejection
-- Expired code handling
-- Duplicate email prevention
-- Email template rendering
-
-## 🚀 System Status
-
-### ✅ Fully Operational
-- **Backend**: Running on http://localhost:5000
-- **Frontend**: Running on http://localhost:5173
-- **Database**: MongoDB connected
-- **Email Service**: Gmail SMTP configured
-- **Verification**: 6-digit codes with 15-min expiration
-
-### 📧 Email Configuration
-```env
-EMAIL_USER=cinemasrtx@gmail.com
-EMAIL_PASS=uvha uhjg hyfy npxj
-```
-
-## 🎯 Key Features Implemented
-
-### 🔐 Security Features
-- 6-digit verification codes
-- 15-minute automatic expiration
-- Secure temporary data storage
-- Duplicate prevention
-- Input validation and sanitization
-
-### 📱 User Experience
-- Two-step signup process with progress indicator
-- Clear error messages and validation
-- Professional email templates
-- Google signup integration
-- Responsive design
-
-### 🛠️ Technical Features
-- Nodemailer Gmail SMTP integration
-- MongoDB document expiration (TTL)
-- Professional email templates with HTML/CSS
-- RESTful API endpoints
-- Error handling and logging
-
-## 📋 Usage Instructions
-
-### For Users
-1. Visit http://localhost:5173/
-2. Click "Sign Up" button
-3. Fill signup form or use Google signup
-4. Check email for 6-digit verification code
-5. Enter code to complete account creation
-6. Receive welcome email confirmation
-
-### For Developers
-1. Backend server: `npm start` in backend/
-2. Frontend server: `npm run dev` in frontend/
-3. Check backend console for verification codes during testing
-4. Use test scripts in backend/ for automated testing
-
-## 🎉 Success Metrics
-
-### ✅ Requirements Met
-- ✅ Email verification required for all signups
-- ✅ Nodemailer framework implementation
-- ✅ Professional RTX Cinema email templates
-- ✅ 6-digit codes with database storage
-- ✅ 15-minute expiration system
-- ✅ Google signup verification support
-- ✅ Welcome emails after verification
-- ✅ Complete frontend integration
-- ✅ Comprehensive error handling
-- ✅ Security best practices
-
-### 📈 System Performance
-- Fast email delivery via Gmail SMTP
-- Efficient database operations with TTL
-- Responsive frontend with step indicators
-- Comprehensive error handling
-- Professional user experience
+The email verification system has been successfully migrated from OTP-based to link-based verification using Brevo email service. Users now receive a verification email with a clickable link, and after verification, they are automatically logged in.
 
 ---
 
-## 🏁 TASK COMPLETION STATUS: ✅ COMPLETE
+## What Was Fixed
 
-The email verification system has been successfully restored and enhanced with Nodemailer. All requirements have been implemented and tested. The system is ready for production use with professional email templates, secure verification codes, and seamless user experience for both regular and Google signup flows.
+### 1. **Brevo Email Service Integration**
+- ✅ Installed `@getbrevo/brevo` package (v5.0.4)
+- ✅ Created `backend/services/brevoService.js` with proper client initialization
+- ✅ Fixed API key loading issue by creating client instance on-demand
+- ✅ Configured sender email: `cinemasrtx@gmail.com`
+- ✅ Verified sender email in Brevo dashboard
+- ✅ Disabled IP restrictions for development
 
-**Next Steps**: System is ready for end-to-end testing with real email addresses and production deployment.
+### 2. **Backend Authentication Routes**
+- ✅ Updated `backend/routes/auth.js` with new endpoints:
+  - `POST /api/auth/signup` - Creates user and sends verification email
+  - `GET /api/auth/verify-email/:token` - Verifies email via link
+  - `POST /api/auth/login` - Checks email verification before login
+  - `POST /api/auth/google-signup` - Google signup (auto-verified)
+  - `POST /api/auth/google-login` - Google login
+
+### 3. **User Model Updates**
+- ✅ Added `emailVerified` field (Boolean)
+- ✅ Added `verificationToken` field (String)
+- ✅ Added `verificationTokenExpires` field (Date)
+
+### 4. **Frontend Updates**
+- ✅ Simplified `SignupPage.jsx` - removed OTP step
+- ✅ Created `EmailVerificationPage.jsx` - handles verification link
+- ✅ Added auto-login after successful verification
+- ✅ Updated `App.jsx` with verification route
+
+### 5. **Brevo Configuration Issues Resolved**
+- ❌ Initial issue: Sender email `noreply@rtxcinema.com` not verified
+  - ✅ Fixed: Changed to `cinemasrtx@gmail.com`
+- ❌ Initial issue: IP address blocked by Brevo
+  - ✅ Fixed: Disabled IP restrictions in Brevo dashboard
+- ❌ Initial issue: API key not loading properly
+  - ✅ Fixed: Changed to on-demand client initialization
+
+---
+
+## Current Configuration
+
+### Backend Environment Variables (`backend/.env`)
+```env
+# Brevo Email Service
+BREVO_API_KEY=your_brevo_api_key_here
+BREVO_SENDER_EMAIL=cinemasrtx@gmail.com
+FRONTEND_URL=http://localhost:5173
+```
+
+### Brevo Dashboard Settings
+- ✅ Sender email verified: `cinemasrtx@gmail.com`
+- ✅ IP restrictions: Disabled
+- ✅ API key: Active and working
+- ✅ Free tier: 300 emails/day
+
+---
+
+## How It Works Now
+
+### Signup Flow:
+1. User fills signup form on frontend
+2. Frontend sends `POST /api/auth/signup` with email, username, password
+3. Backend creates user with `emailVerified: false`
+4. Backend generates verification token (32-byte hex string)
+5. Backend sends verification email via Brevo
+6. Frontend shows "Check Your Email!" success message
+
+### Verification Flow:
+1. User receives email with verification link
+2. User clicks link: `http://localhost:5173/verify-email/{token}`
+3. Frontend calls `GET /api/auth/verify-email/{token}`
+4. Backend verifies token and marks user as verified
+5. Backend returns user data
+6. Frontend stores user in localStorage
+7. Frontend redirects to homepage (user is now logged in)
+
+### Login Flow:
+1. User enters credentials
+2. Backend checks if email is verified
+3. If not verified, returns error: "Please verify your email"
+4. If verified, login proceeds normally
+
+---
+
+## Files Modified
+
+### Backend:
+- `backend/services/brevoService.js` - Brevo email service (NEW)
+- `backend/routes/auth.js` - Updated authentication routes
+- `backend/models/User.js` - Added verification fields
+- `backend/.env` - Added Brevo configuration
+
+### Frontend:
+- `frontend/src/pages/EmailVerificationPage.jsx` - Verification page (NEW)
+- `frontend/src/pages/EmailVerificationPage.css` - Verification styles (NEW)
+- `frontend/src/pages/SignupPage.jsx` - Simplified signup flow
+- `frontend/src/App.jsx` - Added verification route
+
+### Documentation:
+- `EMAIL_VERIFICATION_MIGRATION_PLAN.md` - Migration plan
+- `EMAIL_VERIFICATION_IMPLEMENTATION_COMPLETE.md` - Implementation details
+- `EMAIL_VERIFICATION_RESTORED.md` - This file
+
+---
+
+## Testing
+
+### Test Signup:
+1. Go to http://localhost:5173
+2. Click "Sign Up"
+3. Enter email, username, password
+4. Click "Sign Up"
+5. Should see: "Check Your Email!" message
+
+### Test Email:
+1. Check email inbox (and spam folder)
+2. Should receive email from "RTX Cinema <cinemasrtx@gmail.com>"
+3. Subject: "Verify Your RTX Cinema Account"
+4. Email contains verification button
+
+### Test Verification:
+1. Click "Verify Email Address" button in email
+2. Browser opens: http://localhost:5173/verify-email/{token}
+3. Should see: "Email Verified!" message
+4. After 2 seconds, redirects to homepage
+5. User is automatically logged in
+
+### Test Login:
+1. Try to login with unverified account
+2. Should see error: "Please verify your email"
+3. After verification, login works normally
+
+---
+
+## Production Deployment
+
+### Brevo Configuration:
+- ✅ Sender email already verified
+- ✅ IP restrictions disabled (works from any server)
+- ✅ API key works for both development and production
+
+### Environment Variables for Render:
+```env
+BREVO_API_KEY=your_brevo_api_key_here
+BREVO_SENDER_EMAIL=cinemasrtx@gmail.com
+FRONTEND_URL=https://dashing-macaron-ee78db.netlify.app
+```
+
+### Environment Variables for Netlify:
+```env
+VITE_API_URL=https://rtx-cinemas-backend.onrender.com
+```
+
+---
+
+## Troubleshooting
+
+### Email Not Received:
+1. Check spam folder
+2. Check backend console for errors
+3. Verify sender email in Brevo dashboard
+4. Check Brevo daily limit (300 emails/day on free tier)
+
+### Verification Link Not Working:
+1. Check if token is expired (24 hours)
+2. Check backend console for errors
+3. Verify frontend URL in `backend/.env`
+
+### Auto-Login Not Working:
+1. Check browser console for errors
+2. Verify user data is returned from backend
+3. Check localStorage for user data
+
+---
+
+## Next Steps
+
+### Optional Improvements:
+1. Add "Resend Verification Email" button
+2. Add email verification reminder on login page
+3. Add verification status indicator in user profile
+4. Add email change functionality with re-verification
+5. Add admin panel to manually verify users
+
+### Security Enhancements:
+1. Add rate limiting for signup endpoint
+2. Add CAPTCHA to prevent spam signups
+3. Add email domain validation
+4. Add password strength requirements
+5. Add account lockout after failed login attempts
+
+---
+
+## Success Metrics
+
+✅ Email verification system working end-to-end
+✅ Users receive verification emails within seconds
+✅ Verification links work correctly
+✅ Users are automatically logged in after verification
+✅ Unverified users cannot login
+✅ Google signup users are auto-verified
+✅ System ready for production deployment
+
+---
+
+## Credits
+
+- **Email Service**: Brevo (formerly Sendinblue)
+- **Email Package**: @getbrevo/brevo v5.0.4
+- **Free Tier**: 300 emails/day
+- **Sender Email**: cinemasrtx@gmail.com
+
+---
+
+**Status**: ✅ COMPLETE AND WORKING
+
+**Date**: May 24, 2026
+
+**Tested**: ✅ Local Development
+**Ready for**: 🚀 Production Deployment

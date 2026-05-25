@@ -11,14 +11,10 @@ export default function SignupPage({ onBackToLogin }) {
   const [name, setName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
-  // Verification states
-  const [step, setStep] = useState("signup"); // "signup" or "verify"
-  const [verificationCode, setVerificationCode] = useState("");
-  const [pendingEmail, setPendingEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
 
-  // Email validation function
+  // Email validation
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -28,7 +24,7 @@ export default function SignupPage({ onBackToLogin }) {
     e.preventDefault();
     setIsLoading(true);
 
-    // Validate email format
+    // Validate email
     if (!isValidEmail(email)) {
       alert("Please enter a valid email address!");
       setIsLoading(false);
@@ -50,7 +46,7 @@ export default function SignupPage({ onBackToLogin }) {
     }
 
     try {
-      const response = await fetch('${API_URL}/api/auth/send-verification', {
+      const response = await fetch(`${API_URL}/api/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,70 +55,26 @@ export default function SignupPage({ onBackToLogin }) {
           login: username,
           email,
           password,
-          name: name || username,
-          verificationType: 'signup'
+          name: name || username
         })
       });
 
       const data = await response.json();
 
       if (data.success) {
-        setPendingEmail(email);
-        setStep("verify");
-        alert(`Verification code sent to ${email}. Please check your inbox!`);
+        setSignupSuccess(true);
       } else {
         alert(`Error: ${data.message}`);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to connect to server. Make sure the backend is running!');
-    }
-    
-    setIsLoading(false);
-  };
-
-  const handleVerification = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    if (!verificationCode || verificationCode.length !== 6) {
-      alert("Please enter the 6-digit verification code!");
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch('${API_URL}/api/auth/verify-signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          email: pendingEmail,
-          code: verificationCode
-        })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        alert(`Welcome ${data.user.login}! Account created successfully. Check your email for welcome message!`);
-        console.log('User data:', data.user);
-        onBackToLogin();
-      } else {
-        alert(`Error: ${data.message}`);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Failed to verify code. Please try again!');
+      alert('Failed to connect to server. Please try again!');
     }
     
     setIsLoading(false);
   };
 
   const handleGoogleSuccess = async (credentialResponse) => {
-    setIsLoading(true);
-    
     try {
       const token = credentialResponse.credential;
       const base64Url = token.split('.')[1];
@@ -136,12 +88,11 @@ export default function SignupPage({ onBackToLogin }) {
       const googleUser = {
         email: userInfo.email,
         name: userInfo.name,
-        googleId: userInfo.sub,
-        picture: userInfo.picture
+        googleId: userInfo.sub
       };
 
-      // First check if user already exists (try login)
-      const loginResponse = await fetch('${API_URL}/api/auth/google-login', {
+      // Try to login first
+      const loginResponse = await fetch(`${API_URL}/api/auth/google-login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -152,54 +103,86 @@ export default function SignupPage({ onBackToLogin }) {
       const loginData = await loginResponse.json();
 
       if (loginData.success) {
-        alert(`Welcome back ${loginData.user.name}! Logged in successfully.`);
-        console.log('User data:', loginData.user);
-        onBackToLogin();
-        setIsLoading(false);
-        return;
-      }
-
-      // If user doesn't exist, send verification for Google signup
-      if (loginData.needsSignup) {
-        const verifyResponse = await fetch('${API_URL}/api/auth/send-verification', {
+        localStorage.setItem('user', JSON.stringify(loginData.user));
+        window.location.href = '/';
+      } else if (loginData.needsSignup) {
+        // Create new account
+        const signupResponse = await fetch(`${API_URL}/api/auth/google-signup`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ 
-            email: googleUser.email,
-            verificationType: 'google-signup',
-            googleData: googleUser
-          })
+          body: JSON.stringify(googleUser)
         });
 
-        const verifyData = await verifyResponse.json();
+        const signupData = await signupResponse.json();
 
-        if (verifyData.success) {
-          setPendingEmail(googleUser.email);
-          setStep("verify");
-          alert(`Verification code sent to ${googleUser.email}. Please check your inbox to complete Google signup!`);
+        if (signupData.success) {
+          localStorage.setItem('user', JSON.stringify(signupData.user));
+          window.location.href = '/';
         } else {
-          alert(`Error: ${verifyData.message}`);
+          alert(`Error: ${signupData.message}`);
         }
       } else {
         alert(`Error: ${loginData.message}`);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Failed to process Google sign-up!');
+      alert('Failed to process Google sign-in!');
     }
-    
-    setIsLoading(false);
   };
 
   const handleGoogleError = () => {
-    alert('Google Sign-Up failed. Please try again.');
+    alert('Google Sign-In failed. Please try again.');
   };
 
+  // Success screen
+  if (signupSuccess) {
+    return (
+      <div className="app-container">
+        <div className="left-panel">
+          <img 
+            src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800" 
+            alt="Cinema" 
+            className="cinema-image"
+          />
+        </div>
+
+        <div className="right-panel">
+          <button className="back-arrow" onClick={onBackToLogin}>
+            ←
+          </button>
+
+          <div className="login-container">
+            <div className="success-message">
+              <div className="success-icon">✓</div>
+              <h1 className="welcome-title">Check Your Email!</h1>
+              <p className="subtitle-text">
+                We've sent a verification link to <strong>{email}</strong>
+              </p>
+              <p className="subtitle-text">
+                Please click the link in the email to verify your account and complete the signup process.
+              </p>
+              <p className="subtitle-text" style={{ marginTop: '20px', fontSize: '14px' }}>
+                Didn't receive the email? Check your spam folder or try signing up again.
+              </p>
+              <button 
+                className="login-btn" 
+                onClick={onBackToLogin}
+                style={{ marginTop: '30px' }}
+              >
+                Back to Login
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Signup form
   return (
     <div className="app-container">
-      {/* Left side - Image */}
       <div className="left-panel">
         <img 
           src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800" 
@@ -208,169 +191,119 @@ export default function SignupPage({ onBackToLogin }) {
         />
       </div>
 
-      {/* Right side - Signup Form */}
       <div className="right-panel">
         <button className="back-arrow" onClick={onBackToLogin}>
           ←
         </button>
-        
+
         <div className="login-container">
-          {/* Step indicator */}
-          <div className="step-indicator">
-            <div className={`step-dot ${step === "signup" ? "active" : ""}`}></div>
-            <div className={`step-dot ${step === "verify" ? "active" : ""}`}></div>
-          </div>
+          <h1 className="welcome-title">Create Account</h1>
+          <p className="subtitle-text">Join RTX Cinema for the best movie experience</p>
 
-          {step === "signup" ? (
-            <>
-              <h1 className="welcome-title">Create Account</h1>
-              <p className="subtitle-text">Join RTX Cinema for the best movie experience</p>
+          <form className="login-form" onSubmit={handleSignup}>
+            <div className="form-group">
+              <label className="form-label">EMAIL</label>
+              <input
+                type="email"
+                className="form-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
 
-              <form className="login-form" onSubmit={handleSignup}>
-                <div className="form-group">
-                  <label className="form-label">EMAIL</label>
-                  <input
-                    type="email"
-                    className="form-input"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
+            <div className="form-group">
+              <label className="form-label">USERNAME</label>
+              <input
+                type="text"
+                className="form-input"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
 
-                <div className="form-group">
-                  <label className="form-label">USERNAME</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                  />
-                </div>
+            <div className="form-group">
+              <label className="form-label">FULL NAME (Optional)</label>
+              <input
+                type="text"
+                className="form-input"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
 
-                <div className="form-group">
-                  <label className="form-label">FULL NAME (Optional)</label>
-                  <input
-                    type="text"
-                    className="form-input"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Your full name"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">PASSWORD</label>
-                  <div className="password-input-wrapper">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      className="form-input"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                    <button
-                      type="button"
-                      className="password-toggle"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? "👁️" : "👁️‍🗨️"}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">CONFIRM PASSWORD</label>
-                  <div className="password-input-wrapper">
-                    <input
-                      type={showConfirmPassword ? "text" : "password"}
-                      className="form-input"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                    />
-                    <button
-                      type="button"
-                      className="password-toggle"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
-                    </button>
-                  </div>
-                </div>
-
-                <button type="submit" className="login-btn" disabled={isLoading}>
-                  {isLoading ? "Sending..." : "Send Verification Code"}
-                </button>
-              </form>
-
-              <div className="auth-divider">Or sign up with</div>
-
-              <div className="google-signin-wrapper">
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={handleGoogleError}
-                  text="signup_with"
-                  shape="rectangular"
-                  theme="outline"
-                  size="large"
-                  width="350"
+            <div className="form-group">
+              <label className="form-label">PASSWORD</label>
+              <div className="password-input-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="form-input"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={8}
                 />
-              </div>
-            </>
-          ) : (
-            <>
-              <h1 className="welcome-title">Verify Your Email</h1>
-              <p className="subtitle-text">
-                We've sent a 6-digit verification code to <strong>{pendingEmail}</strong>
-              </p>
-
-              <form className="login-form" onSubmit={handleVerification}>
-                <div className="form-group">
-                  <label className="form-label">VERIFICATION CODE</label>
-                  <input
-                    type="text"
-                    className="form-input verification-input"
-                    value={verificationCode}
-                    onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    placeholder="000000"
-                    maxLength="6"
-                    required
-                  />
-                </div>
-
-                <button type="submit" className="login-btn" disabled={isLoading}>
-                  {isLoading ? "Verifying..." : "Verify & Create Account"}
-                </button>
-              </form>
-
-              <p className="signup-text">
-                Didn't receive the code? 
-                <button 
-                  className="link-button" 
-                  onClick={() => setStep("signup")}
-                  style={{ marginLeft: '5px' }}
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
                 >
-                  Try Again
+                  {showPassword ? "👁️" : "👁️‍🗨️"}
                 </button>
-              </p>
-            </>
-          )}
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">CONFIRM PASSWORD</label>
+              <div className="password-input-wrapper">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  className="form-input"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={8}
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
+                </button>
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              className="login-btn"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Creating Account...' : 'Sign Up'}
+            </button>
+          </form>
 
           <p className="signup-text">
-            Already have an account? 
-            <button 
-              className="link-button" 
-              onClick={onBackToLogin}
-              style={{ marginLeft: '5px' }}
-            >
-              Sign In
-            </button>
+            Already have an account? <button className="link-button" onClick={onBackToLogin}>Login</button>
           </p>
 
+          <div className="auth-divider">OR</div>
+
+          <div className="google-signin-wrapper">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              text="signup_with"
+              shape="rectangular"
+              theme="outline"
+              size="large"
+              width="350"
+            />
+          </div>
+
           <footer className="footer-text">
-            © 2024 RTX Cinema - Nepal's Premier Cinema Chain
+            © 2024 RTX Cinema
           </footer>
         </div>
       </div>

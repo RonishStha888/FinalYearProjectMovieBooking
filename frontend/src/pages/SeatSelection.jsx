@@ -135,6 +135,19 @@ export default function SeatSelection({
     return () => clearInterval(timer);
   }, [timerActive]);
 
+  // Check if seats have been permanently booked (payment completed)
+  useEffect(() => {
+    if (selectedSeats.length > 0 && timerActive) {
+      // Check if any of our selected seats are now in the booked list
+      const seatsNowBooked = selectedSeats.some(seat => bookedSeats.includes(seat));
+      if (seatsNowBooked) {
+        // Payment was completed, stop the timer
+        setTimerActive(false);
+        console.log('✅ Seats permanently booked - timer stopped');
+      }
+    }
+  }, [bookedSeats, selectedSeats, timerActive]);
+
   const fetchHeldSeats = async () => {
     try {
       // Use a mock showtime ID if not available
@@ -176,7 +189,7 @@ export default function SeatSelection({
       // Use a mock showtime ID if not available
       const showtimeId = selectedShowtime?._id || `showtime_${selectedCinema?._id}_${selectedDate}_${selectedShowtime?.time}`;
       
-      const response = await fetch('${API_URL}/api/seat-hold/hold', {
+      const response = await fetch(`${API_URL}/api/seat-hold/hold`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -214,7 +227,7 @@ export default function SeatSelection({
     try {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       
-      await fetch('${API_URL}/api/seat-hold/release', {
+      await fetch(`${API_URL}/api/seat-hold/release`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

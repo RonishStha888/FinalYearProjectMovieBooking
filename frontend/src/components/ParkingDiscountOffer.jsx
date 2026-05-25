@@ -11,7 +11,7 @@ export default function ParkingDiscountOffer({ bookingId, userId, onClaim, onDis
     setError(null);
 
     try {
-      const response = await fetch('${API_URL}/api/parking/claim-coupon', {
+      const response = await fetch(`${API_URL}/api/parking/claim-coupon`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

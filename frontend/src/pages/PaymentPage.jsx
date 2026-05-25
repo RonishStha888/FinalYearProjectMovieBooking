@@ -92,7 +92,7 @@ export default function PaymentPage({
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const pendingBooking = JSON.parse(sessionStorage.getItem('pendingBooking') || '{}');
 
-      const response = await fetch('${API_URL}/api/payment/khalti/verify', {
+      const response = await fetch(`${API_URL}/api/payment/khalti/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pidx, bookingData: pendingBooking })
@@ -191,7 +191,7 @@ export default function PaymentPage({
     // Mark seats as permanently booked
     try {
       const sessionId = sessionStorage.getItem('sessionId') || `session_${Date.now()}`;
-      await fetch('${API_URL}/api/seat-hold/complete', {
+      await fetch(`${API_URL}/api/seat-hold/complete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -207,7 +207,7 @@ export default function PaymentPage({
     // Redeem points if selected
     if (userId && pointsToRedeem > 0) {
       try {
-        await fetch('${API_URL}/api/loyalty/redeem', {
+        await fetch(`${API_URL}/api/loyalty/redeem`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ userId, points: pointsToRedeem, bookingReference })
@@ -218,7 +218,7 @@ export default function PaymentPage({
     // Award points for ticket purchase
     if (userId && ticketTotal > 0) {
       try {
-        await fetch('${API_URL}/api/loyalty/award', {
+        await fetch(`${API_URL}/api/loyalty/award`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -279,7 +279,7 @@ export default function PaymentPage({
         // Mark seats as permanently booked
         try {
           const sessionId = sessionStorage.getItem('sessionId') || `session_${Date.now()}`;
-          await fetch('${API_URL}/api/seat-hold/complete', {
+          await fetch(`${API_URL}/api/seat-hold/complete`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -295,7 +295,7 @@ export default function PaymentPage({
         // Redeem points if selected
         if (userId && pointsToRedeem > 0) {
           try {
-            await fetch('${API_URL}/api/loyalty/redeem', {
+            await fetch(`${API_URL}/api/loyalty/redeem`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ userId, points: pointsToRedeem, bookingReference })
@@ -306,7 +306,7 @@ export default function PaymentPage({
         // Award points
         if (userId && ticketTotal > 0) {
           try {
-            await fetch('${API_URL}/api/loyalty/award', {
+            await fetch(`${API_URL}/api/loyalty/award`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

@@ -1,155 +1,191 @@
-# ✅ PASSWORD RESET VERIFICATION SYSTEM - COMPLETE
+# Password Reset & Email Verification System - Complete ✅
 
-## 🎯 Enhancement Summary
-Successfully enhanced the password reset system to use a three-step verification process with email verification codes, providing better security and user experience.
+## Summary
 
-## 🔄 New Password Reset Flow
-
-### Step 1: Email Entry
-- User enters their email address
-- System sends 6-digit verification code via email
-- Professional RTX Cinema branded email template
-
-### Step 2: Code Verification
-- User enters the 6-digit verification code
-- Code validation before proceeding to password reset
-- Clear error handling for invalid/expired codes
-
-### Step 3: New Password Setup
-- User sets new password with confirmation
-- Password strength validation (minimum 8 characters)
-- Password visibility toggles for better UX
-
-## 🎨 UI/UX Improvements
-
-### ✅ Visual Enhancements
-- **Three-step progress indicator** showing current step
-- **Consistent design** matching signup verification flow
-- **Professional glassmorphism** styling maintained
-- **Responsive layout** for all screen sizes
-- **Clear navigation** between steps with back buttons
-
-### 📱 User Experience
-- **Step-by-step guidance** with clear instructions
-- **Email confirmation** showing where code was sent
-- **Error handling** with helpful messages
-- **Loading states** during API calls
-- **Password visibility toggles** for better usability
-
-## 🔧 Technical Implementation
-
-### Frontend Changes
-```javascript
-// Three-step state management
-const [step, setStep] = useState("email"); // "email", "verify", "reset"
-
-// Enhanced form handling
-- Email validation and submission
-- Verification code input (6-digit numeric)
-- Password reset with confirmation
-- Error handling and navigation
-```
-
-### Backend Integration
-- Uses existing `/api/auth/forgot-password` endpoint
-- Uses existing `/api/auth/reset-password` endpoint
-- 6-digit verification codes with 15-minute expiration
-- Professional email templates via Nodemailer
-
-## 🧪 Testing Results
-
-### ✅ All Tests Passing
-- Password reset codes sent successfully
-- Professional email templates delivered
-- Invalid codes properly rejected
-- Three-step UI flow working smoothly
-- Password validation and confirmation
-- Error handling and navigation
-
-## 🔐 Security Features
-
-### Enhanced Security
-- **Email verification required** before password reset
-- **6-digit codes** with automatic expiration
-- **Rate limiting** through existing backend logic
-- **Secure password validation** with strength requirements
-- **Clear error messages** without revealing user existence
-
-## 📊 Flow Comparison
-
-### Before (Old Flow)
-1. Enter email → 2. Check email for instructions
-
-### After (New Flow)
-1. Enter email → 2. Enter verification code → 3. Set new password
-
-## 🎯 Key Features Implemented
-
-### 🔄 Three-Step Process
-- **Step 1**: Email entry with validation
-- **Step 2**: 6-digit code verification
-- **Step 3**: New password setup with confirmation
-
-### 🎨 Professional UI
-- Step progress indicators
-- Consistent RTX Cinema branding
-- Glassmorphism design maintained
-- Responsive across all devices
-
-### 🔐 Security & Validation
-- Email format validation
-- 6-digit numeric code input
-- Password strength requirements
-- Confirmation password matching
-- Clear error handling
-
-### 📧 Email Integration
-- Professional RTX Cinema email templates
-- 6-digit verification codes
-- 15-minute automatic expiration
-- Gmail SMTP delivery
-
-## 📱 Usage Instructions
-
-### For Users
-1. Visit http://localhost:5173/
-2. Click "Forgot Password?" on login page
-3. Enter email address
-4. Check email for 6-digit verification code
-5. Enter verification code
-6. Set new password with confirmation
-7. Login with new password
-
-### For Developers
-- Backend handles code generation and validation
-- Frontend manages three-step UI flow
-- Email templates sent via Nodemailer
-- Verification codes logged to console for testing
-
-## 🎉 Success Metrics
-
-### ✅ Requirements Met
-- ✅ Three-step verification process implemented
-- ✅ Email verification code system working
-- ✅ Professional UI with step indicators
-- ✅ Password reset with confirmation
-- ✅ Error handling and validation
-- ✅ Professional email templates
-- ✅ Consistent design with signup flow
-- ✅ Responsive across all devices
-- ✅ Security best practices followed
-
-### 📈 User Experience Improvements
-- Clear step-by-step guidance
-- Professional email communications
-- Secure verification process
-- Intuitive navigation between steps
-- Helpful error messages and validation
+Successfully migrated the entire authentication system to use link-based verification instead of OTP codes. Both email verification and password reset now use secure email links with automatic login after verification.
 
 ---
 
-## 🏁 ENHANCEMENT STATUS: ✅ COMPLETE
+## ✅ What Was Completed
 
-The password reset system has been successfully enhanced with a three-step verification process. Users now receive verification codes via email and can securely reset their passwords through a guided, professional interface that matches the overall RTX Cinema design system.
+### 1. Email Verification System
+- ✅ Link-based verification (no more OTP codes)
+- ✅ Brevo email service integration
+- ✅ Automatic login after email verification
+- ✅ User redirected to homepage after verification
+- ✅ localStorage check on app mount for persistent login
+- ✅ Fixed double API call issue with React StrictMode
 
-**Next Steps**: System is ready for production use with enhanced security and improved user experience.
+### 2. Password Reset System
+- ✅ Changed from verification code to email link
+- ✅ Simplified forgot password flow
+- ✅ Created PasswordResetPage component
+- ✅ Updated PasswordReset model to support tokens
+- ✅ Email link expires after 1 hour
+- ✅ User can set new password via link
+
+### 3. Bug Fixes
+- ✅ Fixed Brevo API key loading issue
+- ✅ Fixed sender email verification (changed to cinemasrtx@gmail.com)
+- ✅ Disabled IP restrictions in Brevo
+- ✅ Fixed template literal bugs (backticks vs single quotes)
+- ✅ Fixed parking discount API URL bug
+- ✅ Added localStorage persistence for login state
+
+---
+
+## 📁 Files Modified
+
+### Backend:
+- `backend/services/brevoService.js` - Brevo email service with on-demand client
+- `backend/routes/auth.js` - Updated auth endpoints
+- `backend/models/User.js` - Added email verification fields
+- `backend/models/PasswordReset.js` - Added token and expiresAt fields
+- `backend/.env` - Brevo configuration
+
+### Frontend:
+- `frontend/src/App.jsx` - Added useEffect for localStorage check, added password reset route
+- `frontend/src/pages/EmailVerificationPage.jsx` - Auto-login after verification
+- `frontend/src/pages/ForgotPasswordPage.jsx` - Simplified to email-only flow
+- `frontend/src/pages/PasswordResetPage.jsx` - NEW - Password reset via link
+- `frontend/src/components/ParkingDiscountOffer.jsx` - Fixed API URL bug
+
+---
+
+## 🔄 Complete User Flows
+
+### Email Verification Flow:
+1. User signs up → Enters email, username, password
+2. Backend creates unverified user → Sends verification email via Brevo
+3. User receives email → Clicks "Verify Email Address" button
+4. Opens verification page → Calls `/api/auth/verify-email/:token`
+5. Backend verifies token → Marks user as verified → Returns user data
+6. Frontend stores user in localStorage → Shows "Email Verified! Logging you in..."
+7. After 2 seconds → Redirects to `/` → App checks localStorage → User logged in → Shows HomePage
+
+### Password Reset Flow:
+1. User clicks "Lost Password? Reset Password"
+2. Enters email → Clicks "Send Reset Link"
+3. Backend generates reset token → Sends email via Brevo
+4. User receives email → Clicks "Reset Password" button
+5. Opens `/reset-password/:token` → PasswordResetPage loads
+6. User enters new password → Submits
+7. Backend verifies token → Updates password → Success
+8. User redirected to login page
+
+### Login Persistence:
+1. User logs in or verifies email → User data saved to localStorage
+2. User closes browser → Reopens site
+3. App.jsx useEffect runs → Checks localStorage
+4. If user data exists → Automatically logs in → Shows HomePage
+5. If no user data → Shows login page
+
+---
+
+## 🔧 Technical Details
+
+### Brevo Configuration:
+- **API Key:** Active and working
+- **Sender Email:** cinemasrtx@gmail.com (verified)
+- **IP Restrictions:** Disabled (works from any IP)
+- **Free Tier:** 300 emails/day
+
+### Token Security:
+- **Email Verification Token:** 32-byte hex string, expires in 24 hours
+- **Password Reset Token:** 32-byte hex string, expires in 1 hour
+- **Tokens:** Stored in database, cleared after use
+
+### localStorage Structure:
+```javascript
+{
+  _id: "user_id",
+  login: "username",
+  email: "user@email.com",
+  name: "User Name",
+  role: "user",
+  authMethod: "email",
+  loyaltyPoints: { ... }
+}
+```
+
+---
+
+## 🐛 Bugs Fixed
+
+1. **Brevo API Key Not Loading**
+   - Issue: Client initialized at module load before env vars loaded
+   - Fix: Changed to on-demand client creation with `getClient()` function
+
+2. **Sender Email Not Verified**
+   - Issue: Using `noreply@rtxcinema.com` (unverified domain)
+   - Fix: Changed to `cinemasrtx@gmail.com` and verified in Brevo
+
+3. **IP Address Blocked**
+   - Issue: Brevo blocking requests from unrecognized IP
+   - Fix: Disabled IP restrictions in Brevo dashboard
+
+4. **Double API Calls**
+   - Issue: React StrictMode calling useEffect twice
+   - Fix: Added `useRef` to prevent double verification calls
+
+5. **Template Literal Bugs**
+   - Issue: Using `'${API_URL}'` instead of `` `${API_URL}` ``
+   - Fix: Changed single quotes to backticks in multiple files
+
+6. **Auto-Login Not Working**
+   - Issue: App not checking localStorage on mount
+   - Fix: Added useEffect in App.jsx to check localStorage
+
+7. **Parking Discount API Bug**
+   - Issue: Same template literal bug in ParkingDiscountOffer
+   - Fix: Changed to backticks
+
+---
+
+## ✅ Testing Checklist
+
+- [x] Email verification sends email
+- [x] Verification link works
+- [x] User automatically logged in after verification
+- [x] User redirected to homepage
+- [x] Login persists after browser close
+- [x] Password reset sends email
+- [x] Password reset link works
+- [x] New password can be set
+- [x] Expired tokens are rejected
+- [x] Used tokens are rejected
+- [x] Google signup/login works
+- [x] Logout clears localStorage
+
+---
+
+## 🚀 Production Ready
+
+The system is now ready for production deployment:
+- ✅ Brevo configured for production
+- ✅ Environment variables set
+- ✅ Error handling in place
+- ✅ Security measures implemented
+- ✅ User experience optimized
+
+---
+
+## 📝 Environment Variables
+
+### Backend (.env):
+```env
+BREVO_API_KEY=your_brevo_api_key_here
+BREVO_SENDER_EMAIL=cinemasrtx@gmail.com
+FRONTEND_URL=http://localhost:5173
+```
+
+### Frontend (.env):
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+---
+
+**Status:** ✅ COMPLETE AND TESTED
+**Date:** May 24, 2026
+**Ready for:** 🚀 Production Deployment

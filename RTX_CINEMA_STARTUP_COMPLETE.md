@@ -1,168 +1,326 @@
-# RTX Cinema Application - Ready to Run! 🚀
+# RTX Cinema - Complete Startup Guide
 
-## ✅ **Current Status: FULLY OPERATIONAL**
+## 🚀 Quick Start (Recommended)
 
-Your RTX Cinema application is **connected, running, and ready to use!**
+### Option 1: Automatic Startup (Windows)
+Double-click `start-servers.bat` in the project root folder.
 
-## 🔗 **Database Connection Status**
+This will automatically open 2 terminal windows:
+- ✅ Backend Server (http://localhost:5000)
+- ✅ Frontend Server (http://localhost:5173)
 
-### **✅ Database Connected Successfully**
-- **Database**: `rtx_cinema` on `localhost:27017`
-- **Connection**: Active and stable
-- **Data**: All movies, users, cinemas, and showtimes loaded
+**Keep both windows open while using the application!**
 
-### **📊 Database Contents Verified**
-- ✅ **6 Movies** loaded and accessible
-- ✅ **3 Users** ready for login testing
-- ✅ **3 Cinemas** with halls and showtimes
-- ✅ **1,680 Showtimes** for 14 days advance booking
+---
 
-## 🖥️ **Application Status**
+### Option 2: Manual Startup
 
-### **✅ Backend Server (Port 5000)**
-- **Status**: Running and responding
-- **API**: All endpoints functional
-- **Database**: Connected to `rtx_cinema`
-- **Authentication**: Login system working
-
-### **✅ Frontend Server (Port 3000)**
-- **Status**: Running with hot reload
-- **UI**: Professional design system applied
-- **Pages**: Login, Signup, Home, Booking all ready
-- **API Integration**: Connected to backend
-
-## 🔐 **Ready-to-Use Login Credentials**
-
-### **Test Users Available**
-```
-Username: testuser
-Password: password123
-Email: test@rtxcinema.com
-
-Username: admin  
-Password: password123
-Email: admin@rtxcinema.com
-
-Username: john_doe
-Password: password123
-Email: john@example.com
-```
-
-## 🌐 **Access Your Application**
-
-### **Frontend (User Interface)**
-```
-URL: http://localhost:3000
-Status: ✅ Running
-Features: Login, Browse Movies, Book Tickets
-```
-
-### **Backend API**
-```
-URL: http://localhost:5000
-Status: ✅ Running
-Endpoints: /api/auth, /api/movies, /api/cinemas
-```
-
-## 🎬 **Available Features**
-
-### **✅ User Authentication**
-- Login with username/password
-- Google OAuth integration
-- Email verification system
-- Password reset functionality
-
-### **✅ Movie Browsing**
-- 6 movies with complete details
-- Categories: top-rated, action, coming-soon
-- Professional movie cards with ratings
-- High-quality movie posters
-
-### **✅ Cinema Booking**
-- 3 cinemas in Kathmandu
-- 5 different halls with various pricing
-- Real showtimes for next 14 days
-- Weekend pricing included
-
-### **✅ Professional UI**
-- Dark theme cinema design
-- Glassmorphism effects
-- Responsive for all devices
-- Smooth animations and transitions
-
-## 🚀 **How to Use**
-
-### **Step 1: Open the Application**
-1. Open your browser
-2. Go to `http://localhost:3000`
-3. You'll see the professional login page
-
-### **Step 2: Login**
-1. Use any test credentials above
-2. Click "Login" button
-3. You'll be redirected to the movie homepage
-
-### **Step 3: Browse Movies**
-1. See 6 movies with ratings and details
-2. Click on any movie to book tickets
-3. Choose date, cinema, and showtime
-
-### **Step 4: Book Tickets**
-1. Select your preferred date
-2. Choose cinema and hall type
-3. Pick showtime and proceed
-
-## 🔧 **Technical Details**
-
-### **Database Configuration**
-```env
-MONGODB_URI=mongodb://localhost:27017/rtx_cinema
-PORT=5000
-```
-
-### **Server Processes**
+#### Terminal 1 - Backend
 ```bash
-Frontend: npm run dev (Port 3000)
-Backend: npm start (Port 5000)
-Database: MongoDB (Port 27017)
+cd backend
+npm start
 ```
 
-### **API Endpoints Working**
-- ✅ `GET /api/movies` - Returns 6 movies
-- ✅ `POST /api/auth/login` - User authentication
-- ✅ `GET /api/cinemas` - Cinema information
-- ✅ `GET /api/movies/:id/showtimes` - Movie showtimes
+**Wait for:**
+```
+🚀 Server running on http://localhost:5000
+✅ Connected to MongoDB
+```
 
-## 🎯 **What You Can Do Now**
+**Keep this terminal open!**
 
-### **Immediate Actions**
-1. **Test Login**: Use `testuser` / `password123`
-2. **Browse Movies**: See all 6 movies with details
-3. **Book Tickets**: Select movies and showtimes
-4. **Test Features**: Try all authentication flows
+---
 
-### **Development Actions**
-1. **Add More Movies**: Use the seeding script
-2. **Create New Users**: Use the user creation script
-3. **Modify UI**: All pages use consistent design system
-4. **Add Features**: Build on the solid foundation
+#### Terminal 2 - Frontend
+```bash
+cd frontend
+npm run dev
+```
 
-## 🏆 **Final Year Project Ready**
+**Wait for:**
+```
+➜  Local:   http://localhost:5173/
+```
 
-### **Professional Quality**
-- ✅ **Industry-Standard UI**: Cinema-grade design
-- ✅ **Complete Database**: Realistic data structure
-- ✅ **Full Authentication**: Secure login system
-- ✅ **Real Functionality**: Working booking system
+**Keep this terminal open!**
 
-### **Demonstration Ready**
-- ✅ **Live Application**: Fully functional system
-- ✅ **Professional Appearance**: University presentation quality
-- ✅ **Complete Features**: End-to-end user experience
-- ✅ **Technical Excellence**: Modern development practices
+---
 
-## 🎬 **Your RTX Cinema is Live!**
+## 🌐 Access the Application
 
-**Open http://localhost:3000 and start using your professional cinema booking system!**
+Open your browser and go to:
+```
+http://localhost:5173
+```
 
-Everything is connected, running, and ready for your final year project demonstration! 🌟
+---
+
+## ✅ Verify Everything is Working
+
+### 1. Check Backend
+Open in browser: http://localhost:5000
+
+**Should see:**
+```json
+{"message":"RTX Cinema API is running!"}
+```
+
+If you see this, backend is working! ✅
+
+---
+
+### 2. Check Frontend
+Open in browser: http://localhost:5173
+
+**Should see:**
+- RTX Cinema homepage
+- Movies displayed
+- Navigation menu
+- Login/Signup buttons
+
+If you see this, frontend is working! ✅
+
+---
+
+### 3. Test Signup Flow
+
+1. Click "Sign Up" button
+2. Fill in the form:
+   - Email: your_email@gmail.com
+   - Username: testuser
+   - Password: password123
+   - Confirm Password: password123
+3. Click "Sign Up"
+
+**Expected Result:**
+```
+✅ "Check Your Email!" success message
+```
+
+**Backend Console Should Show:**
+```
+📧 Signup request for: your_email@gmail.com
+✅ User created (unverified): testuser
+📧 Verification email sent to your_email@gmail.com
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### Problem 1: "Failed to connect to server"
+
+**Cause:** Backend is not running
+
+**Fix:**
+1. Open a new terminal
+2. Run:
+   ```bash
+   cd backend
+   npm start
+   ```
+3. Wait for "Server running" message
+4. Try signup again
+
+---
+
+### Problem 2: Backend won't start
+
+**Error:** `Cannot find module '@getbrevo/brevo'`
+
+**Fix:**
+```bash
+cd backend
+npm install
+npm start
+```
+
+---
+
+### Problem 3: Frontend won't start
+
+**Error:** `Cannot find module` or similar
+
+**Fix:**
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+---
+
+### Problem 4: Email not sending
+
+**Check Backend Console:**
+- ✅ `📧 Verification email sent` = Working!
+- ❌ `Brevo email error` = API key issue
+
+**Fix:**
+1. Get Brevo API key from https://www.brevo.com/
+2. Update `backend/.env`:
+   ```
+   BREVO_API_KEY=your_actual_api_key_here
+   ```
+3. Restart backend server
+
+**Test Brevo API:**
+```bash
+node test-brevo-api.js
+```
+
+---
+
+### Problem 5: MongoDB connection error
+
+**Error:** `MongoDB connection error`
+
+**Check:**
+1. Is your internet connected?
+2. Is MongoDB Atlas connection string correct in `backend/.env`?
+
+**Current Connection String:**
+```
+mongodb+srv://rtx_admin:c2H5HtlZxV3lJMSD@cluster0.xeizws7.mongodb.net/rtx_cinema?retryWrites=true&w=majority&appName=Cluster0
+```
+
+---
+
+### Problem 6: Port already in use
+
+**Error:** `Port 5000 is already in use`
+
+**Fix:**
+1. Find and close the process using port 5000
+2. Or change port in `backend/.env`:
+   ```
+   PORT=5001
+   ```
+3. Update `frontend/.env`:
+   ```
+   VITE_API_URL=http://localhost:5001
+   ```
+
+---
+
+## 📋 Pre-Flight Checklist
+
+Before starting, make sure:
+
+- [ ] Node.js is installed (v18 or higher)
+- [ ] npm is installed
+- [ ] Internet connection is active
+- [ ] MongoDB Atlas is accessible
+- [ ] Brevo API key is configured (optional for testing)
+- [ ] No other apps using ports 5000 or 5173
+
+---
+
+## 🧪 Run Tests
+
+### Test Backend Connection
+```bash
+node test-backend-connection.js
+```
+
+### Test Brevo Email Service
+```bash
+node test-brevo-api.js
+```
+
+---
+
+## 📁 Important Files
+
+### Configuration Files
+- `backend/.env` - Backend configuration (MongoDB, Brevo, etc.)
+- `frontend/.env` - Frontend configuration (API URL)
+
+### Startup Scripts
+- `start-servers.bat` - Automatic startup (Windows)
+- `test-backend-connection.js` - Test backend
+- `test-brevo-api.js` - Test email service
+
+### Documentation
+- `QUICK_FIX_NETWORK_ERROR.md` - Fix connection errors
+- `EMAIL_VERIFICATION_IMPLEMENTATION_COMPLETE.md` - Email system docs
+- `DEPLOYMENT_GUIDE.md` - Production deployment
+
+---
+
+## 🎯 Development Workflow
+
+### Daily Startup
+1. Double-click `start-servers.bat`
+2. Wait for both servers to start
+3. Open http://localhost:5173
+4. Start developing!
+
+### Making Changes
+- **Frontend changes:** Auto-reload (no restart needed)
+- **Backend changes:** Restart backend server (Ctrl+C, then `npm start`)
+- **.env changes:** Restart the server that uses it
+
+### Stopping Servers
+- Press `Ctrl+C` in each terminal
+- Or close the terminal windows
+
+---
+
+## 🌍 Production Deployment
+
+When ready to deploy:
+1. See `DEPLOYMENT_GUIDE.md`
+2. See `QUICK_DEPLOY.md`
+3. See `DEPLOYMENT_CHECKLIST.md`
+
+---
+
+## 💡 Tips
+
+1. **Keep terminals visible** - You can see errors immediately
+2. **Check backend console** - Most errors show up there first
+3. **Use browser DevTools (F12)** - Check Network tab for API errors
+4. **Clear browser cache** - Use Ctrl+Shift+R for hard refresh
+5. **Test in incognito mode** - Avoid cache issues
+
+---
+
+## 🆘 Still Having Issues?
+
+### Check These:
+1. Backend console - Any error messages?
+2. Frontend console (F12) - Any error messages?
+3. Network tab (F12) - Are API calls failing?
+4. `backend/.env` - All variables set correctly?
+5. `frontend/.env` - API URL correct?
+
+### Common Error Messages:
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| "Failed to connect to server" | Backend not running | Start backend |
+| "Cannot find module" | Dependencies not installed | Run `npm install` |
+| "Port already in use" | Port conflict | Change port or kill process |
+| "MongoDB connection error" | Internet or wrong URI | Check connection |
+| "Brevo email error" | Invalid API key | Get new key from Brevo |
+
+---
+
+## 📞 Need More Help?
+
+Read these guides:
+- `QUICK_FIX_NETWORK_ERROR.md` - Connection issues
+- `EMAIL_VERIFICATION_IMPLEMENTATION_COMPLETE.md` - Email system
+- `DEPLOYMENT_GUIDE.md` - Deployment help
+
+---
+
+## ✨ You're All Set!
+
+Once both servers are running:
+- Backend: http://localhost:5000 ✅
+- Frontend: http://localhost:5173 ✅
+- MongoDB: Connected ✅
+
+**Happy coding! 🎬🍿**

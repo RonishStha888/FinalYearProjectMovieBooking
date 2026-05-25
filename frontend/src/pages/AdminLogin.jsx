@@ -27,9 +27,9 @@ const AdminLogin = () => {
 
     try {
       console.log('🔐 Attempting admin login with:', formData);
-      console.log('🌐 Making request to:', '${API_URL}/api/admin/login');
+      console.log('🌐 Making request to:', `${API_URL}/api/admin/login`);
       
-      const response = await fetch('${API_URL}/api/admin/login', {
+      const response = await fetch(`${API_URL}/api/admin/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

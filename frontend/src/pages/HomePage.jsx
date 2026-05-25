@@ -33,6 +33,23 @@ export default function HomePage({ user, onLogout }) {
   const [lastEarnedPoints, setLastEarnedPoints] = useState(0);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [showQuickBookModal, setShowQuickBookModal] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Detect scroll to hide logo
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      console.log('Scroll position:', scrollPosition); // Debug log
+      if (scrollPosition > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Fetch movies when category changes
   useEffect(() => {
@@ -293,7 +310,7 @@ export default function HomePage({ user, onLogout }) {
             <div className="brand-section">
               <div className="logo-container">
                 <div className="logo-icon">
-                  <img src={logo} alt="RTX Cinema Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  <img src={logo} alt="RTX Cinema Logo" />
                 </div>
               </div>
               <div className="brand-text">
@@ -343,7 +360,7 @@ export default function HomePage({ user, onLogout }) {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '40px 20px',
+          padding: '120px 20px 40px 20px',
           textAlign: 'center'
         }}>
           <div style={{
@@ -391,9 +408,9 @@ export default function HomePage({ user, onLogout }) {
   return (
     <div className="homepage-container">
       {/* Professional Header */}
-      <header className="professional-header">
+      <header className={`professional-header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="header-content">
-          <div className="brand-section">
+          <div className={`brand-section ${isScrolled ? 'hidden' : ''}`}>
             <div className="logo-container">
               <div className="logo-icon">
                 <img src={logo} alt="RTX Cinema Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
