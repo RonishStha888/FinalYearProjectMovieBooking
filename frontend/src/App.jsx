@@ -236,6 +236,7 @@ export default function App() {
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
           
           {/* Email Verification Route */}
           <Route path="/verify-email/:token" element={<EmailVerificationPage />} />
