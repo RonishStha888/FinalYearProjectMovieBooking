@@ -176,8 +176,8 @@
 
 .esewa-hint {
   font-size: 11px;
-  color: #3d9970;
-  background: #f0faf5;
+  color: #5C2D91;
+  background: #f3f0f7;
   padding: 4px 10px;
   border-radius: 4px;
   text-align: center;
@@ -190,6 +190,11 @@
   background: #f5f5f5;
   padding: 8px 14px;
   border-radius: 8px;
+}
+
+.esewa-user-id {
+  color: #5C2D91;
+  font-weight: 600;
 }
 
 .esewa-user-avatar {

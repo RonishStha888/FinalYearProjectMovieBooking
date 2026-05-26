@@ -110,7 +110,7 @@ export default function EsewaSandboxPage({ amount, orderName, onSuccess, onCance
             <div className="esewa-step-label">Enter Password</div>
             <div className="esewa-user-chip">
               <div className="esewa-user-avatar">{esewaid[0]}</div>
-              <span>{esewaid}</span>
+              <span className="esewa-user-id">{esewaid}</span>
               <button type="button" onClick={() => setStep('login')} className="esewa-change">Change</button>
             </div>
             <div className="esewa-field">

@@ -1,4 +1,0 @@
-# Paste your friend's report content here
-# This will help me understand the structure and format
-
-[Paste the content from the .docx file here]
