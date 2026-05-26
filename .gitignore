@@ -42,9 +42,13 @@ backend/test-sendgrid.js
 # Documentation files (keep locally, not in GitHub)
 *.md
 *.txt
+*.docx
+*.html
 
-# Exception: Keep README files
+# Exception: Keep README files and index.html
 !README.md
 !backend/README.md
 !frontend/README.md
 !frontend2/README.md
+!frontend/index.html
+!frontend2/index.html
