@@ -62,7 +62,7 @@ export default function FoodBeveragePage({
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('${API_URL}/api/fb/categories');
+      const response = await fetch(`${API_URL}/api/fb/categories`);
       const data = await response.json();
       if (data.success) {
         setCategories(data.categories);
@@ -106,7 +106,7 @@ export default function FoodBeveragePage({
   const fetchRecommendations = async () => {
     try {
       const cinemaId = cinema?._id || '';
-      const response = await fetch('${API_URL}/api/fb/recommendations', {
+      const response = await fetch(`${API_URL}/api/fb/recommendations`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ticketCount, cinemaId })
@@ -128,7 +128,7 @@ export default function FoodBeveragePage({
         size: item.selectedSize
       }));
 
-      const response = await fetch('${API_URL}/api/fb/calculate-total', {
+      const response = await fetch(`${API_URL}/api/fb/calculate-total`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -207,11 +207,18 @@ export default function FoodBeveragePage({
       return;
     }
 
+    // Calculate total from cart items as fallback
+    const cartItems = Array.from(cart.values());
+    const calculatedSubtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
     const fbData = {
-      items: Array.from(cart.values()),
-      ...cartTotals
+      items: cartItems,
+      subtotal: cartTotals.subtotal || calculatedSubtotal,
+      totalDiscount: cartTotals.totalDiscount || 0,
+      finalTotal: cartTotals.finalTotal || calculatedSubtotal
     };
 
+    console.log('F&B Data being passed:', fbData); // Debug log
     onContinue(fbData);
   };
 
